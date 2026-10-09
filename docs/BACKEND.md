@@ -96,6 +96,21 @@ supabase config push                        # перенести настрой�
   пользователь останется на экране входа до подтверждения почты — это поддерживается.
 - **Password requirements** — `letters_digits`, соответствует подсказке в форме регистрации.
 
+**Если `db push` падает с `failed to connect … db.<ref>.supabase.co … socket is not connected`** — прямой адрес базы
+доступен только по IPv6, а сеть его не поддерживает. Используйте pooler (IPv4), строка есть в Dashboard → Connect;
+спецсимволы пароля нужно percent-encode (`@` → `%40`):
+
+```bash
+supabase db push --db-url "postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres"
+```
+
+Проверка без пароля, через публичный REST API: `category` отдаёт 7 строк, а `habit` для `anon` отвечает `42501`:
+
+```bash
+curl -s "https://<project-ref>.supabase.co/rest/v1/category?select=id" -H "apikey: <publishable-key>"
+curl -s "https://<project-ref>.supabase.co/rest/v1/habit?select=id"    -H "apikey: <publishable-key>"
+```
+
 `seed.sql` в удалённый проект не попадает (`db push` без `--include-seed`), справочник категорий приходит миграцией.
 
 ## Изменение схемы
