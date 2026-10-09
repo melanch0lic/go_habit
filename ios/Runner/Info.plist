@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Email links (sign-up confirmation, password reset) return to the app via
+	     gohabit://auth-callback; supabase_flutter handles them. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>gohabit</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Auth links must not be pushed to go_router as routes. -->
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>

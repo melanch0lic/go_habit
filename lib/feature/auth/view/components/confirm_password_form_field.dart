@@ -1,47 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:go_habit/core/extension/locale_extension.dart';
+import 'package:go_habit/feature/auth/view/auth_validators.dart';
+import 'package:go_habit/feature/auth/view/components/auth_text_field.dart';
 
 class ConfirmPasswordFormField extends StatelessWidget {
   const ConfirmPasswordFormField({
-    super.key,
     required TextEditingController controller,
     required TextEditingController passwordController,
-    required bool isPasswordVisible,
-    required VoidCallback onToggleVisibility,
+    this.focusNode,
+    this.onFieldSubmitted,
+    this.onChanged,
+    this.enabled = true,
+    super.key,
   })  : _controller = controller,
-        _passwordController = passwordController,
-        _isPasswordVisible = isPasswordVisible,
-        _onToggleVisibility = onToggleVisibility;
+        _passwordController = passwordController;
 
   final TextEditingController _controller;
   final TextEditingController _passwordController;
-  final bool _isPasswordVisible;
-  final VoidCallback _onToggleVisibility;
+  final FocusNode? focusNode;
+  final ValueChanged<String>? onFieldSubmitted;
+  final ValueChanged<String>? onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    final l10n = context.l10n;
+    return AuthTextField(
       controller: _controller,
-      decoration: InputDecoration(
-        labelText: 'Подтвердите пароль',
-        border: const OutlineInputBorder(),
-        prefixIcon: const Icon(Icons.lock_outline),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-          ),
-          onPressed: _onToggleVisibility,
-        ),
-      ),
-      obscureText: !_isPasswordVisible,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Пожалуйста, подтвердите пароль';
-        }
-        if (value != _passwordController.text) {
-          return 'Пароли не совпадают';
-        }
-        return null;
-      },
+      focusNode: focusNode,
+      label: l10n.confirm_password_label,
+      prefixIcon: Icons.lock_outline,
+      isPassword: true,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: TextInputAction.done,
+      autofillHints: const [AutofillHints.newPassword],
+      onFieldSubmitted: onFieldSubmitted,
+      onChanged: onChanged,
+      enabled: enabled,
+      validator: (value) => AuthValidators.confirmPassword(value, _passwordController.text, l10n),
     );
   }
 }

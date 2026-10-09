@@ -93,7 +93,7 @@ supabase config push                        # перенести настрой�
 
 - **Site URL / Redirect URLs** — сейчас в `config.toml` локальные значения; для продакшена укажите свои.
 - **Email confirmations** — локально выключены (`enable_confirmations = false`). Если включить, после регистрации
-  пользователь останется на экране входа до подтверждения почты — это поддерживается.
+  после регистрации приложение покажет экран «Проверьте почту»; войти можно после перехода по ссылке.
 - **Password requirements** — `letters_digits`, соответствует подсказке в форме регистрации.
 
 **Если `db push` падает с `failed to connect … db.<ref>.supabase.co … socket is not connected`** — прямой адрес базы
@@ -112,6 +112,25 @@ curl -s "https://<project-ref>.supabase.co/rest/v1/habit?select=id"    -H "apike
 ```
 
 `seed.sql` в удалённый проект не попадает (`db push` без `--include-seed`), справочник категорий приходит миграцией.
+
+## Ссылки из писем (подтверждение email, сброс пароля)
+
+Приложение просит Supabase вернуть пользователя по адресу `gohabit://auth-callback` (`authCallbackUrl` в
+`authentication_repository_impl.dart`). Схема зарегистрирована в `ios/Runner/Info.plist` и
+`android/app/src/main/AndroidManifest.xml`; ссылку обрабатывает `supabase_flutter` (PKCE), а router открывает экран
+нового пароля при событии `passwordRecovery`.
+
+Чтобы это работало на удалённом проекте, добавьте адрес в Dashboard → Authentication → URL Configuration →
+**Redirect URLs**: `gohabit://auth-callback`. Пока его нет, Supabase игнорирует `redirectTo` и ведёт на Site URL: письмо
+подтверждения всё равно подтвердит адрес (после чего пользователь входит вручную), а сброс пароля из приложения
+завершить не получится.
+
+Ссылка работает только на том устройстве, где её запросили (PKCE хранит verifier локально), и ограничена по времени.
+Просроченная или чужая ссылка показывается на экране входа как «Ссылка недействительна или устарела».
+
+Лимит писем (`over_email_send_rate_limit`) на встроенном SMTP Supabase очень маленький — для продакшена подключите свой
+SMTP (Dashboard → Authentication → SMTP Settings). Приложение показывает понятное сообщение и даёт повторить отправку не
+чаще раза в минуту.
 
 ## Изменение схемы
 

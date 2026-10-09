@@ -98,6 +98,154 @@ class AppLocalizationsRu extends AppLocalizations {
   String get email_invalid => 'Пожалуйста, введите корректный email';
 
   @override
+  String get auth_sign_in_subtitle =>
+      'Войдите, чтобы продолжить свои серии привычек';
+
+  @override
+  String get auth_sign_up_subtitle => 'Всё, что нужно, — email и пароль';
+
+  @override
+  String get auth_forgot_password => 'Забыли пароль?';
+
+  @override
+  String get auth_no_account => 'Нет аккаунта?';
+
+  @override
+  String get auth_create_account_action => 'Зарегистрироваться';
+
+  @override
+  String get auth_have_account => 'Уже есть аккаунт?';
+
+  @override
+  String get email_hint => 'name@example.com';
+
+  @override
+  String get password_show => 'Показать пароль';
+
+  @override
+  String get password_hide => 'Скрыть пароль';
+
+  @override
+  String get password_letters_digits => 'Пароль должен содержать буквы и цифры';
+
+  @override
+  String get password_req_length => 'Не менее 6 символов';
+
+  @override
+  String get password_req_letters_digits => 'Буквы и цифры';
+
+  @override
+  String get auth_check_email_title => 'Проверьте почту';
+
+  @override
+  String auth_confirm_email_message(String email) {
+    return 'Мы отправили письмо со ссылкой для подтверждения на $email. Перейдите по ссылке, а затем войдите в аккаунт.';
+  }
+
+  @override
+  String get auth_check_email_hint =>
+      'Нет письма? Проверьте папку «Спам». Если аккаунт с этим адресом уже есть, просто войдите или восстановите пароль.';
+
+  @override
+  String get auth_resend_email => 'Отправить письмо ещё раз';
+
+  @override
+  String auth_resend_in(int seconds) {
+    return 'Отправить ещё раз через $seconds с';
+  }
+
+  @override
+  String get auth_email_resent => 'Письмо отправлено ещё раз';
+
+  @override
+  String get auth_back_to_sign_in => 'Вернуться ко входу';
+
+  @override
+  String get auth_reset_title => 'Восстановление пароля';
+
+  @override
+  String get auth_reset_subtitle =>
+      'Укажите email аккаунта — мы пришлём ссылку для сброса пароля';
+
+  @override
+  String get auth_reset_send => 'Отправить ссылку';
+
+  @override
+  String auth_reset_sent_message(String email) {
+    return 'Если аккаунт с адресом $email существует, мы отправили на него ссылку для сброса пароля.';
+  }
+
+  @override
+  String get auth_reset_sent_hint =>
+      'Откройте письмо на этом устройстве — ссылка откроется в приложении. Она действует ограниченное время.';
+
+  @override
+  String get auth_new_password_title => 'Смена пароля';
+
+  @override
+  String get auth_new_password_subtitle =>
+      'Придумайте новый пароль для своего аккаунта';
+
+  @override
+  String get auth_new_password_label => 'Новый пароль';
+
+  @override
+  String get auth_new_password_save => 'Сохранить пароль';
+
+  @override
+  String get auth_password_updated => 'Пароль обновлён';
+
+  @override
+  String get auth_later => 'Позже';
+
+  @override
+  String get auth_error_invalid_credentials =>
+      'Неверный email или пароль. Проверьте данные или восстановите пароль.';
+
+  @override
+  String get auth_error_email_not_confirmed =>
+      'Email ещё не подтверждён. Перейдите по ссылке из письма, которое пришло после регистрации.';
+
+  @override
+  String get auth_error_user_exists =>
+      'Аккаунт с этим email уже существует. Войдите или восстановите пароль.';
+
+  @override
+  String get auth_error_weak_password =>
+      'Пароль слишком простой. Нужно не менее 6 символов, буквы и цифры.';
+
+  @override
+  String get auth_error_same_password =>
+      'Новый пароль должен отличаться от текущего.';
+
+  @override
+  String get auth_error_invalid_email =>
+      'Этот email не подходит. Проверьте адрес.';
+
+  @override
+  String get auth_error_signup_disabled =>
+      'Регистрация сейчас недоступна. Попробуйте позже.';
+
+  @override
+  String get auth_error_rate_limited =>
+      'Слишком много попыток. Подождите несколько минут и попробуйте снова.';
+
+  @override
+  String get auth_error_network =>
+      'Не удалось связаться с сервером. Проверьте интернет и попробуйте снова.';
+
+  @override
+  String get auth_error_link_invalid =>
+      'Ссылка недействительна или устарела. Запросите новую.';
+
+  @override
+  String get auth_error_session_expired =>
+      'Время на смену пароля истекло. Запросите новую ссылку.';
+
+  @override
+  String get auth_error_unknown => 'Что-то пошло не так. Попробуйте ещё раз.';
+
+  @override
   String get profile_title => 'Профиль';
 
   @override
