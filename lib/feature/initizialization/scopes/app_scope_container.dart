@@ -42,7 +42,8 @@ class AppScopeContainer extends ScopeContainer {
         database: appDatabase.get,
         remoteApi: SupabaseSyncRemoteApi(supabaseClient.get),
         appConnect: appConnect.get,
-        userIdChanges: auth.onAuthStateChange.map((state) => state.session?.user.id),
+        // A failed email link is reported as a stream error; it does not change the user.
+        userIdChanges: auth.onAuthStateChange.map((state) => state.session?.user.id).handleError((Object _) {}),
         currentUserId: () => auth.currentUser?.id,
       );
     },

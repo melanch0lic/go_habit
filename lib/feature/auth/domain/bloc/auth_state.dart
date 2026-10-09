@@ -4,8 +4,6 @@ sealed class AuthState {}
 
 class AuthInitial extends AuthState {}
 
-class AuthLoading extends AuthState {}
-
 class AuthUserAuthenticated extends AuthState {
   final User user;
 
@@ -20,7 +18,12 @@ class AuthLogoutConfirmationRequired extends AuthUserAuthenticated {
   AuthLogoutConfirmationRequired(super.user, {required this.pendingChanges});
 }
 
-class AuthUserUnauthenticated extends AuthState {}
+class AuthUserUnauthenticated extends AuthState {
+  /// Set when an email link failed; the sign-in screen explains what happened.
+  final AuthFailure? failure;
+
+  AuthUserUnauthenticated({this.failure});
+}
 
 class AuthError extends AuthState {
   final String errorMessage;

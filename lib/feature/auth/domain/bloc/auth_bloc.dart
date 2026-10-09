@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/sync/sync_service.dart';
+import 'package:go_habit/feature/auth/domain/models/auth_failure.dart';
 import 'package:go_habit/feature/auth/domain/repositories/i_authentication_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -25,49 +26,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await _onLogoutButtonPressed(event, emit);
         case AuthErrorOccurred():
           _onAuthErrorOccurred(event, emit);
-        case AuthSignInRequested():
-          await _onSignInRequested(event, emit);
-        case AuthSignUpRequested():
-          await _onSignUpRequested(event, emit);
       }
     });
 
     _startUserSubscription();
-  }
-
-  Future<void> _onSignInRequested(AuthSignInRequested event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
-    try {
-      await _authenticationRepository.signInWithEmail(email: event.email, password: event.password);
-    } on AuthException catch (e) {
-      debugPrint(e.toString());
-      switch (e.statusCode) {
-        case '400' || '401' || '403':
-          emit(AuthError('Неправильный логин или пароль'));
-        default:
-          emit(AuthError('Ошибка авторизации'));
-      }
-    } catch (e) {
-      emit(AuthError('Ошибка сервера'));
-    }
-  }
-
-  Future<void> _onSignUpRequested(AuthSignUpRequested event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
-    try {
-      await _authenticationRepository.signUp(email: event.email, password: event.password);
-    } on AuthException catch (e) {
-      debugPrint(e.toString());
-      switch (e.statusCode) {
-        case '400' || '401' || '403':
-          emit(AuthError(
-              'Неккоректные данные, проверьте валидность, пароль должен содержать латинские символы и цифры'));
-        default:
-          emit(AuthError('Ошибка регистрации'));
-      }
-    } catch (e) {
-      emit(AuthError('Ошибка сервера'));
-    }
   }
 
   Future<void> _onInitialAuthChecked(AuthInitialCheckRequested event, Emitter<AuthState> emit) async {
@@ -108,11 +70,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _startUserSubscription() => _userSubscription =
       _authenticationRepository.getCurrentUser().listen((user) => add(AuthOnCurrentUserChanged(user)))
-        ..onError((error) {
-          add(AuthErrorOccurred(error.toString()));
+        ..onError((Object error) {
+          add(AuthErrorOccurred(error is AuthFailureException ? error.failure : AuthFailure.unknown));
         });
 
-  void _onAuthErrorOccurred(AuthErrorOccurred event, Emitter<AuthState> emit) => emit(AuthError(event.errorMessage));
+  /// Errors on the session stream come from email links that could not be exchanged
+  /// for a session (expired, already used, opened on another device). They do not
+  /// change the session, so a signed-in user is not affected.
+  void _onAuthErrorOccurred(AuthErrorOccurred event, Emitter<AuthState> emit) {
+    debugPrint('Auth callback failed: ${event.failure}');
+    if (state is AuthUserAuthenticated) return;
+    emit(AuthUserUnauthenticated(failure: event.failure));
+  }
 
   @override
   Future<void> close() {

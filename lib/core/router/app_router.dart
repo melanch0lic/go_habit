@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_habit/core/router/routes_enum.dart';
 import 'package:go_habit/feature/auth/view/auth_screen.dart';
+import 'package:go_habit/feature/auth/view/forgot_password_screen.dart';
 import 'package:go_habit/feature/auth/view/registration_screen.dart';
+import 'package:go_habit/feature/auth/view/reset_password_screen.dart';
 import 'package:go_habit/feature/auth/view/splash_screen.dart';
 import 'package:go_habit/feature/auth/view/welcome_screen.dart';
 import 'package:go_habit/feature/habits/view/habits_page.dart';
@@ -14,6 +16,7 @@ import 'package:go_habit/feature/profile/view/profile_screen.dart';
 import 'package:go_habit/feature/root/view/root_page.dart';
 import 'package:go_habit/feature/settings/view/widgets_settings_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthChangeEvent, AuthState;
 
 part 'routes/auth_routes.dart';
 part 'routes/calendar_routes.dart';
@@ -30,13 +33,14 @@ final _profileRoutesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Profil
 
 class AppRouter {
   final bool Function() _isSignedIn;
-  final _AuthRefreshListenable _authRefresh;
+  final AuthRefreshListenable _authRefresh;
 
-  /// [authChanges] re-evaluates the redirect whenever the session changes, e.g. after
-  /// sign-out or when the session expires and cannot be refreshed.
-  AppRouter({required bool Function() isSignedIn, required Stream<Object?> authChanges})
+  /// [authChanges] re-evaluates the redirect whenever the session changes: after
+  /// sign-in, sign-out, when the session expires, or when a reset link opens a
+  /// recovery session.
+  AppRouter({required bool Function() isSignedIn, required Stream<AuthState> authChanges})
       : _isSignedIn = isSignedIn,
-        _authRefresh = _AuthRefreshListenable(authChanges);
+        _authRefresh = AuthRefreshListenable(authChanges);
 
   GoRouter get routerConfig => GoRouter(
         observers: [MyRouteObserver()],
@@ -58,21 +62,56 @@ class AppRouter {
         ),
       );
 
-  /// Signed-out users can only see the splash and auth screens.
-  String? _redirect(BuildContext context, GoRouterState state) {
-    final location = state.matchedLocation;
-    if (location == '/') return null; // the splash screen decides
-    final isAuthRoute = AuthRoutes.values.any((route) => route.path == location);
-    if (!_isSignedIn() && !isAuthRoute) return AuthRoutes.login.path;
-    return null;
-  }
+  String? _redirect(BuildContext context, GoRouterState state) => resolveAuthRedirect(
+        location: state.matchedLocation,
+        isSignedIn: _isSignedIn(),
+        passwordRecovery: _authRefresh.takePasswordRecovery(),
+      );
 }
 
-class _AuthRefreshListenable extends ChangeNotifier {
-  late final StreamSubscription<Object?> _subscription;
+/// Where the router sends the user for [location], or null to stay.
+///
+/// - A reset link opens the new-password screen ([passwordRecovery]), even over the
+///   splash screen when the link launched the app.
+/// - Otherwise the splash screen ("/") decides on its own.
+/// - Signed-out users only see the auth screens (not the new-password screen, which
+///   needs the recovery session).
+/// - Signed-in users skip sign-in and registration and go straight to the app, so
+///   screens never navigate after a successful sign-in themselves.
+@visibleForTesting
+String? resolveAuthRedirect({required String location, required bool isSignedIn, bool passwordRecovery = false}) {
+  final resetPassword = AuthRoutes.resetPassword.path;
+  if (passwordRecovery && isSignedIn) return location == resetPassword ? null : resetPassword;
+  if (location == '/') return null;
 
-  _AuthRefreshListenable(Stream<Object?> changes) {
-    _subscription = changes.listen((_) => notifyListeners());
+  final isAuthRoute = AuthRoutes.values.any((route) => route.path == location);
+  if (!isSignedIn) return isAuthRoute && location != resetPassword ? null : AuthRoutes.login.path;
+  if (isAuthRoute && location != resetPassword) return HomeRoutes.home.path;
+  return null;
+}
+
+@visibleForTesting
+class AuthRefreshListenable extends ChangeNotifier {
+  late final StreamSubscription<AuthState> _subscription;
+  bool _passwordRecovery = false;
+
+  AuthRefreshListenable(Stream<AuthState> changes) {
+    _subscription = changes.listen(
+      (state) {
+        if (state.event == AuthChangeEvent.passwordRecovery) _passwordRecovery = true;
+        notifyListeners();
+      },
+      // Failed email links surface as stream errors; AuthBloc reports them.
+      onError: (Object _) {},
+    );
+  }
+
+  /// Whether a reset link was opened since the last call. Consumed once, so the user
+  /// can leave the new-password screen afterwards.
+  bool takePasswordRecovery() {
+    final value = _passwordRecovery;
+    _passwordRecovery = false;
+    return value;
   }
 
   @override

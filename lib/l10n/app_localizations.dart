@@ -260,6 +260,258 @@ abstract class AppLocalizations {
   /// **'Please enter a valid email'**
   String get email_invalid;
 
+  /// No description provided for @auth_sign_in_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to keep your habit streaks going'**
+  String get auth_sign_in_subtitle;
+
+  /// No description provided for @auth_sign_up_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All you need is an email and a password'**
+  String get auth_sign_up_subtitle;
+
+  /// No description provided for @auth_forgot_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get auth_forgot_password;
+
+  /// No description provided for @auth_no_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get auth_no_account;
+
+  /// No description provided for @auth_create_account_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get auth_create_account_action;
+
+  /// No description provided for @auth_have_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get auth_have_account;
+
+  /// No description provided for @email_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'name@example.com'**
+  String get email_hint;
+
+  /// No description provided for @password_show.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get password_show;
+
+  /// No description provided for @password_hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get password_hide;
+
+  /// No description provided for @password_letters_digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain letters and digits'**
+  String get password_letters_digits;
+
+  /// No description provided for @password_req_length.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 6 characters'**
+  String get password_req_length;
+
+  /// No description provided for @password_req_letters_digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Letters and digits'**
+  String get password_req_letters_digits;
+
+  /// No description provided for @auth_check_email_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get auth_check_email_title;
+
+  /// No description provided for @auth_confirm_email_message.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a confirmation link to {email}. Follow the link, then sign in.'**
+  String auth_confirm_email_message(String email);
+
+  /// No description provided for @auth_check_email_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'No email? Check your spam folder. If you already have an account with this address, just sign in or reset your password.'**
+  String get auth_check_email_hint;
+
+  /// No description provided for @auth_resend_email.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend email'**
+  String get auth_resend_email;
+
+  /// No description provided for @auth_resend_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds} s'**
+  String auth_resend_in(int seconds);
+
+  /// No description provided for @auth_email_resent.
+  ///
+  /// In en, this message translates to:
+  /// **'Email sent again'**
+  String get auth_email_resent;
+
+  /// No description provided for @auth_back_to_sign_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get auth_back_to_sign_in;
+
+  /// No description provided for @auth_reset_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get auth_reset_title;
+
+  /// No description provided for @auth_reset_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your account email and we\'ll send you a reset link'**
+  String get auth_reset_subtitle;
+
+  /// No description provided for @auth_reset_send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send link'**
+  String get auth_reset_send;
+
+  /// No description provided for @auth_reset_sent_message.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account with {email} exists, we\'ve sent it a password reset link.'**
+  String auth_reset_sent_message(String email);
+
+  /// No description provided for @auth_reset_sent_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the email on this device so the link opens in the app. The link expires after a while.'**
+  String get auth_reset_sent_hint;
+
+  /// No description provided for @auth_new_password_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get auth_new_password_title;
+
+  /// No description provided for @auth_new_password_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password for your account'**
+  String get auth_new_password_subtitle;
+
+  /// No description provided for @auth_new_password_label.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get auth_new_password_label;
+
+  /// No description provided for @auth_new_password_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save password'**
+  String get auth_new_password_save;
+
+  /// No description provided for @auth_password_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated'**
+  String get auth_password_updated;
+
+  /// No description provided for @auth_later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get auth_later;
+
+  /// No description provided for @auth_error_invalid_credentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong email or password. Check your details or reset your password.'**
+  String get auth_error_invalid_credentials;
+
+  /// No description provided for @auth_error_email_not_confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email is not confirmed yet. Follow the link from the email we sent after sign-up.'**
+  String get auth_error_email_not_confirmed;
+
+  /// No description provided for @auth_error_user_exists.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists. Sign in or reset your password.'**
+  String get auth_error_user_exists;
+
+  /// No description provided for @auth_error_weak_password.
+  ///
+  /// In en, this message translates to:
+  /// **'This password is too weak. Use at least 6 characters with letters and digits.'**
+  String get auth_error_weak_password;
+
+  /// No description provided for @auth_error_same_password.
+  ///
+  /// In en, this message translates to:
+  /// **'The new password must differ from the current one.'**
+  String get auth_error_same_password;
+
+  /// No description provided for @auth_error_invalid_email.
+  ///
+  /// In en, this message translates to:
+  /// **'This email can\'t be used. Check the address.'**
+  String get auth_error_invalid_email;
+
+  /// No description provided for @auth_error_signup_disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-up is currently unavailable. Try again later.'**
+  String get auth_error_signup_disabled;
+
+  /// No description provided for @auth_error_rate_limited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Wait a few minutes and try again.'**
+  String get auth_error_rate_limited;
+
+  /// No description provided for @auth_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server. Check your connection and try again.'**
+  String get auth_error_network;
+
+  /// No description provided for @auth_error_link_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'This link is invalid or has expired. Request a new one.'**
+  String get auth_error_link_invalid;
+
+  /// No description provided for @auth_error_session_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'The time to change your password has run out. Request a new link.'**
+  String get auth_error_session_expired;
+
+  /// No description provided for @auth_error_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get auth_error_unknown;
+
   /// No description provided for @profile_title.
   ///
   /// In en, this message translates to:

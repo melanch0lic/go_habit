@@ -1,47 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:go_habit/l10n/app_localizations.dart';
+import 'package:go_habit/core/extension/locale_extension.dart';
+import 'package:go_habit/feature/auth/view/auth_validators.dart';
+import 'package:go_habit/feature/auth/view/components/auth_text_field.dart';
 
+/// Password field with a visibility toggle.
+///
+/// [isNewPassword] applies the password rules and tells password managers to suggest a
+/// new password; otherwise only a value is required.
 class PasswordFormField extends StatelessWidget {
   const PasswordFormField({
-    super.key,
     required TextEditingController controller,
-    required bool isPasswordVisible,
-    required VoidCallback onToggleVisibility,
-  })  : _controller = controller,
-        _isPasswordVisible = isPasswordVisible,
-        _onToggleVisibility = onToggleVisibility;
+    this.isNewPassword = false,
+    this.label,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onFieldSubmitted,
+    this.onChanged,
+    this.enabled = true,
+    super.key,
+  }) : _controller = controller;
 
   final TextEditingController _controller;
-  final bool _isPasswordVisible;
-  final VoidCallback _onToggleVisibility;
+  final bool isNewPassword;
+  final String? label;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
+  final ValueChanged<String>? onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-
-    return TextFormField(
+    final l10n = context.l10n;
+    return AuthTextField(
       controller: _controller,
-      decoration: InputDecoration(
-        labelText: localizations.password_label,
-        border: const OutlineInputBorder(),
-        prefixIcon: const Icon(Icons.lock),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-          ),
-          onPressed: _onToggleVisibility,
-        ),
-      ),
-      obscureText: !_isPasswordVisible,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return localizations.password_required;
-        }
-        if (value.length < 6) {
-          return localizations.password_length;
-        }
-        return null;
-      },
+      focusNode: focusNode,
+      label: label ?? l10n.password_label,
+      prefixIcon: Icons.lock_outline,
+      isPassword: true,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: textInputAction,
+      autofillHints: [if (isNewPassword) AutofillHints.newPassword else AutofillHints.password],
+      onFieldSubmitted: onFieldSubmitted,
+      onChanged: onChanged,
+      enabled: enabled,
+      validator: (value) =>
+          isNewPassword ? AuthValidators.newPassword(value, l10n) : AuthValidators.existingPassword(value, l10n),
     );
   }
 }

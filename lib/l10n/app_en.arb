@@ -37,6 +37,69 @@
     "email_label": "Email",
     "email_required": "Please enter your email",
     "email_invalid": "Please enter a valid email",
+    "auth_sign_in_subtitle": "Sign in to keep your habit streaks going",
+    "auth_sign_up_subtitle": "All you need is an email and a password",
+    "auth_forgot_password": "Forgot password?",
+    "auth_no_account": "Don't have an account?",
+    "auth_create_account_action": "Sign up",
+    "auth_have_account": "Already have an account?",
+    "email_hint": "name@example.com",
+    "password_show": "Show password",
+    "password_hide": "Hide password",
+    "password_letters_digits": "Password must contain letters and digits",
+    "password_req_length": "At least 6 characters",
+    "password_req_letters_digits": "Letters and digits",
+    "auth_check_email_title": "Check your email",
+    "auth_confirm_email_message": "We sent a confirmation link to {email}. Follow the link, then sign in.",
+    "@auth_confirm_email_message": {
+        "placeholders": {
+            "email": {
+                "type": "String"
+            }
+        }
+    },
+    "auth_check_email_hint": "No email? Check your spam folder. If you already have an account with this address, just sign in or reset your password.",
+    "auth_resend_email": "Resend email",
+    "auth_resend_in": "Resend in {seconds} s",
+    "@auth_resend_in": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "auth_email_resent": "Email sent again",
+    "auth_back_to_sign_in": "Back to sign in",
+    "auth_reset_title": "Reset password",
+    "auth_reset_subtitle": "Enter your account email and we'll send you a reset link",
+    "auth_reset_send": "Send link",
+    "auth_reset_sent_message": "If an account with {email} exists, we've sent it a password reset link.",
+    "@auth_reset_sent_message": {
+        "placeholders": {
+            "email": {
+                "type": "String"
+            }
+        }
+    },
+    "auth_reset_sent_hint": "Open the email on this device so the link opens in the app. The link expires after a while.",
+    "auth_new_password_title": "Change password",
+    "auth_new_password_subtitle": "Choose a new password for your account",
+    "auth_new_password_label": "New password",
+    "auth_new_password_save": "Save password",
+    "auth_password_updated": "Password updated",
+    "auth_later": "Later",
+    "auth_error_invalid_credentials": "Wrong email or password. Check your details or reset your password.",
+    "auth_error_email_not_confirmed": "Your email is not confirmed yet. Follow the link from the email we sent after sign-up.",
+    "auth_error_user_exists": "An account with this email already exists. Sign in or reset your password.",
+    "auth_error_weak_password": "This password is too weak. Use at least 6 characters with letters and digits.",
+    "auth_error_same_password": "The new password must differ from the current one.",
+    "auth_error_invalid_email": "This email can't be used. Check the address.",
+    "auth_error_signup_disabled": "Sign-up is currently unavailable. Try again later.",
+    "auth_error_rate_limited": "Too many attempts. Wait a few minutes and try again.",
+    "auth_error_network": "Couldn't reach the server. Check your connection and try again.",
+    "auth_error_link_invalid": "This link is invalid or has expired. Request a new one.",
+    "auth_error_session_expired": "The time to change your password has run out. Request a new link.",
+    "auth_error_unknown": "Something went wrong. Please try again.",
     
     "profile_title": "Profile",
     "nav_home": "Home",

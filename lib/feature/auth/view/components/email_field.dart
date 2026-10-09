@@ -1,32 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:go_habit/core/extension/locale_extension.dart';
+import 'package:go_habit/feature/auth/view/auth_validators.dart';
+import 'package:go_habit/feature/auth/view/components/auth_text_field.dart';
 
 class EmailFieldWidget extends StatelessWidget {
   const EmailFieldWidget({
-    super.key,
     required TextEditingController emailController,
+    this.focusNode,
+    this.textInputAction = TextInputAction.next,
+    this.onFieldSubmitted,
+    this.onChanged,
+    this.enabled = true,
+    super.key,
   }) : _emailController = emailController;
 
   final TextEditingController _emailController;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
+  final ValueChanged<String>? onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    final l10n = context.l10n;
+    return AuthTextField(
       controller: _emailController,
-      decoration: const InputDecoration(
-        labelText: 'Email',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.email),
-      ),
+      focusNode: focusNode,
+      label: l10n.email_label,
+      hint: l10n.email_hint,
+      prefixIcon: Icons.mail_outline,
       keyboardType: TextInputType.emailAddress,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Пожалуйста, введите email';
-        }
-        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-          return 'Пожалуйста, введите корректный email';
-        }
-        return null;
-      },
+      textInputAction: textInputAction,
+      autofillHints: const [AutofillHints.email],
+      onFieldSubmitted: onFieldSubmitted,
+      onChanged: onChanged,
+      enabled: enabled,
+      validator: (value) => AuthValidators.email(value, l10n),
     );
   }
 }

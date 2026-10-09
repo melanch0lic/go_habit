@@ -8,6 +8,9 @@ enum AuthRoutes {
   login(path: '${_authRoutesKey}login'),
   register(path: '${_authRoutesKey}register'),
   forgotPassword(path: '${_authRoutesKey}forgot-password'),
+
+  /// Sets a new password; only reachable with the recovery session from a reset link.
+  resetPassword(path: '${_authRoutesKey}reset-password'),
   welcome(path: '${_authRoutesKey}welcome');
 
   final String path;

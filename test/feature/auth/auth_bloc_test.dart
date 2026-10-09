@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_habit/core/sync/sync_service.dart';
 import 'package:go_habit/feature/auth/domain/bloc/auth_bloc.dart';
+import 'package:go_habit/feature/auth/domain/models/auth_failure.dart';
 import 'package:go_habit/feature/auth/domain/repositories/i_authentication_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,7 +25,16 @@ class _FakeAuthRepository implements IAuthenticationRepository {
   Future<void> signInWithEmail({required String email, required String password}) async {}
 
   @override
-  Future<void> signUp({required String email, required String password}) async {}
+  Future<SignUpResult> signUp({required String email, required String password}) async => SignUpResult.signedIn;
+
+  @override
+  Future<void> resendSignUpConfirmation({required String email}) async {}
+
+  @override
+  Future<void> requestPasswordReset({required String email}) async {}
+
+  @override
+  Future<void> updatePassword({required String password}) async {}
 
   @override
   Future<void> signOut() async {
@@ -115,5 +125,37 @@ void main() {
     repository.users.add(null);
     await pumpEventQueue();
     expect(bloc.state, isA<AuthUserUnauthenticated>());
+  });
+
+  test('an expired email link is reported to a signed-out user', () async {
+    repository = _FakeAuthRepository()..signedIn = null;
+    session = _FakeSessionData(repository.log);
+    bloc = AuthBloc(repository, session)..add(AuthInitialCheckRequested());
+    await pumpEventQueue();
+
+    repository.users.addError(const AuthFailureException(AuthFailure.linkInvalid));
+    await pumpEventQueue();
+
+    expect(bloc.state, isA<AuthUserUnauthenticated>().having((s) => s.failure, 'failure', AuthFailure.linkInvalid));
+  });
+
+  test('a failed email link does not sign out a signed-in user', () async {
+    await signedInBloc();
+    repository.users.addError(const AuthFailureException(AuthFailure.linkInvalid));
+    await pumpEventQueue();
+
+    expect(bloc.state, isA<AuthUserAuthenticated>());
+  });
+
+  test('an unexpected stream error maps to an unknown failure, not raw text', () async {
+    repository = _FakeAuthRepository()..signedIn = null;
+    session = _FakeSessionData(repository.log);
+    bloc = AuthBloc(repository, session)..add(AuthInitialCheckRequested());
+    await pumpEventQueue();
+
+    repository.users.addError(StateError('boom'));
+    await pumpEventQueue();
+
+    expect(bloc.state, isA<AuthUserUnauthenticated>().having((s) => s.failure, 'failure', AuthFailure.unknown));
   });
 }
