@@ -2,9 +2,9 @@ import 'package:go_habit/feature/auth/domain/repositories/i_authentication_repos
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class AuthenticationRepositoryImpl implements IAuthenticationRepository {
-  final _supabase = Supabase.instance.client;
+  final SupabaseClient _supabase;
 
-  AuthenticationRepositoryImpl();
+  AuthenticationRepositoryImpl(this._supabase);
 
   @override
   Stream<User?> getCurrentUser() => _supabase.auth.onAuthStateChange.map((data) {

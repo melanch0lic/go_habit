@@ -1,3 +1,5 @@
+import 'package:go_habit/core/utils/calendar_day.dart';
+
 /// Вспомогательные функции для работы с датами в тестах
 class DateHelper {
   /// Возвращает стабильную дату для сегодняшнего дня
@@ -15,6 +17,12 @@ class DateHelper {
   static DateTime getStableTwoDaysAgo() {
     return DateTime(2023, 5, 13);
   }
+
+  static CalendarDay get stableToday => CalendarDay.fromDateTime(getStableToday());
+
+  static CalendarDay get stableYesterday => CalendarDay.fromDateTime(getStableYesterday());
+
+  static CalendarDay get stableTwoDaysAgo => CalendarDay.fromDateTime(getStableTwoDaysAgo());
 
   /// Возвращает стабильную строку ISO8601 для сегодняшнего дня
   static String getStableTodayIso() {

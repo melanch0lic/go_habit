@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_habit/core/router/routes_enum.dart';
@@ -27,15 +29,22 @@ final _notificationRoutesBranchNavigatorKey =
 final _profileRoutesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'ProfileRoutesNavigatorKey');
 
 class AppRouter {
-  // final String initialLocation;
+  final bool Function() _isSignedIn;
+  final _AuthRefreshListenable _authRefresh;
 
-  AppRouter();
+  /// [authChanges] re-evaluates the redirect whenever the session changes, e.g. after
+  /// sign-out or when the session expires and cannot be refreshed.
+  AppRouter({required bool Function() isSignedIn, required Stream<Object?> authChanges})
+      : _isSignedIn = isSignedIn,
+        _authRefresh = _AuthRefreshListenable(authChanges);
 
   GoRouter get routerConfig => GoRouter(
         observers: [MyRouteObserver()],
         navigatorKey: rootNavigatorKey,
         debugLogDiagnostics: kDebugMode,
         initialLocation: '/',
+        refreshListenable: _authRefresh,
+        redirect: _redirect,
         routes: [
           GoRoute(
             path: '/',
@@ -48,6 +57,29 @@ class AppRouter {
           child: Text(state.error.toString()),
         ),
       );
+
+  /// Signed-out users can only see the splash and auth screens.
+  String? _redirect(BuildContext context, GoRouterState state) {
+    final location = state.matchedLocation;
+    if (location == '/') return null; // the splash screen decides
+    final isAuthRoute = AuthRoutes.values.any((route) => route.path == location);
+    if (!_isSignedIn() && !isAuthRoute) return AuthRoutes.login.path;
+    return null;
+  }
+}
+
+class _AuthRefreshListenable extends ChangeNotifier {
+  late final StreamSubscription<Object?> _subscription;
+
+  _AuthRefreshListenable(Stream<Object?> changes) {
+    _subscription = changes.listen((_) => notifyListeners());
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
 }
 
 final _commonBottomNavigationBarShellRoute = StatefulShellRoute.indexedStack(
@@ -101,14 +133,14 @@ final _profileRoutesBranch = StatefulShellBranch(
 
 class MyRouteObserver extends NavigatorObserver {
   @override
-  void didPush(Route route, Route? previousRoute) {
+  void didPush(Route<Object?> route, Route<Object?>? previousRoute) {
     debugPrint("Route pushed: ${route.settings.name ?? 'Unknown'} with arguments: ${route.settings.arguments}");
     debugPrint("Previous Route: ${previousRoute?.settings.name ?? 'None'}");
     super.didPush(route, previousRoute);
   }
 
   @override
-  void didPop(Route route, Route? previousRoute) {
+  void didPop(Route<Object?> route, Route<Object?>? previousRoute) {
     debugPrint("Route popped: ${route.settings.name ?? 'Unknown'}");
     debugPrint("Previous Route: ${previousRoute?.settings.name ?? 'None'}");
     super.didPop(route, previousRoute);

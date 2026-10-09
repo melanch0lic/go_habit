@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/feature/categories/bloc/habit_category_bloc.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
-import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
+import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -30,16 +30,6 @@ class HabitHomeCard extends StatefulWidget {
 }
 
 class _HabitHomeCardState extends State<HabitHomeCard> {
-  double _progress = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    final completedDate = DateTime.tryParse(widget.habit.lastCompletedTime ?? '2000-01-01');
-    debugPrint('Difference: ${completedDate!.difference(DateTime.now()).inHours}');
-    _progress = DateTime.now().difference(completedDate).inHours > 24 ? 0.0 : 1.0;
-  }
-
   Color _getColorFromHex(String hexColor) {
     hexColor = hexColor.replaceAll('#', '');
     if (hexColor.length == 6) {
@@ -72,28 +62,16 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
     return Icons.category;
   }
 
-  void _completeHabit() {
-    final habitsBloc = context.read<HabitsBloc>();
-
-    if (!mounted) return;
-
-    if (DateTime.parse(widget.habit.lastCompletedTime ?? '2023-03-31T00:00:00.000').difference(DateTime.now()).inDays ==
-        0) {
-      context.read<HabitsBloc>().add(UnFinishHabit(widget.habit.id));
-    } else {
-      context.read<HabitsBloc>().add(FinishHabit(widget.habit.id));
-      setState(() {
-        _progress = 1.0;
-      });
-    }
+  void _toggleCompletion() {
+    context.read<HabitStatsBloc>().add(HabitCompletionToggled(widget.habit.id));
   }
 
-  Widget _buildProgressIndicator(Color cardColor) {
+  Widget _buildProgressIndicator(Color cardColor, double progress) {
     switch (widget.displayMode) {
       case HabitCardDisplayMode.linear:
         return LinearPercentIndicator(
           lineHeight: 10,
-          percent: _progress,
+          percent: progress,
           backgroundColor: Colors.white.withValues(alpha: .5),
           progressColor: cardColor.withValues(alpha: 0.9),
           barRadius: const Radius.circular(4),
@@ -107,7 +85,7 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
     }
   }
 
-  Widget _buildHabitIcon(Color cardColor) {
+  Widget _buildHabitIcon(Color cardColor, double progress) {
     if (widget.displayMode == HabitCardDisplayMode.circular) {
       return Stack(
         alignment: Alignment.center,
@@ -115,7 +93,7 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
           CircularPercentIndicator(
             radius: 32,
             lineWidth: 4,
-            percent: _progress,
+            percent: progress,
             backgroundColor: Colors.white.withValues(alpha: .5),
             progressColor: cardColor.withValues(alpha: 0.9),
             animation: true,
@@ -163,6 +141,13 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
   @override
   Widget build(BuildContext context) {
     final cardColor = _getColorFromHex(widget.category.color);
+    final completedToday = context.select<HabitStatsBloc, bool>(
+      (bloc) => switch (bloc.state) {
+        final HabitStatsLoaded loaded => loaded.isCompletedToday(widget.habit.id),
+        _ => false,
+      },
+    );
+    final progress = completedToday ? 1.0 : 0.0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -210,7 +195,7 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
             const SizedBox(height: 12),
             Row(
               children: [
-                _buildHabitIcon(cardColor),
+                _buildHabitIcon(cardColor, progress),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -228,34 +213,22 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
                         style: TextStyle(fontSize: 14, color: cardColor.withValues(alpha: 0.6)),
                       ),
                       const SizedBox(height: 8),
-                      _buildProgressIndicator(cardColor),
+                      _buildProgressIndicator(cardColor, progress),
                     ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8, bottom: 40),
                   child: InkWell(
-                    onTap: _completeHabit,
+                    onTap: _toggleCompletion,
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: DateTime.now()
-                                    .difference(
-                                        DateTime.parse(widget.habit.lastCompletedTime ?? '2023-03-31T00:00:00.000'))
-                                    .inDays ==
-                                0
-                            ? Colors.grey
-                            : cardColor.withValues(alpha: 0.9),
+                        color: completedToday ? Colors.grey : cardColor.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
-                        DateTime.now()
-                                    .difference(
-                                        DateTime.parse(widget.habit.lastCompletedTime ?? '2023-03-31T00:00:00.000'))
-                                    .inDays ==
-                                0
-                            ? Icons.close
-                            : Icons.check,
+                        completedToday ? Icons.close : Icons.check,
                         color: Colors.white,
                       ),
                     ),
@@ -267,13 +240,5 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
         ),
       ),
     );
-  }
-
-  @override
-  void didUpdateWidget(covariant HabitHomeCard oldWidget) {
-    final completedDate = DateTime.tryParse(widget.habit.lastCompletedTime ?? '2000-01-01');
-    debugPrint('Difference: ${completedDate!.difference(DateTime.now()).inHours}');
-    _progress = DateTime.now().difference(completedDate).inHours > 24 ? 0.0 : 1.0;
-    super.didUpdateWidget(oldWidget);
   }
 }

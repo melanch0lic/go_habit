@@ -113,9 +113,9 @@ class SettingsSection extends StatelessWidget {
     );
   }
 
-  void _showSignOutConfirmationDialog(BuildContext context) {
+  void _showSignOutConfirmationDialog(BuildContext parentContext) {
     showDialog(
-      context: context,
+      context: parentContext,
       builder: (context) => AlertDialog(
         backgroundColor: context.themeOf.cardColor,
         title: Text(context.l10n.sign_out_confirmation_title),
@@ -129,6 +129,9 @@ class SettingsSection extends StatelessWidget {
             listener: (context, state) {
               if (state is AuthUserUnauthenticated) {
                 context.go(AuthRoutes.login.path);
+              } else if (state is AuthLogoutConfirmationRequired) {
+                Navigator.pop(context);
+                _showUnsyncedChangesDialog(parentContext, state.pendingChanges);
               }
             },
             child: TextButton(
@@ -137,6 +140,31 @@ class SettingsSection extends StatelessWidget {
               },
               child: Text(context.l10n.sign_out),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showUnsyncedChangesDialog(BuildContext context, int pendingChanges) {
+    final authBloc = context.read<AuthBloc>();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: context.themeOf.cardColor,
+        title: Text(context.l10n.sign_out_confirmation_title),
+        content: Text(context.l10n.sign_out_unsynced_message(pendingChanges)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              authBloc.add(AuthLogoutButtonPressed(force: true));
+            },
+            child: Text(context.l10n.sign_out_anyway),
           ),
         ],
       ),

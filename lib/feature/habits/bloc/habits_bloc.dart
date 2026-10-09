@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:go_habit/feature/habits/domain/repositories/habit_repository.dart';
@@ -13,6 +13,7 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
   StreamSubscription<List<Habit>>? _subscription;
 
   HabitsBloc(this._habitRepository) : super(HabitsInitial()) {
+    // Writes read `state.habits`; handling one event at a time avoids acting on stale state.
     on<HabitsEvent>((event, emit) async {
       switch (event) {
         case InitializeHabits():
@@ -25,14 +26,10 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
           await _onUpdateHabit(event, emit);
         case DeleteHabit():
           await _onDeleteHabit(event, emit);
-        case FinishHabit():
-          await _onFinishHabit(event, emit);
-        case UnFinishHabit():
-          await _onUnFinishHabit(event, emit);
         case ToggleActiveHabit():
           await _onToggleHabitActive(event, emit);
       }
-    });
+    }, transformer: sequential());
 
     _subscription = _habitRepository.watchHabits().listen((habits) {
       add(LoadHabits(habits));
@@ -55,9 +52,6 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
   Future<void> _onInitializeHabits(InitializeHabits event, Emitter<HabitsState> emit) async {
     try {
       final habits = await _habitRepository.getHabits();
-      for (final element in habits) {
-        debugPrint(element.toString());
-      }
       emit(HabitsLoadSuccess(habits));
     } catch (error) {
       emit(HabitsOperationFailure(error: error.toString(), habits: state.habits));
@@ -90,6 +84,7 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
       final editedHabit = state.habits.firstWhere((element) => element.id == event.id).copyWith(
             title: event.title,
             description: event.description,
+            categoryId: event.categoryId,
           );
       await _habitRepository.updateHabit(editedHabit);
       emit(HabitsOperationSuccess(message: 'Habit is updated', habits: state.habits));
@@ -108,34 +103,9 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
     }
   }
 
-  Future<void> _onFinishHabit(FinishHabit event, Emitter<HabitsState> emit) async {
-    try {
-      final finishedHabit = state.habits.firstWhere((element) => element.id == event.id).copyWith(
-            lastCompletedTime: DateTime.now().toIso8601String(),
-          );
-      await _habitRepository.updateHabit(finishedHabit);
-      emit(HabitsOperationSuccess(message: 'Habit is finished', habits: state.habits));
-    } catch (error) {
-      emit(HabitsOperationFailure(error: error.toString(), habits: state.habits));
-    }
-  }
-
-  Future<void> _onUnFinishHabit(UnFinishHabit event, Emitter<HabitsState> emit) async {
-    try {
-      final finishedHabit = state.habits
-          .firstWhere((element) => element.id == event.id)
-          .copyWith(lastCompletedTime: '2023-03-31T00:00:00.000');
-      await _habitRepository.updateHabit(finishedHabit);
-      emit(HabitsOperationSuccess(message: 'Habit is unfinished', habits: state.habits));
-    } catch (error) {
-      emit(HabitsOperationFailure(error: error.toString(), habits: state.habits));
-    }
-  }
-
   @override
   Future<void> close() {
     _subscription?.cancel();
-    _habitRepository.dispose();
     return super.close();
   }
 }

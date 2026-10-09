@@ -3,6 +3,7 @@ import 'package:go_habit/feature/categories/data/data_sources/local/local_habit_
 import 'package:go_habit/feature/categories/data/data_sources/remote/remote_habit_category_datasource.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/categories/domain/repositories/habit_category_repository.dart';
+import 'package:l/l.dart';
 
 class HabitCategoryRepositoryImplementation implements HabitCategoryRepository {
   final LocalHabitCategoryDatasource _localHabitCategoryDatasource;
@@ -12,19 +13,22 @@ class HabitCategoryRepositoryImplementation implements HabitCategoryRepository {
   HabitCategoryRepositoryImplementation(
       this._localHabitCategoryDatasource, this._remoteHabitCategoryDatasource, this._appConnect);
 
+  /// Refreshes the cache from the server when possible and always answers from the cache.
+  /// Throws only if there is nothing cached and the server could not be reached.
   @override
   Future<List<HabitCategory>> getHabitCategories() async {
-    try {
-      if (await _appConnect.hasConnect()) {
+    if (await _appConnect.hasConnect()) {
+      try {
         final remoteCategories = await _remoteHabitCategoryDatasource.getHabitCategories();
-
         if (remoteCategories.isNotEmpty) {
           await _localHabitCategoryDatasource.saveAllCategories(remoteCategories);
         }
+      } on Object catch (error, stackTrace) {
+        l.w('Could not refresh categories, using cache: $error', stackTrace);
       }
-      return await _localHabitCategoryDatasource.getHabitCategories();
-    } catch (error) {
-      throw Exception('Exception on getHabitCategories');
     }
+    final cached = await _localHabitCategoryDatasource.getHabitCategories();
+    if (cached.isEmpty) throw StateError('No categories available');
+    return cached;
   }
 }

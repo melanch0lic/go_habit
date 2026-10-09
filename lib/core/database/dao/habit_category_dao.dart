@@ -8,31 +8,12 @@ part 'habit_category_dao.g.dart';
 class HabitCategoryDao extends DatabaseAccessor<AppDatabase> with _$HabitCategoryDaoMixin {
   HabitCategoryDao(super.db);
 
-  // Получить все категории
-  Future<List<HabitCategory>> getAllCategories() async {
-    return select(habitCategories).get();
-  }
+  Future<List<HabitCategory>> getAllCategories() =>
+      (select(habitCategories)..orderBy([(c) => OrderingTerm(expression: c.sortOrder)])).get();
 
-  // Найти категорию по ID
-  Future<HabitCategory?> getCategoryById(String id) async {
-    return (select(habitCategories)..where((c) => c.id.equals(id))).getSingleOrNull();
-  }
-
-  // Добавить/обновить категорию
-  Future<void> insertOrUpdateCategory(HabitCategory category) async {
-    await into(habitCategories).insert(
-      category,
-      mode: InsertMode.insertOrReplace,
-    );
-  }
-
-  // Удалить категорию
-  Future<void> deleteCategory(String id) async {
-    await (delete(habitCategories)..where((c) => c.id.equals(id))).go();
-  }
-
-  // Очистить все категории
-  Future<void> clearCategories() async {
-    await delete(habitCategories).go();
-  }
+  /// Replaces the cached reference list with the server's.
+  Future<void> replaceAll(List<HabitCategoriesCompanion> categories) => transaction(() async {
+        await delete(habitCategories).go();
+        await batch((batch) => batch.insertAll(habitCategories, categories));
+      });
 }

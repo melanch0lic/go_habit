@@ -1,0 +1,107 @@
+# Бэкенд GoHabit (Supabase)
+
+Весь бэкенд описан кодом в `supabase/` и воспроизводится на чистом проекте без ручных правок в Dashboard,
+кроме настроек Auth на удалённом проекте (см. «Деплой»).
+
+```
+supabase/
+  config.toml                         локальный стек и настройки Auth
+  migrations/
+    20261009120000_core_schema.sql    таблицы, ограничения, индексы, триггеры, справочник категорий
+    20261009120100_rls_policies.sql   привилегии и RLS
+  seed.sql                            dev-seed (намеренно пустой)
+  tests/database/*.test.sql           pgTAP: структура, RLS, изоляция пользователей, каскады
+```
+
+## Схема
+
+| Таблица | Назначение | Владелец | Удаление |
+|---|---|---|---|
+| `category` | справочник категорий (7 строк из миграции) | общий, только чтение | — |
+| `profile` | профиль пользователя, создаётся триггером `on_auth_user_created` | `id = auth.users.id` | каскадом с `auth.users` |
+| `habit` | определение привычки | `user_id → auth.users` | tombstone `deleted_at` (необратим) |
+| `habit_completion` | выполнение привычки за календарный день | `user_id`, `(habit_id, user_id) → habit` | tombstone `deleted_at` (снимается при повторной отметке) |
+
+Ключевые решения:
+
+- **ID генерирует клиент** (UUIDv4 для привычек, детерминированный UUIDv5 от `habit_id/день` для выполнений) — записи создаются офлайн, а повторы и разные устройства сходятся к одной записи.
+- **`UNIQUE (habit_id, completed_on)`** — одно выполнение на день; upsert по этому ключу идемпотентен.
+- **Составной FK `(habit_id, user_id) → habit(id, user_id)`** — выполнение физически не может ссылаться на чужую привычку.
+- **`updated_at` ставит сервер** (`clock_timestamp()`), значение от клиента игнорируется. Это курсор инкрементального pull.
+- **`user_id` по умолчанию `auth.uid()`**, клиент его не отправляет; смена владельца запрещена триггером.
+- **Tombstone привычки** каскадно помечает её выполнения; выполнение, записанное для уже удалённой привычки, сохраняется как tombstone.
+- Стрики и статистика **не хранятся** — вычисляются в приложении из `habit_completion`.
+
+## Безопасность
+
+- RLS включена на всех таблицах `public` (тест проверяет, что таблиц без RLS нет).
+- `anon`: только `SELECT` из `category`.
+- `authenticated`: `SELECT/INSERT/UPDATE` своих строк `habit`, `habit_completion`; `SELECT` и `UPDATE (display_name)` своего `profile`.
+- `DELETE` клиентам не выдан: удаление — это tombstone, иначе его нельзя синхронизировать.
+- Trigger-функции с `search_path = ''`; `handle_new_user` — `security definer`, `EXECUTE` отозван у клиентских ролей.
+- В приложении только URL и publishable/anon-ключ. Ключ — идентификатор клиента, а не защита: авторизацию обеспечивают RLS и привилегии.
+
+## Локальная разработка
+
+Нужны: Flutter ≥ 3.35, Docker, Supabase CLI ≥ 2.75 (`brew install supabase/tap/supabase`).
+
+```bash
+# 1. Зависимости и кодогенерация
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+
+# 2. Локальный Supabase (миграции применяются автоматически)
+supabase start
+supabase status -o env          # API_URL и PUBLISHABLE_KEY / ANON_KEY для .env
+
+# 3. Конфиг приложения
+cp .env.example .env            # вписать значения из шага 2
+
+# 4. Пересоздать БД с нуля: миграции + seed.sql (только локально!)
+supabase db reset
+
+# 5. Тесты безопасности и схемы (pgTAP)
+supabase test db
+
+# 6. Статический анализ схемы
+supabase db lint
+
+# 7. Flutter
+flutter analyze
+flutter test                    # golden-тесты (test/widget) отрисованы на macOS
+```
+
+Эмулятор Android обращается к хосту по `10.0.2.2`, а не `127.0.0.1` — используйте `SUPABASE_URL=http://10.0.2.2:54321`.
+
+Типы БД не генерируются: `supabase gen types` поддерживает TypeScript/Go/Swift, не Dart. Контракт с клиентом
+задаётся в `lib/core/sync/sync_remote_api.dart` (`RemoteHabit.columns`, `RemoteCompletion.columns`).
+
+## Деплой на новый удалённый проект
+
+> Не выполняйте `db push` в проект, который вы не создавали для этого: сначала убедитесь в `project-ref`.
+
+```bash
+supabase login
+supabase link --project-ref <project-ref>   # запросит пароль БД, он не сохраняется в репозитории
+supabase db push --dry-run                  # показать, какие миграции будут применены
+supabase db push                            # применить
+supabase migration list                     # сверить локальные и удалённые миграции
+supabase config push                        # перенести настройки [auth] из config.toml (покажет diff и спросит)
+```
+
+После `config push` проверьте в Dashboard → Authentication:
+
+- **Site URL / Redirect URLs** — сейчас в `config.toml` локальные значения; для продакшена укажите свои.
+- **Email confirmations** — локально выключены (`enable_confirmations = false`). Если включить, после регистрации
+  пользователь останется на экране входа до подтверждения почты — это поддерживается.
+- **Password requirements** — `letters_digits`, соответствует подсказке в форме регистрации.
+
+`seed.sql` в удалённый проект не попадает (`db push` без `--include-seed`), справочник категорий приходит миграцией.
+
+## Изменение схемы
+
+1. `supabase migration new <name>` → SQL в новом файле; уже применённые миграции не редактируются.
+2. Тест в `supabase/tests/database/`, затем `supabase db reset && supabase test db`.
+3. Если меняется контракт с клиентом — обновить `RemoteHabit`/`RemoteCompletion` и `FakeSyncRemoteApi` в тестах.
+4. Если меняется локальная схема Drift — повысить `schemaVersion`, написать миграцию и обновить снимки
+   (команды в `test/core/database/migration_test.dart`).

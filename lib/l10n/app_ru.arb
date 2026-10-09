@@ -51,6 +51,8 @@
     "sign_out": "Выйти",
     "sign_out_confirmation_title": "Выход",
     "sign_out_confirmation_message": "Вы уверены, что хотите выйти из аккаунта?",
+    "sign_out_unsynced_message": "{count, plural, one{{count} изменение ещё не синхронизировано и будет потеряно. Всё равно выйти?} few{{count} изменения ещё не синхронизированы и будут потеряны. Всё равно выйти?} other{{count} изменений ещё не синхронизированы и будут потеряны. Всё равно выйти?}}",
+    "sign_out_anyway": "Всё равно выйти",
     "cancel": "Отмена",
     "close": "Закрыть",
     "app_version": "Версия {major}.{minor}.{patch}",
