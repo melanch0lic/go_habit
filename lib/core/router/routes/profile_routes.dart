@@ -8,6 +8,23 @@ final _profileRoutes = [
     builder: (_, state) => ProfileScreen(
       key: state.pageKey,
     ),
+    routes: [
+      GoRoute(
+        path: 'friends',
+        name: ProfileRoutes.friends.name,
+        builder: (_, state) => FriendsScreen(key: state.pageKey),
+      ),
+      GoRoute(
+        path: 'edit',
+        name: ProfileRoutes.edit.name,
+        builder: (_, state) => ProfileEditScreen(key: state.pageKey),
+      ),
+      GoRoute(
+        path: 'privacy',
+        name: ProfileRoutes.privacy.name,
+        builder: (_, state) => PrivacyScreen(key: state.pageKey),
+      ),
+    ],
   ),
   GoRoute(
     path: ProfileRoutes.settings.path,

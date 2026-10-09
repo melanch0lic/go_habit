@@ -194,6 +194,151 @@
     "community_error_not_allowed": "Not available: the community is closed.",
     "community_error_unauthorized": "Your session expired. Please sign in again.",
     "community_error_unknown": "Something went wrong. Please try again.",
+    "social_accept": "Accept",
+    "social_add_friend": "Add friend",
+    "social_already_accepted": "Already accepted — you're friends",
+    "social_avatar_default": "Pixel avatar from the nickname",
+    "social_avatar_label": "Avatar",
+    "social_bio_label": "About",
+    "social_block": "Block",
+    "social_block_message": "Your friendship and requests will be removed. They won't be able to find you or send requests, and won't be told about the block.",
+    "social_block_title": "Block this user?",
+    "social_blocked": "Blocked",
+    "social_cancel_request": "Cancel request",
+    "social_edit_profile": "Edit profile",
+    "social_error_blocked_by_me": "You blocked this user. Unblock them first.",
+    "social_error_invalid_profile": "The server rejected the profile. Check the nickname and the description.",
+    "social_error_network": "Couldn't reach the server. Please try again.",
+    "social_error_not_allowed": "This action isn't available.",
+    "social_error_not_found": "User not found.",
+    "social_error_offline": "You're offline. Friends and profile changes need a connection.",
+    "social_error_unauthorized": "Your session expired. Please sign in again.",
+    "social_error_unknown": "Something went wrong. Please try again.",
+    "social_friend_removed": "Removed from friends",
+    "social_friends_badge": "Friends",
+    "social_friends_count": "{count, plural, =0{Friends} one{{count} friend} other{{count} friends}}",
+    "@social_friends_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "social_friends_title": "Friends",
+    "social_incoming": "Incoming requests",
+    "social_incoming_count": "{count, plural, one{{count} new request} other{{count} new requests}}",
+    "@social_incoming_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "social_more_actions": "More",
+    "social_my_communities": "My communities",
+    "social_nickname_available": "Nickname is available",
+    "social_nickname_callout": "Choose a nickname so friends can find you.",
+    "social_nickname_characters": "Only Latin letters, digits and “_”",
+    "social_nickname_checking": "Checking…",
+    "social_nickname_hint": "3–20 characters: Latin letters, digits and “_”, starting with a letter. Case doesn't matter for uniqueness.",
+    "social_nickname_label": "Nickname",
+    "social_nickname_required": "Enter a nickname",
+    "social_nickname_reserved": "This nickname is reserved",
+    "social_nickname_start_letter": "The nickname must start with a letter",
+    "social_nickname_taken": "This nickname is taken",
+    "social_nickname_too_long": "At most {max} characters",
+    "@social_nickname_too_long": {
+        "placeholders": {
+            "max": {
+                "type": "int"
+            }
+        }
+    },
+    "social_nickname_too_short": "At least {min} characters",
+    "@social_nickname_too_short": {
+        "placeholders": {
+            "min": {
+                "type": "int"
+            }
+        }
+    },
+    "social_nickname_unchecked": "Couldn't check — it will be checked on save",
+    "social_no_friends": "No friends yet. Find someone by nickname above.",
+    "social_no_nickname": "No nickname yet",
+    "social_no_requests": "No requests.",
+    "social_no_shared_communities": "No shared communities yet.",
+    "social_now_friends": "You're friends now",
+    "social_offline_banner": "You're offline — showing the saved list.",
+    "social_outgoing": "Sent requests",
+    "social_privacy_always_private": "Your email, notes, habit names and history are never shown to others.",
+    "social_privacy_communities": "My communities",
+    "social_privacy_communities_hint": "Who sees which communities you're in (others only see the ones you share).",
+    "social_privacy_intro": "Your nickname, avatar and bio are visible to anyone who finds you. The rest is up to you.",
+    "social_privacy_stats": "Statistics and name in rankings",
+    "social_privacy_stats_hint": "Who sees your active habits, weekly regularity and your nickname in community rankings. Hiding it from everyone also leaves you out of friends' rankings.",
+    "social_privacy_title": "Privacy",
+    "social_profile_saved": "Profile saved",
+    "social_profile_title": "Profile",
+    "social_ranking_empty": "Add friends to compare progress.",
+    "social_ranking_rules": "This week's ranking across all active habits: the share of scheduled days with a mark, from Monday to today and not before a habit was created. Friends who hide their statistics aren't shown.",
+    "social_reject": "Reject",
+    "social_remove_friend": "Remove friend",
+    "social_remove_message": "You can send a request again later.",
+    "social_remove_title": "Remove this friend?",
+    "social_request_accepted_notice": "{handle} accepted your request",
+    "@social_request_accepted_notice": {
+        "placeholders": {
+            "handle": {
+                "type": "String"
+            }
+        }
+    },
+    "social_request_cancelled": "Request cancelled",
+    "social_request_rejected": "Request rejected",
+    "social_request_sent": "Request sent",
+    "social_save": "Save",
+    "social_search_empty": "No user @{query}",
+    "@social_search_empty": {
+        "placeholders": {
+            "query": {
+                "type": "String"
+            }
+        }
+    },
+    "social_search_hint": "Exact nickname",
+    "social_search_label": "Find by nickname",
+    "social_set_nickname": "Set a nickname",
+    "social_setup_subtitle": "A nickname lets friends find you and shows you in rankings. You can change it later.",
+    "social_setup_title": "Choose a nickname",
+    "social_shared_communities": "Shared communities",
+    "social_stat_active_habits": "active habits",
+    "social_stat_best_streak": "best streak",
+    "social_stat_friends": "friends",
+    "social_stat_week": "this week ({completed} of {eligible} days)",
+    "@social_stat_week": {
+        "placeholders": {
+            "completed": {
+                "type": "int"
+            },
+            "eligible": {
+                "type": "int"
+            }
+        }
+    },
+    "social_stats_hidden": "This user hides their statistics.",
+    "social_stats_title": "Statistics",
+    "social_tab_friends": "Friends",
+    "social_tab_ranking": "Ranking",
+    "social_tab_requests": "Requests",
+    "social_this_is_you": "That's you",
+    "social_unblock": "Unblock",
+    "social_user_blocked": "User blocked",
+    "social_user_unblocked": "User unblocked",
+    "social_view_public_profile": "How others see me",
+    "social_visibility_everyone": "Everyone",
+    "social_visibility_friends": "Friends only",
+    "social_visibility_nobody": "Nobody",
+    "social_waiting": "Waiting for an answer",
     "community_rules_title": "How the ranking works",
     "community_rules_body": "One habit created from the community's template takes part in the ranking. The ranking is weekly, from Monday to today. It measures regularity: the share of counted days on which the habit was marked. Days before you joined or created the habit, and future days, are not counted. Time and effort are not compared. Others see only your profile name (or “Member”), your percentage and day count.",
     "community_ranked_habit": "Ranked habit: “{title}”",

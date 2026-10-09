@@ -12,6 +12,7 @@ import '../../generated_migrations/schema_v1.dart' as v1;
 import '../../generated_migrations/schema_v2.dart' as v2;
 import '../../generated_migrations/schema_v3.dart' as v3;
 import '../../generated_migrations/schema_v4.dart' as v4;
+import '../../generated_migrations/schema_v5.dart' as v5;
 
 /// Regenerate helpers after a schema change:
 /// `dart run drift_dev schema dump lib/core/database/drift_database.dart drift_schemas/drift_schema_vN.json`
@@ -24,9 +25,9 @@ void main() {
   int seconds(DateTime dateTime) => dateTime.millisecondsSinceEpoch ~/ 1000;
 
   test('a fresh install matches the latest schema snapshot', () async {
-    final schema = await verifier.schemaAt(5);
+    final schema = await verifier.schemaAt(6);
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
     await db.close();
   });
 
@@ -78,7 +79,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
 
     final habits = {for (final h in await db.select(db.habits).get()) h.id: h};
     expect(habits.keys, unorderedEquals(['a', 'b', 'c']));
@@ -135,7 +136,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
 
     final habit = await (db.select(db.habits)..where((t) => t.id.equals('h1'))).getSingle();
     expect(habit.isPendingSync, isTrue, reason: 'pending uploads survive the upgrade');
@@ -155,7 +156,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
@@ -173,11 +174,28 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
     expect(membership.habitId, isNull);
+    await db.close();
+  });
+
+  test('upgrading from v5 adds the social cache and keeps everything else', () async {
+    final schema = await verifier.schemaAt(5);
+    final old = v5.DatabaseAtV5(schema.newConnection());
+    await old.into(old.communityMemberships).insert(
+          v5.CommunityMembershipsCompanion.insert(
+              templateId: 'reading', habitId: const Value('h1'), joinedOn: '2026-10-09'),
+        );
+    await old.close();
+
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 6);
+
+    expect((await db.select(db.communityMemberships).get()).single.habitId, 'h1');
+    expect(await db.select(db.socialCache).get(), isEmpty);
     await db.close();
   });
 }

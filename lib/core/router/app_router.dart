@@ -17,6 +17,10 @@ import 'package:go_habit/feature/notifications/view/notifications_screen.dart';
 import 'package:go_habit/feature/profile/view/profile_screen.dart';
 import 'package:go_habit/feature/root/view/root_page.dart';
 import 'package:go_habit/feature/settings/view/widgets_settings_screen.dart';
+import 'package:go_habit/feature/social/view/friends_screen.dart';
+import 'package:go_habit/feature/social/view/privacy_screen.dart';
+import 'package:go_habit/feature/social/view/profile_edit_screen.dart';
+import 'package:go_habit/feature/social/view/public_profile_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show AuthChangeEvent, AuthState;
 
@@ -60,6 +64,20 @@ class AppRouter {
           ),
           ..._authRoutes,
           _commonBottomNavigationBarShellRoute,
+          // Full-screen pages above the tabs, reachable from every tab.
+          GoRoute(
+            parentNavigatorKey: rootNavigatorKey,
+            path: SocialRoutes.user.path,
+            builder: (_, state) => PublicProfileScreen(
+              key: state.pageKey,
+              publicId: state.pathParameters['publicId']!,
+            ),
+          ),
+          GoRoute(
+            parentNavigatorKey: rootNavigatorKey,
+            path: SocialRoutes.setup.path,
+            builder: (_, state) => ProfileEditScreen(key: state.pageKey, isSetup: true),
+          ),
         ],
         errorBuilder: (context, state) => Center(
           child: Text(state.error.toString()),

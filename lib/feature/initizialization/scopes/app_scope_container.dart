@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:go_habit/core/app_connect/src/app_connect.dart';
 import 'package:go_habit/core/database/dao/community_dao.dart';
 import 'package:go_habit/core/database/dao/habit_category_dao.dart';
+import 'package:go_habit/core/database/dao/social_cache_dao.dart';
 import 'package:go_habit/core/database/dao/habit_completion_dao.dart';
 import 'package:go_habit/core/database/dao/habits_dao.dart';
 import 'package:go_habit/core/database/drift_database.dart';
@@ -25,6 +26,9 @@ import 'package:go_habit/feature/habits/data/repositories/habit_repository_imple
 import 'package:go_habit/feature/habits/domain/repositories/habit_repository.dart';
 import 'package:go_habit/feature/home/data/repositories/quote_repository_implementation.dart';
 import 'package:go_habit/feature/home/domain/repositories/quote_repository.dart';
+import 'package:go_habit/feature/social/data/social_remote_data_source.dart';
+import 'package:go_habit/feature/social/data/social_repository_impl.dart';
+import 'package:go_habit/feature/social/domain/repositories/social_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:yx_scope/yx_scope.dart';
 
@@ -93,6 +97,14 @@ class AppScopeContainer extends ScopeContainer {
       habits: habitRepositoryDep.get,
       session: syncService.get,
       synced: syncService.get.onSynced,
+    ),
+  );
+
+  late final socialRepository = dep<SocialRepository>(
+    () => SocialRepositoryImpl(
+      remote: SupabaseSocialDataSource(supabaseClient.get),
+      cache: SocialCacheDao(appDatabase.get),
+      appConnect: appConnect.get,
     ),
   );
 

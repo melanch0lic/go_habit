@@ -734,6 +734,564 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get community_error_unknown;
 
+  /// No description provided for @social_accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get social_accept;
+
+  /// No description provided for @social_add_friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Add friend'**
+  String get social_add_friend;
+
+  /// No description provided for @social_already_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Already accepted — you\'re friends'**
+  String get social_already_accepted;
+
+  /// No description provided for @social_avatar_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixel avatar from the nickname'**
+  String get social_avatar_default;
+
+  /// No description provided for @social_avatar_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar'**
+  String get social_avatar_label;
+
+  /// No description provided for @social_bio_label.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get social_bio_label;
+
+  /// No description provided for @social_block.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get social_block;
+
+  /// No description provided for @social_block_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your friendship and requests will be removed. They won\'t be able to find you or send requests, and won\'t be told about the block.'**
+  String get social_block_message;
+
+  /// No description provided for @social_block_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Block this user?'**
+  String get social_block_title;
+
+  /// No description provided for @social_blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get social_blocked;
+
+  /// No description provided for @social_cancel_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get social_cancel_request;
+
+  /// No description provided for @social_edit_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get social_edit_profile;
+
+  /// No description provided for @social_error_blocked_by_me.
+  ///
+  /// In en, this message translates to:
+  /// **'You blocked this user. Unblock them first.'**
+  String get social_error_blocked_by_me;
+
+  /// No description provided for @social_error_invalid_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'The server rejected the profile. Check the nickname and the description.'**
+  String get social_error_invalid_profile;
+
+  /// No description provided for @social_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server. Please try again.'**
+  String get social_error_network;
+
+  /// No description provided for @social_error_not_allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'This action isn\'t available.'**
+  String get social_error_not_allowed;
+
+  /// No description provided for @social_error_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found.'**
+  String get social_error_not_found;
+
+  /// No description provided for @social_error_offline.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Friends and profile changes need a connection.'**
+  String get social_error_offline;
+
+  /// No description provided for @social_error_unauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Please sign in again.'**
+  String get social_error_unauthorized;
+
+  /// No description provided for @social_error_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get social_error_unknown;
+
+  /// No description provided for @social_friend_removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from friends'**
+  String get social_friend_removed;
+
+  /// No description provided for @social_friends_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get social_friends_badge;
+
+  /// No description provided for @social_friends_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Friends} one{{count} friend} other{{count} friends}}'**
+  String social_friends_count(int count);
+
+  /// No description provided for @social_friends_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get social_friends_title;
+
+  /// No description provided for @social_incoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming requests'**
+  String get social_incoming;
+
+  /// No description provided for @social_incoming_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} new request} other{{count} new requests}}'**
+  String social_incoming_count(int count);
+
+  /// No description provided for @social_more_actions.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get social_more_actions;
+
+  /// No description provided for @social_my_communities.
+  ///
+  /// In en, this message translates to:
+  /// **'My communities'**
+  String get social_my_communities;
+
+  /// No description provided for @social_nickname_available.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname is available'**
+  String get social_nickname_available;
+
+  /// No description provided for @social_nickname_callout.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a nickname so friends can find you.'**
+  String get social_nickname_callout;
+
+  /// No description provided for @social_nickname_characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Latin letters, digits and “_”'**
+  String get social_nickname_characters;
+
+  /// No description provided for @social_nickname_checking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get social_nickname_checking;
+
+  /// No description provided for @social_nickname_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'3–20 characters: Latin letters, digits and “_”, starting with a letter. Case doesn\'t matter for uniqueness.'**
+  String get social_nickname_hint;
+
+  /// No description provided for @social_nickname_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname'**
+  String get social_nickname_label;
+
+  /// No description provided for @social_nickname_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a nickname'**
+  String get social_nickname_required;
+
+  /// No description provided for @social_nickname_reserved.
+  ///
+  /// In en, this message translates to:
+  /// **'This nickname is reserved'**
+  String get social_nickname_reserved;
+
+  /// No description provided for @social_nickname_start_letter.
+  ///
+  /// In en, this message translates to:
+  /// **'The nickname must start with a letter'**
+  String get social_nickname_start_letter;
+
+  /// No description provided for @social_nickname_taken.
+  ///
+  /// In en, this message translates to:
+  /// **'This nickname is taken'**
+  String get social_nickname_taken;
+
+  /// No description provided for @social_nickname_too_long.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {max} characters'**
+  String social_nickname_too_long(int max);
+
+  /// No description provided for @social_nickname_too_short.
+  ///
+  /// In en, this message translates to:
+  /// **'At least {min} characters'**
+  String social_nickname_too_short(int min);
+
+  /// No description provided for @social_nickname_unchecked.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t check — it will be checked on save'**
+  String get social_nickname_unchecked;
+
+  /// No description provided for @social_no_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends yet. Find someone by nickname above.'**
+  String get social_no_friends;
+
+  /// No description provided for @social_no_nickname.
+  ///
+  /// In en, this message translates to:
+  /// **'No nickname yet'**
+  String get social_no_nickname;
+
+  /// No description provided for @social_no_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests.'**
+  String get social_no_requests;
+
+  /// No description provided for @social_no_shared_communities.
+  ///
+  /// In en, this message translates to:
+  /// **'No shared communities yet.'**
+  String get social_no_shared_communities;
+
+  /// No description provided for @social_now_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re friends now'**
+  String get social_now_friends;
+
+  /// No description provided for @social_offline_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline — showing the saved list.'**
+  String get social_offline_banner;
+
+  /// No description provided for @social_outgoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent requests'**
+  String get social_outgoing;
+
+  /// No description provided for @social_privacy_always_private.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email, notes, habit names and history are never shown to others.'**
+  String get social_privacy_always_private;
+
+  /// No description provided for @social_privacy_communities.
+  ///
+  /// In en, this message translates to:
+  /// **'My communities'**
+  String get social_privacy_communities;
+
+  /// No description provided for @social_privacy_communities_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Who sees which communities you\'re in (others only see the ones you share).'**
+  String get social_privacy_communities_hint;
+
+  /// No description provided for @social_privacy_intro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your nickname, avatar and bio are visible to anyone who finds you. The rest is up to you.'**
+  String get social_privacy_intro;
+
+  /// No description provided for @social_privacy_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics and name in rankings'**
+  String get social_privacy_stats;
+
+  /// No description provided for @social_privacy_stats_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Who sees your active habits, weekly regularity and your nickname in community rankings. Hiding it from everyone also leaves you out of friends\' rankings.'**
+  String get social_privacy_stats_hint;
+
+  /// No description provided for @social_privacy_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get social_privacy_title;
+
+  /// No description provided for @social_profile_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved'**
+  String get social_profile_saved;
+
+  /// No description provided for @social_profile_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get social_profile_title;
+
+  /// No description provided for @social_ranking_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add friends to compare progress.'**
+  String get social_ranking_empty;
+
+  /// No description provided for @social_ranking_rules.
+  ///
+  /// In en, this message translates to:
+  /// **'This week\'s ranking across all active habits: the share of scheduled days with a mark, from Monday to today and not before a habit was created. Friends who hide their statistics aren\'t shown.'**
+  String get social_ranking_rules;
+
+  /// No description provided for @social_reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get social_reject;
+
+  /// No description provided for @social_remove_friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove friend'**
+  String get social_remove_friend;
+
+  /// No description provided for @social_remove_message.
+  ///
+  /// In en, this message translates to:
+  /// **'You can send a request again later.'**
+  String get social_remove_message;
+
+  /// No description provided for @social_remove_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this friend?'**
+  String get social_remove_title;
+
+  /// No description provided for @social_request_accepted_notice.
+  ///
+  /// In en, this message translates to:
+  /// **'{handle} accepted your request'**
+  String social_request_accepted_notice(String handle);
+
+  /// No description provided for @social_request_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Request cancelled'**
+  String get social_request_cancelled;
+
+  /// No description provided for @social_request_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Request rejected'**
+  String get social_request_rejected;
+
+  /// No description provided for @social_request_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent'**
+  String get social_request_sent;
+
+  /// No description provided for @social_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get social_save;
+
+  /// No description provided for @social_search_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No user @{query}'**
+  String social_search_empty(String query);
+
+  /// No description provided for @social_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact nickname'**
+  String get social_search_hint;
+
+  /// No description provided for @social_search_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Find by nickname'**
+  String get social_search_label;
+
+  /// No description provided for @social_set_nickname.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a nickname'**
+  String get social_set_nickname;
+
+  /// No description provided for @social_setup_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A nickname lets friends find you and shows you in rankings. You can change it later.'**
+  String get social_setup_subtitle;
+
+  /// No description provided for @social_setup_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a nickname'**
+  String get social_setup_title;
+
+  /// No description provided for @social_shared_communities.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared communities'**
+  String get social_shared_communities;
+
+  /// No description provided for @social_stat_active_habits.
+  ///
+  /// In en, this message translates to:
+  /// **'active habits'**
+  String get social_stat_active_habits;
+
+  /// No description provided for @social_stat_best_streak.
+  ///
+  /// In en, this message translates to:
+  /// **'best streak'**
+  String get social_stat_best_streak;
+
+  /// No description provided for @social_stat_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'friends'**
+  String get social_stat_friends;
+
+  /// No description provided for @social_stat_week.
+  ///
+  /// In en, this message translates to:
+  /// **'this week ({completed} of {eligible} days)'**
+  String social_stat_week(int completed, int eligible);
+
+  /// No description provided for @social_stats_hidden.
+  ///
+  /// In en, this message translates to:
+  /// **'This user hides their statistics.'**
+  String get social_stats_hidden;
+
+  /// No description provided for @social_stats_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get social_stats_title;
+
+  /// No description provided for @social_tab_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get social_tab_friends;
+
+  /// No description provided for @social_tab_ranking.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranking'**
+  String get social_tab_ranking;
+
+  /// No description provided for @social_tab_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get social_tab_requests;
+
+  /// No description provided for @social_this_is_you.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s you'**
+  String get social_this_is_you;
+
+  /// No description provided for @social_unblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get social_unblock;
+
+  /// No description provided for @social_user_blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'User blocked'**
+  String get social_user_blocked;
+
+  /// No description provided for @social_user_unblocked.
+  ///
+  /// In en, this message translates to:
+  /// **'User unblocked'**
+  String get social_user_unblocked;
+
+  /// No description provided for @social_view_public_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'How others see me'**
+  String get social_view_public_profile;
+
+  /// No description provided for @social_visibility_everyone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get social_visibility_everyone;
+
+  /// No description provided for @social_visibility_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends only'**
+  String get social_visibility_friends;
+
+  /// No description provided for @social_visibility_nobody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody'**
+  String get social_visibility_nobody;
+
+  /// No description provided for @social_waiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for an answer'**
+  String get social_waiting;
+
   /// No description provided for @community_rules_title.
   ///
   /// In en, this message translates to:

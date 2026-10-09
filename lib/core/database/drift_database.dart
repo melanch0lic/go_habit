@@ -6,6 +6,7 @@ import 'package:go_habit/core/database/tables/community_cache.dart';
 import 'package:go_habit/core/database/tables/habit_categories.dart';
 import 'package:go_habit/core/database/tables/habit_completions.dart';
 import 'package:go_habit/core/database/tables/habits.dart';
+import 'package:go_habit/core/database/tables/social_cache.dart';
 import 'package:go_habit/core/database/tables/sync_state.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,7 +14,7 @@ import 'package:path_provider/path_provider.dart';
 part 'drift_database.g.dart';
 
 @DriftDatabase(
-  tables: [Habits, HabitCategories, HabitCompletions, SyncState, HabitTemplates, CommunityMemberships],
+  tables: [Habits, HabitCategories, HabitCompletions, SyncState, HabitTemplates, CommunityMemberships, SocialCache],
   daos: [HabitsDao],
 )
 class AppDatabase extends _$AppDatabase {
@@ -28,8 +29,9 @@ class AppDatabase extends _$AppDatabase {
   /// 3 — offline caches of the habit catalog and community memberships.
   /// 4 — community memberships no longer link a personal habit.
   /// 5 — community memberships link the ranked habit again.
+  /// 6 — offline cache of the user's social profile, friends and requests.
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -43,6 +45,7 @@ class AppDatabase extends _$AppDatabase {
         }
         // v3 already has `habit_id` (v4 removed it), so only v4 needs it added back.
         if (from == 4) await m.addColumn(communityMemberships, communityMemberships.habitId);
+        if (from < 6) await m.createTable(socialCache);
       },
     );
   }
@@ -114,6 +117,7 @@ class AppDatabase extends _$AppDatabase {
   /// Removes everything that belongs to the signed-in user. Categories and the habit
   /// catalog are shared reference data and are kept.
   Future<void> clearUserData() => transaction(() async {
+        await delete(socialCache).go();
         await delete(communityMemberships).go();
         await delete(habitCompletions).go();
         await delete(habits).go();

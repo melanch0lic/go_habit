@@ -316,7 +316,7 @@ void main() {
       );
       await tester.scrollUntilVisible(find.text(l10n.community_member_fallback), 200);
 
-      expect(find.text('Alice'), findsOneWidget);
+      expect(find.text('@Alice'), findsOneWidget);
       expect(find.text(l10n.community_you), findsOneWidget);
       expect(find.text('71%'), findsOneWidget);
       expect(find.text(l10n.community_my_rank(2, 3)), findsOneWidget);

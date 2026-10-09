@@ -428,6 +428,335 @@ class AppLocalizationsRu extends AppLocalizations {
       'Что-то пошло не так. Попробуйте ещё раз.';
 
   @override
+  String get social_accept => 'Принять';
+
+  @override
+  String get social_add_friend => 'Добавить в друзья';
+
+  @override
+  String get social_already_accepted => 'Заявку уже приняли — вы друзья';
+
+  @override
+  String get social_avatar_default => 'Пиксельный аватар по никнейму';
+
+  @override
+  String get social_avatar_label => 'Аватар';
+
+  @override
+  String get social_bio_label => 'О себе';
+
+  @override
+  String get social_block => 'Заблокировать';
+
+  @override
+  String get social_block_message =>
+      'Дружба и заявки между вами будут удалены. Пользователь не сможет найти вас и отправить заявку и не узнает о блокировке.';
+
+  @override
+  String get social_block_title => 'Заблокировать пользователя?';
+
+  @override
+  String get social_blocked => 'Заблокированные';
+
+  @override
+  String get social_cancel_request => 'Отменить заявку';
+
+  @override
+  String get social_edit_profile => 'Редактировать профиль';
+
+  @override
+  String get social_error_blocked_by_me =>
+      'Вы заблокировали этого пользователя. Сначала разблокируйте его.';
+
+  @override
+  String get social_error_invalid_profile =>
+      'Сервер не принял данные профиля. Проверьте никнейм и описание.';
+
+  @override
+  String get social_error_network =>
+      'Не удалось связаться с сервером. Попробуйте ещё раз.';
+
+  @override
+  String get social_error_not_allowed => 'Это действие недоступно.';
+
+  @override
+  String get social_error_not_found => 'Пользователь не найден.';
+
+  @override
+  String get social_error_offline =>
+      'Нет подключения к интернету. Друзья и профиль меняются только онлайн.';
+
+  @override
+  String get social_error_unauthorized =>
+      'Сессия истекла. Войдите в аккаунт заново.';
+
+  @override
+  String get social_error_unknown => 'Что-то пошло не так. Попробуйте ещё раз.';
+
+  @override
+  String get social_friend_removed => 'Пользователь удалён из друзей';
+
+  @override
+  String get social_friends_badge => 'Друзья';
+
+  @override
+  String social_friends_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count друзей',
+      few: '$count друга',
+      one: '$count друг',
+      zero: 'Друзья',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get social_friends_title => 'Друзья';
+
+  @override
+  String get social_incoming => 'Входящие заявки';
+
+  @override
+  String social_incoming_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count новых заявок',
+      few: '$count новые заявки',
+      one: '$count новая заявка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get social_more_actions => 'Ещё';
+
+  @override
+  String get social_my_communities => 'Мои сообщества';
+
+  @override
+  String get social_nickname_available => 'Никнейм свободен';
+
+  @override
+  String get social_nickname_callout =>
+      'Задайте никнейм, чтобы друзья могли вас найти.';
+
+  @override
+  String get social_nickname_characters =>
+      'Только латинские буквы, цифры и «_»';
+
+  @override
+  String get social_nickname_checking => 'Проверяем…';
+
+  @override
+  String get social_nickname_hint =>
+      '3–20 символов: латинские буквы, цифры и «_», первая — буква. Регистр не важен для уникальности.';
+
+  @override
+  String get social_nickname_label => 'Никнейм';
+
+  @override
+  String get social_nickname_required => 'Введите никнейм';
+
+  @override
+  String get social_nickname_reserved => 'Этот никнейм зарезервирован';
+
+  @override
+  String get social_nickname_start_letter =>
+      'Никнейм должен начинаться с буквы';
+
+  @override
+  String get social_nickname_taken => 'Этот никнейм уже занят';
+
+  @override
+  String social_nickname_too_long(int max) {
+    return 'Не больше $max символов';
+  }
+
+  @override
+  String social_nickname_too_short(int min) {
+    return 'Не меньше $min символов';
+  }
+
+  @override
+  String get social_nickname_unchecked =>
+      'Не удалось проверить — проверим при сохранении';
+
+  @override
+  String get social_no_friends =>
+      'Пока нет друзей. Найдите друга по никнейму выше.';
+
+  @override
+  String get social_no_nickname => 'Никнейм не задан';
+
+  @override
+  String get social_no_requests => 'Заявок нет.';
+
+  @override
+  String get social_no_shared_communities => 'Общих сообществ пока нет.';
+
+  @override
+  String get social_now_friends => 'Теперь вы друзья';
+
+  @override
+  String get social_offline_banner =>
+      'Нет соединения — показан сохранённый список.';
+
+  @override
+  String get social_outgoing => 'Отправленные заявки';
+
+  @override
+  String get social_privacy_always_private =>
+      'Email, заметки, названия привычек и история отметок никогда не показываются другим.';
+
+  @override
+  String get social_privacy_communities => 'Мои сообщества';
+
+  @override
+  String get social_privacy_communities_hint =>
+      'Кто видит, в каких сообществах вы состоите (другие видят только общие с ними).';
+
+  @override
+  String get social_privacy_intro =>
+      'Никнейм, аватар и описание видны всем, кто вас найдёт. Остальное — по вашему выбору.';
+
+  @override
+  String get social_privacy_stats => 'Статистика и имя в рейтингах';
+
+  @override
+  String get social_privacy_stats_hint =>
+      'Кто видит ваши активные привычки, регулярность за неделю и ваш никнейм в рейтингах сообществ. Скрыв её от всех, вы не появитесь в рейтинге друзей.';
+
+  @override
+  String get social_privacy_title => 'Конфиденциальность';
+
+  @override
+  String get social_profile_saved => 'Профиль сохранён';
+
+  @override
+  String get social_profile_title => 'Профиль';
+
+  @override
+  String get social_ranking_empty =>
+      'Добавьте друзей, чтобы сравнивать прогресс.';
+
+  @override
+  String get social_ranking_rules =>
+      'Рейтинг недели по всем активным привычкам: доля дней с отметкой среди запланированных — с понедельника по сегодня, не раньше создания привычки. Друзья, скрывшие статистику, не показываются.';
+
+  @override
+  String get social_reject => 'Отклонить';
+
+  @override
+  String get social_remove_friend => 'Удалить из друзей';
+
+  @override
+  String get social_remove_message =>
+      'Вы сможете снова отправить заявку позже.';
+
+  @override
+  String get social_remove_title => 'Удалить из друзей?';
+
+  @override
+  String social_request_accepted_notice(String handle) {
+    return '$handle принял(а) вашу заявку';
+  }
+
+  @override
+  String get social_request_cancelled => 'Заявка отменена';
+
+  @override
+  String get social_request_rejected => 'Заявка отклонена';
+
+  @override
+  String get social_request_sent => 'Заявка отправлена';
+
+  @override
+  String get social_save => 'Сохранить';
+
+  @override
+  String social_search_empty(String query) {
+    return 'Пользователь @$query не найден';
+  }
+
+  @override
+  String get social_search_hint => 'Точный никнейм';
+
+  @override
+  String get social_search_label => 'Найти по никнейму';
+
+  @override
+  String get social_set_nickname => 'Задать никнейм';
+
+  @override
+  String get social_setup_subtitle =>
+      'Никнейм нужен, чтобы друзья могли найти вас и чтобы вас было видно в рейтингах. Его можно сменить позже.';
+
+  @override
+  String get social_setup_title => 'Выберите никнейм';
+
+  @override
+  String get social_shared_communities => 'Общие сообщества';
+
+  @override
+  String get social_stat_active_habits => 'активных привычек';
+
+  @override
+  String get social_stat_best_streak => 'лучшая серия';
+
+  @override
+  String get social_stat_friends => 'друзей';
+
+  @override
+  String social_stat_week(int completed, int eligible) {
+    return 'за неделю ($completed из $eligible дн.)';
+  }
+
+  @override
+  String get social_stats_hidden => 'Пользователь скрыл статистику.';
+
+  @override
+  String get social_stats_title => 'Статистика';
+
+  @override
+  String get social_tab_friends => 'Друзья';
+
+  @override
+  String get social_tab_ranking => 'Рейтинг';
+
+  @override
+  String get social_tab_requests => 'Заявки';
+
+  @override
+  String get social_this_is_you => 'Это вы';
+
+  @override
+  String get social_unblock => 'Разблокировать';
+
+  @override
+  String get social_user_blocked => 'Пользователь заблокирован';
+
+  @override
+  String get social_user_unblocked => 'Пользователь разблокирован';
+
+  @override
+  String get social_view_public_profile => 'Как меня видят другие';
+
+  @override
+  String get social_visibility_everyone => 'Все';
+
+  @override
+  String get social_visibility_friends => 'Только друзья';
+
+  @override
+  String get social_visibility_nobody => 'Никто';
+
+  @override
+  String get social_waiting => 'Ожидает ответа';
+
+  @override
   String get community_rules_title => 'Как считается рейтинг';
 
   @override

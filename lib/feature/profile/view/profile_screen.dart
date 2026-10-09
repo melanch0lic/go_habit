@@ -4,8 +4,8 @@ import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/feature/auth/domain/bloc/auth_bloc.dart' as app_auth;
 import 'package:go_habit/feature/language/components/language_widget.dart';
 import 'package:go_habit/feature/profile/domain/bloc/profile_bloc.dart';
-import 'package:go_habit/feature/profile/widget/profile_avatar.dart';
 import 'package:go_habit/feature/profile/widget/settings_section.dart';
+import 'package:go_habit/feature/social/view/my_profile_section.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -42,8 +42,11 @@ class ProfileScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ProfileAvatar(email: email),
-                    const SizedBox(height: 24),
+                    const MyProfileSection(),
+                    const SizedBox(height: 8),
+                    // The account email is private: shown here only, never to other users.
+                    Text(email, style: Theme.of(context).textTheme.bodySmall),
+                    const SizedBox(height: 16),
                     const SettingsSection(),
                   ],
                 ),

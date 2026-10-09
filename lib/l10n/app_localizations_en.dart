@@ -421,6 +421,330 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong. Please try again.';
 
   @override
+  String get social_accept => 'Accept';
+
+  @override
+  String get social_add_friend => 'Add friend';
+
+  @override
+  String get social_already_accepted => 'Already accepted — you\'re friends';
+
+  @override
+  String get social_avatar_default => 'Pixel avatar from the nickname';
+
+  @override
+  String get social_avatar_label => 'Avatar';
+
+  @override
+  String get social_bio_label => 'About';
+
+  @override
+  String get social_block => 'Block';
+
+  @override
+  String get social_block_message =>
+      'Your friendship and requests will be removed. They won\'t be able to find you or send requests, and won\'t be told about the block.';
+
+  @override
+  String get social_block_title => 'Block this user?';
+
+  @override
+  String get social_blocked => 'Blocked';
+
+  @override
+  String get social_cancel_request => 'Cancel request';
+
+  @override
+  String get social_edit_profile => 'Edit profile';
+
+  @override
+  String get social_error_blocked_by_me =>
+      'You blocked this user. Unblock them first.';
+
+  @override
+  String get social_error_invalid_profile =>
+      'The server rejected the profile. Check the nickname and the description.';
+
+  @override
+  String get social_error_network =>
+      'Couldn\'t reach the server. Please try again.';
+
+  @override
+  String get social_error_not_allowed => 'This action isn\'t available.';
+
+  @override
+  String get social_error_not_found => 'User not found.';
+
+  @override
+  String get social_error_offline =>
+      'You\'re offline. Friends and profile changes need a connection.';
+
+  @override
+  String get social_error_unauthorized =>
+      'Your session expired. Please sign in again.';
+
+  @override
+  String get social_error_unknown => 'Something went wrong. Please try again.';
+
+  @override
+  String get social_friend_removed => 'Removed from friends';
+
+  @override
+  String get social_friends_badge => 'Friends';
+
+  @override
+  String social_friends_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count friends',
+      one: '$count friend',
+      zero: 'Friends',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get social_friends_title => 'Friends';
+
+  @override
+  String get social_incoming => 'Incoming requests';
+
+  @override
+  String social_incoming_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new requests',
+      one: '$count new request',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get social_more_actions => 'More';
+
+  @override
+  String get social_my_communities => 'My communities';
+
+  @override
+  String get social_nickname_available => 'Nickname is available';
+
+  @override
+  String get social_nickname_callout =>
+      'Choose a nickname so friends can find you.';
+
+  @override
+  String get social_nickname_characters => 'Only Latin letters, digits and “_”';
+
+  @override
+  String get social_nickname_checking => 'Checking…';
+
+  @override
+  String get social_nickname_hint =>
+      '3–20 characters: Latin letters, digits and “_”, starting with a letter. Case doesn\'t matter for uniqueness.';
+
+  @override
+  String get social_nickname_label => 'Nickname';
+
+  @override
+  String get social_nickname_required => 'Enter a nickname';
+
+  @override
+  String get social_nickname_reserved => 'This nickname is reserved';
+
+  @override
+  String get social_nickname_start_letter =>
+      'The nickname must start with a letter';
+
+  @override
+  String get social_nickname_taken => 'This nickname is taken';
+
+  @override
+  String social_nickname_too_long(int max) {
+    return 'At most $max characters';
+  }
+
+  @override
+  String social_nickname_too_short(int min) {
+    return 'At least $min characters';
+  }
+
+  @override
+  String get social_nickname_unchecked =>
+      'Couldn\'t check — it will be checked on save';
+
+  @override
+  String get social_no_friends =>
+      'No friends yet. Find someone by nickname above.';
+
+  @override
+  String get social_no_nickname => 'No nickname yet';
+
+  @override
+  String get social_no_requests => 'No requests.';
+
+  @override
+  String get social_no_shared_communities => 'No shared communities yet.';
+
+  @override
+  String get social_now_friends => 'You\'re friends now';
+
+  @override
+  String get social_offline_banner =>
+      'You\'re offline — showing the saved list.';
+
+  @override
+  String get social_outgoing => 'Sent requests';
+
+  @override
+  String get social_privacy_always_private =>
+      'Your email, notes, habit names and history are never shown to others.';
+
+  @override
+  String get social_privacy_communities => 'My communities';
+
+  @override
+  String get social_privacy_communities_hint =>
+      'Who sees which communities you\'re in (others only see the ones you share).';
+
+  @override
+  String get social_privacy_intro =>
+      'Your nickname, avatar and bio are visible to anyone who finds you. The rest is up to you.';
+
+  @override
+  String get social_privacy_stats => 'Statistics and name in rankings';
+
+  @override
+  String get social_privacy_stats_hint =>
+      'Who sees your active habits, weekly regularity and your nickname in community rankings. Hiding it from everyone also leaves you out of friends\' rankings.';
+
+  @override
+  String get social_privacy_title => 'Privacy';
+
+  @override
+  String get social_profile_saved => 'Profile saved';
+
+  @override
+  String get social_profile_title => 'Profile';
+
+  @override
+  String get social_ranking_empty => 'Add friends to compare progress.';
+
+  @override
+  String get social_ranking_rules =>
+      'This week\'s ranking across all active habits: the share of scheduled days with a mark, from Monday to today and not before a habit was created. Friends who hide their statistics aren\'t shown.';
+
+  @override
+  String get social_reject => 'Reject';
+
+  @override
+  String get social_remove_friend => 'Remove friend';
+
+  @override
+  String get social_remove_message => 'You can send a request again later.';
+
+  @override
+  String get social_remove_title => 'Remove this friend?';
+
+  @override
+  String social_request_accepted_notice(String handle) {
+    return '$handle accepted your request';
+  }
+
+  @override
+  String get social_request_cancelled => 'Request cancelled';
+
+  @override
+  String get social_request_rejected => 'Request rejected';
+
+  @override
+  String get social_request_sent => 'Request sent';
+
+  @override
+  String get social_save => 'Save';
+
+  @override
+  String social_search_empty(String query) {
+    return 'No user @$query';
+  }
+
+  @override
+  String get social_search_hint => 'Exact nickname';
+
+  @override
+  String get social_search_label => 'Find by nickname';
+
+  @override
+  String get social_set_nickname => 'Set a nickname';
+
+  @override
+  String get social_setup_subtitle =>
+      'A nickname lets friends find you and shows you in rankings. You can change it later.';
+
+  @override
+  String get social_setup_title => 'Choose a nickname';
+
+  @override
+  String get social_shared_communities => 'Shared communities';
+
+  @override
+  String get social_stat_active_habits => 'active habits';
+
+  @override
+  String get social_stat_best_streak => 'best streak';
+
+  @override
+  String get social_stat_friends => 'friends';
+
+  @override
+  String social_stat_week(int completed, int eligible) {
+    return 'this week ($completed of $eligible days)';
+  }
+
+  @override
+  String get social_stats_hidden => 'This user hides their statistics.';
+
+  @override
+  String get social_stats_title => 'Statistics';
+
+  @override
+  String get social_tab_friends => 'Friends';
+
+  @override
+  String get social_tab_ranking => 'Ranking';
+
+  @override
+  String get social_tab_requests => 'Requests';
+
+  @override
+  String get social_this_is_you => 'That\'s you';
+
+  @override
+  String get social_unblock => 'Unblock';
+
+  @override
+  String get social_user_blocked => 'User blocked';
+
+  @override
+  String get social_user_unblocked => 'User unblocked';
+
+  @override
+  String get social_view_public_profile => 'How others see me';
+
+  @override
+  String get social_visibility_everyone => 'Everyone';
+
+  @override
+  String get social_visibility_friends => 'Friends only';
+
+  @override
+  String get social_visibility_nobody => 'Nobody';
+
+  @override
+  String get social_waiting => 'Waiting for an answer';
+
+  @override
   String get community_rules_title => 'How the ranking works';
 
   @override
