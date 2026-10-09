@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:go_habit/core/app_connect/src/app_connect.dart';
+import 'package:go_habit/core/database/dao/community_dao.dart';
 import 'package:go_habit/core/database/dao/habit_category_dao.dart';
 import 'package:go_habit/core/database/dao/habit_completion_dao.dart';
 import 'package:go_habit/core/database/dao/habits_dao.dart';
@@ -13,6 +14,9 @@ import 'package:go_habit/feature/categories/data/data_sources/local/local_habit_
 import 'package:go_habit/feature/categories/data/data_sources/remote/remote_habit_category_datasource.dart';
 import 'package:go_habit/feature/categories/data/repositories/habit_category_repository_implementation.dart';
 import 'package:go_habit/feature/categories/domain/repositories/habit_category_repository.dart';
+import 'package:go_habit/feature/communities/data/community_remote_data_source.dart';
+import 'package:go_habit/feature/communities/data/community_repository_impl.dart';
+import 'package:go_habit/feature/communities/domain/repositories/community_repository.dart';
 import 'package:go_habit/feature/habit_stats/data/data_sources/local/local_habit_stats_datasource.dart';
 import 'package:go_habit/feature/habit_stats/data/repositories/habit_stats_repository_implementation.dart';
 import 'package:go_habit/feature/habit_stats/domain/repositories/habit_stats_repository.dart';
@@ -80,6 +84,17 @@ class AppScopeContainer extends ScopeContainer {
 
   late final habitCategoriesRepositoryDep = dep<HabitCategoryRepository>(() => HabitCategoryRepositoryImplementation(
       localHabitCategoryDataSource.get, remoteHabitCategoryDataSource.get, appConnect.get));
+
+  late final communityRepository = dep<CommunityRepository>(
+    () => CommunityRepositoryImpl(
+      remote: SupabaseCommunityDataSource(supabaseClient.get),
+      dao: CommunityDao(appDatabase.get),
+      appConnect: appConnect.get,
+      habits: habitRepositoryDep.get,
+      session: syncService.get,
+      synced: syncService.get.onSynced,
+    ),
+  );
 
   late final routerConfig = dep(() {
     final auth = supabaseClient.get.auth;

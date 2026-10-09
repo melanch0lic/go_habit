@@ -100,6 +100,195 @@
     "auth_error_link_invalid": "This link is invalid or has expired. Request a new one.",
     "auth_error_session_expired": "The time to change your password has run out. Request a new link.",
     "auth_error_unknown": "Something went wrong. Please try again.",
+    "communities_title": "Communities",
+    "communities_tab_catalog": "Catalog",
+    "communities_tab_mine": "Mine",
+    "communities_intro": "Join communities and compete in the weekly ranking with a habit from the template — or just be a member. Your notes and other habits stay private.",
+    "communities_search_hint": "Search habits",
+    "communities_filter_all": "All",
+    "communities_members": "{count, plural, one{{count} member} other{{count} members}}",
+    "@communities_members": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "communities_no_members_yet": "No members yet",
+    "communities_joined_badge": "Joined",
+    "communities_empty_search": "Nothing found. Try another search or category.",
+    "communities_empty_mine": "You haven't joined any community yet.",
+    "communities_browse_catalog": "Browse the catalog",
+    "communities_offline_banner": "You're offline — showing saved data. Joining and rankings need a connection.",
+    "communities_load_failed": "Couldn't load communities.",
+    "communities_retry": "Retry",
+    "unit_pages": "{count, plural, one{{count} page} other{{count} pages}}",
+    "@unit_pages": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "unit_minutes": "{count, plural, one{{count} minute} other{{count} minutes}}",
+    "@unit_minutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "unit_steps": "{count, plural, one{{count} step} other{{count} steps}}",
+    "@unit_steps": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "unit_glasses": "{count, plural, one{{count} glass} other{{count} glasses}}",
+    "@unit_glasses": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "unit_hours": "{count, plural, one{{count} hour} other{{count} hours}}",
+    "@unit_hours": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "community_recommended_target": "Recommended target: {target} a day",
+    "@community_recommended_target": {
+        "placeholders": {
+            "target": {
+                "type": "String"
+            }
+        }
+    },
+    "community_schedule_daily": "Every day",
+    "community_join": "Join",
+    "community_leave": "Leave community",
+    "community_leave_title": "Leave this community?",
+    "community_leave_message": "Your ranked habit stays in your list with its history. If you come back, days of this week before rejoining won't count.",
+    "community_leave_confirm": "Leave",
+    "community_member_since": "Member since {date}",
+    "@community_member_since": {
+        "placeholders": {
+            "date": {
+                "type": "DateTime",
+                "format": "yMMMd"
+            }
+        }
+    },
+    "community_leaderboard_title": "This week's ranking",
+    "community_retired": "This community is closed to new members.",
+    "community_joined": "You joined the community",
+    "community_left": "You left the community. Your habit is kept.",
+    "community_error_offline": "You're offline. Try again when you're connected.",
+    "community_error_network": "Couldn't reach the server. Please try again.",
+    "community_error_not_allowed": "Not available: the community is closed.",
+    "community_error_unauthorized": "Your session expired. Please sign in again.",
+    "community_error_unknown": "Something went wrong. Please try again.",
+    "community_rules_title": "How the ranking works",
+    "community_rules_body": "One habit created from the community's template takes part in the ranking. The ranking is weekly, from Monday to today. It measures regularity: the share of counted days on which the habit was marked. Days before you joined or created the habit, and future days, are not counted. Time and effort are not compared. Others see only your profile name (or “Member”), your percentage and day count.",
+    "community_ranked_habit": "Ranked habit: “{title}”",
+    "@community_ranked_habit": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "community_not_ranked": "You're not in the ranking yet. Create a habit from the template whenever you like.",
+    "community_ranked_habit_missing": "Your ranked habit was deleted or hasn't reached this device yet.",
+    "community_create_ranked_habit": "Create a ranked habit",
+    "community_week_progress": "This week: {completed} of {eligible} days",
+    "@community_week_progress": {
+        "placeholders": {
+            "completed": {
+                "type": "int"
+            },
+            "eligible": {
+                "type": "int"
+            }
+        }
+    },
+    "community_week_progress_none": "No counted days this week yet.",
+    "community_habit_paused": "The habit is paused — it isn't ranked.",
+    "community_leaderboard_empty": "Nobody has counted days this week yet.",
+    "community_leaderboard_offline": "The ranking needs an internet connection.",
+    "community_leaderboard_failed": "Couldn't load the ranking.",
+    "community_member_fallback": "Member",
+    "community_you": "You",
+    "community_days": "{completed} of {eligible} days",
+    "@community_days": {
+        "placeholders": {
+            "completed": {
+                "type": "int"
+            },
+            "eligible": {
+                "type": "int"
+            }
+        }
+    },
+    "community_rank": "Rank {rank}",
+    "@community_rank": {
+        "placeholders": {
+            "rank": {
+                "type": "int"
+            }
+        }
+    },
+    "community_my_rank": "Your rank: {rank} of {total}",
+    "@community_my_rank": {
+        "placeholders": {
+            "rank": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "community_not_ranked_yet": "You'll appear in the ranking once your ranked habit has counted days.",
+    "community_unsynced_hint": "Some marks aren't synced yet — the ranking updates after sync.",
+    "join_sheet_title": "How to take part",
+    "join_option_ranked": "Create a habit and join the ranking",
+    "join_option_ranked_hint": "The habit is added to your list; its marks count for the ranking.",
+    "join_option_unranked": "Join without the ranking",
+    "join_option_unranked_hint": "You can create a ranked habit later.",
+    "community_joined_ranked": "Habit created, you're in the ranking",
+    "community_ranked_habit_created": "The habit was created and is ranked",
+    "community_error_not_synced": "Couldn't upload the habit — nothing was changed. Check your connection and try again.",
+    "community_create_habit_title": "Habit for the ranking",
+    "community_create_habit_action": "Create habit",
+    "create_habit_name_label": "Name",
+    "create_habit_target_label": "Daily target",
+    "create_habit_hint": "The target is saved in the habit's description. Schedule: every day.",
+    "create_habit_similar": "You already have a similar habit: “{title}”.",
+    "@create_habit_similar": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "create_habit_description": "{description} Target: {target} a day.",
+    "@create_habit_description": {
+        "placeholders": {
+            "description": {
+                "type": "String"
+            },
+            "target": {
+                "type": "String"
+            }
+        }
+    },
     
     "profile_title": "Profile",
     "nav_home": "Home",

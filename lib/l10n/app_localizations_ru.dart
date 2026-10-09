@@ -246,6 +246,319 @@ class AppLocalizationsRu extends AppLocalizations {
   String get auth_error_unknown => 'Что-то пошло не так. Попробуйте ещё раз.';
 
   @override
+  String get communities_title => 'Сообщества';
+
+  @override
+  String get communities_tab_catalog => 'Каталог';
+
+  @override
+  String get communities_tab_mine => 'Мои';
+
+  @override
+  String get communities_intro =>
+      'Вступайте в сообщества и участвуйте в недельном рейтинге с привычкой по шаблону — или просто будьте участником. Ваши заметки и остальные привычки остаются личными.';
+
+  @override
+  String get communities_search_hint => 'Поиск привычки';
+
+  @override
+  String get communities_filter_all => 'Все';
+
+  @override
+  String communities_members(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count участников',
+      few: '$count участника',
+      one: '$count участник',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communities_no_members_yet => 'Пока нет участников';
+
+  @override
+  String get communities_joined_badge => 'Вы участник';
+
+  @override
+  String get communities_empty_search =>
+      'Ничего не нашлось. Попробуйте другой запрос или категорию.';
+
+  @override
+  String get communities_empty_mine =>
+      'Вы пока не состоите ни в одном сообществе.';
+
+  @override
+  String get communities_browse_catalog => 'Открыть каталог';
+
+  @override
+  String get communities_offline_banner =>
+      'Нет соединения — показаны сохранённые данные. Вступать в сообщества и смотреть рейтинг можно только онлайн.';
+
+  @override
+  String get communities_load_failed => 'Не удалось загрузить сообщества.';
+
+  @override
+  String get communities_retry => 'Повторить';
+
+  @override
+  String unit_pages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count страниц',
+      few: '$count страницы',
+      one: '$count страница',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_minutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count минут',
+      few: '$count минуты',
+      one: '$count минута',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_steps(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count шагов',
+      few: '$count шага',
+      one: '$count шаг',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_glasses(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count стаканов',
+      few: '$count стакана',
+      one: '$count стакан',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_hours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count часов',
+      few: '$count часа',
+      one: '$count час',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String community_recommended_target(String target) {
+    return 'Рекомендуемая цель: $target в день';
+  }
+
+  @override
+  String get community_schedule_daily => 'Каждый день';
+
+  @override
+  String get community_join => 'Вступить';
+
+  @override
+  String get community_leave => 'Покинуть сообщество';
+
+  @override
+  String get community_leave_title => 'Покинуть сообщество?';
+
+  @override
+  String get community_leave_message =>
+      'Привычка для рейтинга останется в вашем списке вместе с историей. Если вернётесь, дни этой недели до повторного вступления засчитаны не будут.';
+
+  @override
+  String get community_leave_confirm => 'Покинуть';
+
+  @override
+  String community_member_since(DateTime date) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat.yMMMd(localeName);
+    final String dateString = dateDateFormat.format(date);
+
+    return 'Вы участник с $dateString';
+  }
+
+  @override
+  String get community_leaderboard_title => 'Рейтинг недели';
+
+  @override
+  String get community_retired => 'Сообщество закрыто для новых участников.';
+
+  @override
+  String get community_joined => 'Вы вступили в сообщество';
+
+  @override
+  String get community_left => 'Вы покинули сообщество. Привычка сохранена.';
+
+  @override
+  String get community_error_offline =>
+      'Нет подключения к интернету. Попробуйте, когда появится сеть.';
+
+  @override
+  String get community_error_network =>
+      'Не удалось связаться с сервером. Попробуйте ещё раз.';
+
+  @override
+  String get community_error_not_allowed =>
+      'Сейчас это недоступно: сообщество закрыто.';
+
+  @override
+  String get community_error_unauthorized =>
+      'Сессия истекла. Войдите в аккаунт заново.';
+
+  @override
+  String get community_error_unknown =>
+      'Что-то пошло не так. Попробуйте ещё раз.';
+
+  @override
+  String get community_rules_title => 'Как считается рейтинг';
+
+  @override
+  String get community_rules_body =>
+      'В рейтинге участвует одна привычка, созданная по шаблону сообщества. Рейтинг недельный: с понедельника по сегодня. Считается регулярность — доля засчитываемых дней, в которые привычка отмечена. Дни до вступления и до создания привычки не учитываются, будущие дни тоже. Время и усилия не сравниваются. Другие участники видят только имя профиля (или «Участник»), процент и число дней.';
+
+  @override
+  String community_ranked_habit(String title) {
+    return 'В рейтинге: «$title»';
+  }
+
+  @override
+  String get community_not_ranked =>
+      'Вы пока не участвуете в рейтинге. Создайте привычку по шаблону, когда захотите.';
+
+  @override
+  String get community_ranked_habit_missing =>
+      'Привычка для рейтинга удалена или ещё не загрузилась на это устройство.';
+
+  @override
+  String get community_create_ranked_habit => 'Создать привычку для рейтинга';
+
+  @override
+  String community_week_progress(int completed, int eligible) {
+    return 'На этой неделе: $completed из $eligible дн.';
+  }
+
+  @override
+  String get community_week_progress_none =>
+      'На этой неделе засчитываемых дней пока нет.';
+
+  @override
+  String get community_habit_paused =>
+      'Привычка на паузе — она не участвует в рейтинге.';
+
+  @override
+  String get community_leaderboard_empty =>
+      'Пока ни у кого нет засчитываемых дней на этой неделе.';
+
+  @override
+  String get community_leaderboard_offline =>
+      'Рейтинг доступен только при подключении к интернету.';
+
+  @override
+  String get community_leaderboard_failed => 'Не удалось загрузить рейтинг.';
+
+  @override
+  String get community_member_fallback => 'Участник';
+
+  @override
+  String get community_you => 'Вы';
+
+  @override
+  String community_days(int completed, int eligible) {
+    return '$completed из $eligible дн.';
+  }
+
+  @override
+  String community_rank(int rank) {
+    return 'Место $rank';
+  }
+
+  @override
+  String community_my_rank(int rank, int total) {
+    return 'Ваше место: $rank из $total';
+  }
+
+  @override
+  String get community_not_ranked_yet =>
+      'Вы появитесь в рейтинге, когда у привычки для рейтинга будут засчитываемые дни.';
+
+  @override
+  String get community_unsynced_hint =>
+      'Часть отметок ещё не синхронизирована — рейтинг обновится после синхронизации.';
+
+  @override
+  String get join_sheet_title => 'Как участвовать';
+
+  @override
+  String get join_option_ranked => 'Создать привычку и участвовать в рейтинге';
+
+  @override
+  String get join_option_ranked_hint =>
+      'Привычка появится в вашем списке; её отметки будут учитываться в рейтинге.';
+
+  @override
+  String get join_option_unranked => 'Вступить без участия в рейтинге';
+
+  @override
+  String get join_option_unranked_hint =>
+      'Привычку для рейтинга можно создать позже.';
+
+  @override
+  String get community_joined_ranked =>
+      'Привычка создана, вы участвуете в рейтинге';
+
+  @override
+  String get community_ranked_habit_created =>
+      'Привычка создана и участвует в рейтинге';
+
+  @override
+  String get community_error_not_synced =>
+      'Не удалось загрузить привычку на сервер — ничего не изменено. Проверьте интернет и попробуйте снова.';
+
+  @override
+  String get community_create_habit_title => 'Привычка для рейтинга';
+
+  @override
+  String get community_create_habit_action => 'Создать привычку';
+
+  @override
+  String get create_habit_name_label => 'Название';
+
+  @override
+  String get create_habit_target_label => 'Цель в день';
+
+  @override
+  String get create_habit_hint =>
+      'Цель сохраняется в описании привычки. Расписание — каждый день.';
+
+  @override
+  String create_habit_similar(String title) {
+    return 'У вас уже есть похожая привычка «$title».';
+  }
+
+  @override
+  String create_habit_description(String description, String target) {
+    return '$description Цель: $target в день.';
+  }
+
+  @override
   String get profile_title => 'Профиль';
 
   @override

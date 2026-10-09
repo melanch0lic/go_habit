@@ -50,8 +50,11 @@ class $AssetsNavbarIconsGen {
   /// File path: assets/navbar_icons/user.svg
   SvgGenImage get user => const SvgGenImage('assets/navbar_icons/user.svg');
 
+  /// File path: assets/navbar_icons/users.svg
+  SvgGenImage get users => const SvgGenImage('assets/navbar_icons/users.svg');
+
   /// List of all assets
-  List<SvgGenImage> get values => [bell, edit, home, user];
+  List<SvgGenImage> get values => [bell, edit, home, user, users];
 }
 
 class Assets {

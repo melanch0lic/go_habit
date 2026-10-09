@@ -41,7 +41,7 @@ GoRouter _router() => GoRouter(
         StatefulShellRoute.indexedStack(
           builder: (_, __, shell) => RootShellLayout(navigationShell: shell),
           branches: [
-            for (final name in ['a', 'b', 'c', 'd'])
+            for (final name in ['a', 'b', 'c', 'd', 'e'])
               StatefulShellBranch(routes: [
                 GoRoute(
                   path: '/$name',
@@ -80,7 +80,7 @@ void main() {
   }
 
   String? selectedLabel(WidgetTester tester) {
-    for (final label in ['Home', 'Habits', 'Notifications', 'Profile']) {
+    for (final label in ['Home', 'Habits', 'Communities', 'Notifications', 'Profile']) {
       if (find.text(label).evaluate().isNotEmpty) return label;
     }
     return null;
@@ -93,7 +93,7 @@ void main() {
     await tester.tap(find.byTooltip('Profile'));
     await tester.pumpAndSettle();
 
-    expect(find.text('d: 0'), findsOneWidget);
+    expect(find.text('e: 0'), findsOneWidget);
     expect(selectedLabel(tester), 'Profile');
   });
 
@@ -131,7 +131,7 @@ void main() {
   testWidgets('the highlight follows navigation that does not come from the bar', (tester) async {
     await pumpApp(tester);
 
-    router.go('/c');
+    router.go('/d');
     await tester.pumpAndSettle();
 
     expect(selectedLabel(tester), 'Notifications');
@@ -139,7 +139,7 @@ void main() {
 
   testWidgets('rapid tab switching ends on the last tapped tab without errors', (tester) async {
     await pumpApp(tester);
-    for (final label in ['Habits', 'Notifications', 'Profile', 'Habits']) {
+    for (final label in ['Habits', 'Communities', 'Notifications', 'Profile', 'Habits']) {
       await tester.tap(find.byTooltip(label));
       await tester.pump(const Duration(milliseconds: 16));
     }
@@ -148,6 +148,37 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(selectedLabel(tester), 'Habits');
     expect(find.text('b: 0'), findsOneWidget);
+  });
+
+  testWidgets('the communities tab opens its own branch', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.byTooltip('Communities'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('c: 0'), findsOneWidget);
+    expect(selectedLabel(tester), 'Communities');
+  });
+
+  testWidgets('five destinations fit a 320 px screen with large text', (tester) async {
+    tester.view
+      ..physicalSize = const Size(320, 568)
+      ..devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await pumpApp(tester);
+    for (final label in ['Habits', 'Communities', 'Notifications', 'Profile', 'Home']) {
+      await tester.tap(find.byTooltip(label));
+      for (var i = 0; i < 20; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+        expect(tester.takeException(), isNull, reason: 'switching to $label');
+      }
+      for (final target in ['Home', 'Habits', 'Communities', 'Notifications', 'Profile']) {
+        final size = tester.getSize(find.byTooltip(target));
+        expect(size.width, greaterThanOrEqualTo(48), reason: '$target touch target');
+      }
+    }
   });
 
   testWidgets('pages get the bar height as bottom inset', (tester) async {

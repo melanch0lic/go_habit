@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:go_habit/core/database/dao/habit_completion_dao.dart';
 import 'package:go_habit/core/database/dao/habits_dao.dart';
+import 'package:go_habit/core/database/tables/community_cache.dart';
 import 'package:go_habit/core/database/tables/habit_categories.dart';
 import 'package:go_habit/core/database/tables/habit_completions.dart';
 import 'package:go_habit/core/database/tables/habits.dart';
@@ -11,7 +12,10 @@ import 'package:path_provider/path_provider.dart';
 
 part 'drift_database.g.dart';
 
-@DriftDatabase(tables: [Habits, HabitCategories, HabitCompletions, SyncState], daos: [HabitsDao])
+@DriftDatabase(
+  tables: [Habits, HabitCategories, HabitCompletions, SyncState, HabitTemplates, CommunityMemberships],
+  daos: [HabitsDao],
+)
 class AppDatabase extends _$AppDatabase {
   /// [executor] is for tests; the app uses the on-device database.
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
@@ -21,8 +25,11 @@ class AppDatabase extends _$AppDatabase {
   /// 2 — completions keyed by calendar day, tombstones, per-row sync versions,
   ///     sync metadata table; `habit_streaks`, `habits.sync_status` and
   ///     `habits.last_time_completed` removed.
+  /// 3 — offline caches of the habit catalog and community memberships.
+  /// 4 — community memberships no longer link a personal habit.
+  /// 5 — community memberships link the ranked habit again.
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -30,6 +37,12 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (m) => m.createAll(),
       onUpgrade: (m, from, to) async {
         if (from < 2) await _migrateFrom1To2(m);
+        if (from < 3) {
+          await m.createTable(habitTemplates);
+          await m.createTable(communityMemberships);
+        }
+        // v3 already has `habit_id` (v4 removed it), so only v4 needs it added back.
+        if (from == 4) await m.addColumn(communityMemberships, communityMemberships.habitId);
       },
     );
   }
@@ -98,9 +111,10 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 
-  /// Removes everything that belongs to the signed-in user. Categories are shared
-  /// reference data and are kept.
+  /// Removes everything that belongs to the signed-in user. Categories and the habit
+  /// catalog are shared reference data and are kept.
   Future<void> clearUserData() => transaction(() async {
+        await delete(communityMemberships).go();
         await delete(habitCompletions).go();
         await delete(habits).go();
         await delete(syncState).go();
