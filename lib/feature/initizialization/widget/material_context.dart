@@ -7,6 +7,7 @@ import 'package:go_habit/feature/categories/widget/habit_categories_scope.dart';
 import 'package:go_habit/feature/habits/widget/habits_scope.dart';
 import 'package:go_habit/feature/initizialization/scopes/app_scope_container.dart';
 import 'package:go_habit/feature/language/domain/bloc/language_bloc.dart';
+import 'package:go_habit/feature/social/widget/social_scope.dart';
 import 'package:go_habit/feature/theme/theme_cubit.dart' as theme_cubit;
 import 'package:go_habit/feature/theme/widget/theme_scope.dart';
 import 'package:go_habit/l10n/app_localizations.dart';
@@ -36,6 +37,8 @@ class MaterialContext extends StatelessWidget {
 
                     return MaterialApp.router(
                       routerConfig: scope.routerConfig.get,
+                      // Above every route, so tabs and full-screen pages share them.
+                      builder: (context, child) => SocialScope(child: child ?? const SizedBox.shrink()),
                       title: 'Go Habit',
                       theme: appTheme.lightTheme,
                       darkTheme: appTheme.darkTheme,

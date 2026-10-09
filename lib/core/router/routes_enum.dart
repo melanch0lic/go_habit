@@ -60,7 +60,10 @@ enum CommunityRoutes {
 
 enum ProfileRoutes {
   profile(path: '${_profileRoutesKey}profile'),
-  settings(path: '${_profileRoutesKey}settings');
+  settings(path: '${_profileRoutesKey}settings'),
+  friends(path: '${_profileRoutesKey}profile/friends'),
+  edit(path: '${_profileRoutesKey}profile/edit'),
+  privacy(path: '${_profileRoutesKey}profile/privacy');
 
   final String path;
 
@@ -77,4 +80,19 @@ enum NotificationsRoutes {
   const NotificationsRoutes({
     required this.path,
   });
+}
+
+/// Full-screen social pages, reachable from every tab.
+enum SocialRoutes {
+  /// Another user's (or the own) public profile; the last segment is the public id.
+  user(path: '/users/:publicId'),
+
+  /// Choosing a nickname right after sign-in, for users who have none yet.
+  setup(path: '/profile_setup');
+
+  final String path;
+
+  const SocialRoutes({required this.path});
+
+  static String userOf(String publicId) => user.path.replaceFirst(':publicId', Uri.encodeComponent(publicId));
 }

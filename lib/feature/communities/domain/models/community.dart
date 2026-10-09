@@ -95,6 +95,10 @@ class LeaderboardEntry {
   /// Members ranked this week (the same on every row).
   final int rankedCount;
 
+  /// Public handle to open the profile; null for anonymous rows.
+  final String? publicId;
+  final String? avatar;
+
   const LeaderboardEntry({
     required this.isMe,
     required this.completedDays,
@@ -103,11 +107,16 @@ class LeaderboardEntry {
     this.displayName,
     this.consistency,
     this.rankedCount = 0,
+    this.publicId,
+    this.avatar,
   });
 
+  /// Parses rows of `community_leaderboard` and `friends_leaderboard`.
   factory LeaderboardEntry.fromJson(Map<String, dynamic> json) => LeaderboardEntry(
         rank: json['rank'] as int?,
-        displayName: json['display_name'] as String?,
+        displayName: (json['display_name'] ?? json['nickname']) as String?,
+        publicId: json['public_id'] as String?,
+        avatar: json['avatar'] as String?,
         isMe: json['is_me'] as bool? ?? false,
         completedDays: json['completed_days'] as int? ?? 0,
         eligibleDays: json['eligible_days'] as int? ?? 0,

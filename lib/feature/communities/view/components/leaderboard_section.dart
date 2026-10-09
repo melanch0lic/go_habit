@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/router/routes_enum.dart';
 import 'package:go_habit/feature/communities/bloc/community_detail_bloc.dart';
 import 'package:go_habit/feature/communities/domain/models/community.dart';
 import 'package:go_habit/feature/communities/view/community_texts.dart';
+import 'package:go_habit/feature/social/view/components/user_avatar.dart';
+import 'package:go_router/go_router.dart';
 
 /// The weekly ranking with its loading, empty, offline and error states.
 class LeaderboardSection extends StatelessWidget {
@@ -36,7 +39,7 @@ class LeaderboardSection extends StatelessWidget {
     } else if (leaderboard.entries.isEmpty) {
       body = _Message(text: l10n.community_leaderboard_empty);
     } else {
-      body = Column(children: [for (final entry in leaderboard.entries) _LeaderboardRow(entry: entry)]);
+      body = Column(children: [for (final entry in leaderboard.entries) LeaderboardRow(entry: entry)]);
     }
 
     return Column(
@@ -89,54 +92,75 @@ class LeaderboardSection extends StatelessWidget {
   }
 }
 
-class _LeaderboardRow extends StatelessWidget {
+/// One ranked member: place, avatar, name (or a neutral label), days and percent.
+/// Opens the member's public profile when their name is visible.
+class LeaderboardRow extends StatelessWidget {
   final LeaderboardEntry entry;
 
-  const _LeaderboardRow({required this.entry});
+  const LeaderboardRow({required this.entry, super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = context.themeOf;
     final green = context.theme.commonColors.green100;
-    final name = entry.isMe ? l10n.community_you : (entry.displayName ?? l10n.community_member_fallback);
+    final name = entry.isMe
+        ? l10n.community_you
+        : entry.displayName == null
+            ? l10n.community_member_fallback
+            : '@${entry.displayName}';
     final percent = entry.roundedPercent ?? 0;
     final days = l10n.community_days(entry.completedDays, entry.eligibleDays);
+    final publicId = entry.publicId;
+    final canOpen = publicId != null && !entry.isMe;
 
     return Semantics(
       container: true,
+      button: canOpen,
       label: '${l10n.community_rank(entry.rank ?? 0)}, $name, $percent%, $days',
       excludeSemantics: true,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 3),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 3),
+        child: Material(
           color: entry.isMe ? green.withValues(alpha: 0.14) : theme.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: entry.isMe ? green : theme.dividerColor),
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 32,
-              child: Text('${entry.rank}', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: entry.isMe ? green : theme.dividerColor),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: canOpen ? () => context.push(SocialRoutes.userOf(publicId)) : null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
                 children: [
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyLarge?.copyWith(fontWeight: entry.isMe ? FontWeight.bold : null),
+                  SizedBox(
+                    width: 32,
+                    child: Text('${entry.rank}',
+                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   ),
-                  Text(days, style: theme.textTheme.bodySmall),
+                  UserAvatar(nickname: entry.displayName, avatar: entry.avatar, size: 32),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyLarge?.copyWith(fontWeight: entry.isMe ? FontWeight.bold : null),
+                        ),
+                        Text(days, style: theme.textTheme.bodySmall),
+                      ],
+                    ),
+                  ),
+                  Text('$percent%',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: green)),
                 ],
               ),
             ),
-            Text('$percent%', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: green)),
-          ],
+          ),
         ),
       ),
     );

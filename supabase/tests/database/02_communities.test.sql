@@ -31,7 +31,8 @@ insert into auth.users (id, email) values
   ('33333333-3333-3333-3333-333333333333', 'carol@example.test'),
   ('44444444-4444-4444-4444-444444444444', 'dave@example.test'),
   ('55555555-5555-5555-5555-555555555555', 'erin@example.test');
-update public.profile set display_name = 'Alice' where id = '11111111-1111-1111-1111-111111111111';
+-- Alice shows her name to everyone; the others keep the default (friends only).
+update public.profile set nickname = 'Alice', stats_visibility = 'everyone' where id = '11111111-1111-1111-1111-111111111111';
 
 insert into public.habit (id, user_id, category_id, title, is_active, created_at) values
   ('a0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'health', 'Walk', true, '2000-01-01'),
@@ -130,10 +131,10 @@ select set_config('request.jwt.claims',
 select is((select array_agg(rank order by rank) from public.community_leaderboard('meditation', current_date)),
           array[1, 2, 3], 'members with a ranked habit are ranked; others are not');
 select is((select display_name from public.community_leaderboard('meditation', current_date) where rank = 1),
-          'Alice', 'ties go to more completed days, then a stable order; public display names are shown');
+          'Alice', 'ties go to more completed days, then a stable order; public nicknames are shown');
 select is((select (rank, is_me, display_name is null)::text
              from public.community_leaderboard('meditation', current_date) where is_me),
-          '(2,t,t)', 'the caller sees their own rank; members without a public name stay anonymous');
+          '(2,t,t)', 'the caller sees their own rank; members who do not share their name stay anonymous');
 select is((select round(consistency) from public.community_leaderboard('meditation', current_date) where rank = 3),
           0::numeric, 'a member with no completions is ranked last with 0%');
 select is((select max(ranked_count) from public.community_leaderboard('meditation', current_date)),
