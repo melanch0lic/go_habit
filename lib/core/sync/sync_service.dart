@@ -54,6 +54,7 @@ class SyncService implements SyncScheduler, SessionDataManager {
   Timer? _retryTimer;
   StreamSubscription<String?>? _authSubscription;
   StreamSubscription<bool>? _connectSubscription;
+  final _synced = StreamController<void>.broadcast();
 
   static const ownerKey = 'owner_user_id';
   static const habitCursorKey = 'habit_cursor';
@@ -99,7 +100,12 @@ class SyncService implements SyncScheduler, SessionDataManager {
     _retryTimer?.cancel();
     await _authSubscription?.cancel();
     await _connectSubscription?.cancel();
+    await _synced.close();
   }
+
+  /// Emits after every run that completed against the server, e.g. so views of
+  /// server-computed data (community rankings) can reload.
+  Stream<void> get onSynced => _synced.stream;
 
   @override
   void requestSync() => _scheduleRun(_debounce);
@@ -181,6 +187,7 @@ class SyncService implements SyncScheduler, SessionDataManager {
       await _pullCompletions(userId);
       _failedAttempts = 0;
       _retryTimer?.cancel();
+      if (!_synced.isClosed) _synced.add(null);
       return true;
     } on _AccountChanged {
       return false;

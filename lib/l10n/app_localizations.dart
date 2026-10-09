@@ -512,6 +512,432 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get auth_error_unknown;
 
+  /// No description provided for @communities_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Communities'**
+  String get communities_title;
+
+  /// No description provided for @communities_tab_catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog'**
+  String get communities_tab_catalog;
+
+  /// No description provided for @communities_tab_mine.
+  ///
+  /// In en, this message translates to:
+  /// **'Mine'**
+  String get communities_tab_mine;
+
+  /// No description provided for @communities_intro.
+  ///
+  /// In en, this message translates to:
+  /// **'Join communities and compete in the weekly ranking with a habit from the template — or just be a member. Your notes and other habits stay private.'**
+  String get communities_intro;
+
+  /// No description provided for @communities_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search habits'**
+  String get communities_search_hint;
+
+  /// No description provided for @communities_filter_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get communities_filter_all;
+
+  /// No description provided for @communities_members.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} member} other{{count} members}}'**
+  String communities_members(int count);
+
+  /// No description provided for @communities_no_members_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet'**
+  String get communities_no_members_yet;
+
+  /// No description provided for @communities_joined_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get communities_joined_badge;
+
+  /// No description provided for @communities_empty_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing found. Try another search or category.'**
+  String get communities_empty_search;
+
+  /// No description provided for @communities_empty_mine.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t joined any community yet.'**
+  String get communities_empty_mine;
+
+  /// No description provided for @communities_browse_catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the catalog'**
+  String get communities_browse_catalog;
+
+  /// No description provided for @communities_offline_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline — showing saved data. Joining and rankings need a connection.'**
+  String get communities_offline_banner;
+
+  /// No description provided for @communities_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load communities.'**
+  String get communities_load_failed;
+
+  /// No description provided for @communities_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get communities_retry;
+
+  /// No description provided for @unit_pages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} page} other{{count} pages}}'**
+  String unit_pages(int count);
+
+  /// No description provided for @unit_minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} minute} other{{count} minutes}}'**
+  String unit_minutes(int count);
+
+  /// No description provided for @unit_steps.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} step} other{{count} steps}}'**
+  String unit_steps(int count);
+
+  /// No description provided for @unit_glasses.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} glass} other{{count} glasses}}'**
+  String unit_glasses(int count);
+
+  /// No description provided for @unit_hours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} hour} other{{count} hours}}'**
+  String unit_hours(int count);
+
+  /// No description provided for @community_recommended_target.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended target: {target} a day'**
+  String community_recommended_target(String target);
+
+  /// No description provided for @community_schedule_daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get community_schedule_daily;
+
+  /// No description provided for @community_join.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get community_join;
+
+  /// No description provided for @community_leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave community'**
+  String get community_leave;
+
+  /// No description provided for @community_leave_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this community?'**
+  String get community_leave_title;
+
+  /// No description provided for @community_leave_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ranked habit stays in your list with its history. If you come back, days of this week before rejoining won\'t count.'**
+  String get community_leave_message;
+
+  /// No description provided for @community_leave_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get community_leave_confirm;
+
+  /// No description provided for @community_member_since.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since {date}'**
+  String community_member_since(DateTime date);
+
+  /// No description provided for @community_leaderboard_title.
+  ///
+  /// In en, this message translates to:
+  /// **'This week\'s ranking'**
+  String get community_leaderboard_title;
+
+  /// No description provided for @community_retired.
+  ///
+  /// In en, this message translates to:
+  /// **'This community is closed to new members.'**
+  String get community_retired;
+
+  /// No description provided for @community_joined.
+  ///
+  /// In en, this message translates to:
+  /// **'You joined the community'**
+  String get community_joined;
+
+  /// No description provided for @community_left.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the community. Your habit is kept.'**
+  String get community_left;
+
+  /// No description provided for @community_error_offline.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Try again when you\'re connected.'**
+  String get community_error_offline;
+
+  /// No description provided for @community_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server. Please try again.'**
+  String get community_error_network;
+
+  /// No description provided for @community_error_not_allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available: the community is closed.'**
+  String get community_error_not_allowed;
+
+  /// No description provided for @community_error_unauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Please sign in again.'**
+  String get community_error_unauthorized;
+
+  /// No description provided for @community_error_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get community_error_unknown;
+
+  /// No description provided for @community_rules_title.
+  ///
+  /// In en, this message translates to:
+  /// **'How the ranking works'**
+  String get community_rules_title;
+
+  /// No description provided for @community_rules_body.
+  ///
+  /// In en, this message translates to:
+  /// **'One habit created from the community\'s template takes part in the ranking. The ranking is weekly, from Monday to today. It measures regularity: the share of counted days on which the habit was marked. Days before you joined or created the habit, and future days, are not counted. Time and effort are not compared. Others see only your profile name (or “Member”), your percentage and day count.'**
+  String get community_rules_body;
+
+  /// No description provided for @community_ranked_habit.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranked habit: “{title}”'**
+  String community_ranked_habit(String title);
+
+  /// No description provided for @community_not_ranked.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not in the ranking yet. Create a habit from the template whenever you like.'**
+  String get community_not_ranked;
+
+  /// No description provided for @community_ranked_habit_missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ranked habit was deleted or hasn\'t reached this device yet.'**
+  String get community_ranked_habit_missing;
+
+  /// No description provided for @community_create_ranked_habit.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a ranked habit'**
+  String get community_create_ranked_habit;
+
+  /// No description provided for @community_week_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'This week: {completed} of {eligible} days'**
+  String community_week_progress(int completed, int eligible);
+
+  /// No description provided for @community_week_progress_none.
+  ///
+  /// In en, this message translates to:
+  /// **'No counted days this week yet.'**
+  String get community_week_progress_none;
+
+  /// No description provided for @community_habit_paused.
+  ///
+  /// In en, this message translates to:
+  /// **'The habit is paused — it isn\'t ranked.'**
+  String get community_habit_paused;
+
+  /// No description provided for @community_leaderboard_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody has counted days this week yet.'**
+  String get community_leaderboard_empty;
+
+  /// No description provided for @community_leaderboard_offline.
+  ///
+  /// In en, this message translates to:
+  /// **'The ranking needs an internet connection.'**
+  String get community_leaderboard_offline;
+
+  /// No description provided for @community_leaderboard_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the ranking.'**
+  String get community_leaderboard_failed;
+
+  /// No description provided for @community_member_fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get community_member_fallback;
+
+  /// No description provided for @community_you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get community_you;
+
+  /// No description provided for @community_days.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {eligible} days'**
+  String community_days(int completed, int eligible);
+
+  /// No description provided for @community_rank.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank {rank}'**
+  String community_rank(int rank);
+
+  /// No description provided for @community_my_rank.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rank: {rank} of {total}'**
+  String community_my_rank(int rank, int total);
+
+  /// No description provided for @community_not_ranked_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll appear in the ranking once your ranked habit has counted days.'**
+  String get community_not_ranked_yet;
+
+  /// No description provided for @community_unsynced_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Some marks aren\'t synced yet — the ranking updates after sync.'**
+  String get community_unsynced_hint;
+
+  /// No description provided for @join_sheet_title.
+  ///
+  /// In en, this message translates to:
+  /// **'How to take part'**
+  String get join_sheet_title;
+
+  /// No description provided for @join_option_ranked.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a habit and join the ranking'**
+  String get join_option_ranked;
+
+  /// No description provided for @join_option_ranked_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The habit is added to your list; its marks count for the ranking.'**
+  String get join_option_ranked_hint;
+
+  /// No description provided for @join_option_unranked.
+  ///
+  /// In en, this message translates to:
+  /// **'Join without the ranking'**
+  String get join_option_unranked;
+
+  /// No description provided for @join_option_unranked_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can create a ranked habit later.'**
+  String get join_option_unranked_hint;
+
+  /// No description provided for @community_joined_ranked.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit created, you\'re in the ranking'**
+  String get community_joined_ranked;
+
+  /// No description provided for @community_ranked_habit_created.
+  ///
+  /// In en, this message translates to:
+  /// **'The habit was created and is ranked'**
+  String get community_ranked_habit_created;
+
+  /// No description provided for @community_error_not_synced.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t upload the habit — nothing was changed. Check your connection and try again.'**
+  String get community_error_not_synced;
+
+  /// No description provided for @community_create_habit_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit for the ranking'**
+  String get community_create_habit_title;
+
+  /// No description provided for @community_create_habit_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Create habit'**
+  String get community_create_habit_action;
+
+  /// No description provided for @create_habit_name_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get create_habit_name_label;
+
+  /// No description provided for @create_habit_target_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily target'**
+  String get create_habit_target_label;
+
+  /// No description provided for @create_habit_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The target is saved in the habit\'s description. Schedule: every day.'**
+  String get create_habit_hint;
+
+  /// No description provided for @create_habit_similar.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a similar habit: “{title}”.'**
+  String create_habit_similar(String title);
+
+  /// No description provided for @create_habit_description.
+  ///
+  /// In en, this message translates to:
+  /// **'{description} Target: {target} a day.'**
+  String create_habit_description(String description, String target);
+
   /// No description provided for @profile_title.
   ///
   /// In en, this message translates to:

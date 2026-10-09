@@ -64,6 +64,7 @@ class RootShellLayout extends StatelessWidget {
               destinations: [
                 BottomNavDestination(icon: Assets.navbarIcons.home, label: context.l10n.nav_home),
                 BottomNavDestination(icon: Assets.navbarIcons.edit, label: context.l10n.nav_habits),
+                BottomNavDestination(icon: Assets.navbarIcons.users, label: context.l10n.communities_title),
                 // The notifications screen shows mock data; the badge mirrors it.
                 BottomNavDestination(icon: Assets.navbarIcons.bell, label: context.l10n.notifications, badgeCount: 2),
               ],

@@ -1,6 +1,7 @@
 const _authRoutesKey = '/auth_routes/';
 const _homeRoutesKey = '/home_routes/';
 const _calendarRoutesKey = '/calendar_routes/';
+const _communityRoutesKey = '/community_routes/';
 const _notificationRoutesKey = '/notification_routes/';
 const _profileRoutesKey = '/profile_routes/';
 
@@ -38,6 +39,23 @@ enum CalendarRoutes {
   const CalendarRoutes({
     required this.path,
   });
+}
+
+enum CommunityRoutes {
+  /// Habit catalog and the user's communities (a main tab).
+  communities(path: '${_communityRoutesKey}communities'),
+
+  /// Community details; the last segment is the template id.
+  detail(path: '${_communityRoutesKey}communities/:templateId');
+
+  final String path;
+
+  const CommunityRoutes({
+    required this.path,
+  });
+
+  /// Location of the community of [templateId].
+  static String detailOf(String templateId) => detail.path.replaceFirst(':templateId', Uri.encodeComponent(templateId));
 }
 
 enum ProfileRoutes {

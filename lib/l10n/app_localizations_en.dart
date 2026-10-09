@@ -246,6 +246,310 @@ class AppLocalizationsEn extends AppLocalizations {
   String get auth_error_unknown => 'Something went wrong. Please try again.';
 
   @override
+  String get communities_title => 'Communities';
+
+  @override
+  String get communities_tab_catalog => 'Catalog';
+
+  @override
+  String get communities_tab_mine => 'Mine';
+
+  @override
+  String get communities_intro =>
+      'Join communities and compete in the weekly ranking with a habit from the template — or just be a member. Your notes and other habits stay private.';
+
+  @override
+  String get communities_search_hint => 'Search habits';
+
+  @override
+  String get communities_filter_all => 'All';
+
+  @override
+  String communities_members(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '$count member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communities_no_members_yet => 'No members yet';
+
+  @override
+  String get communities_joined_badge => 'Joined';
+
+  @override
+  String get communities_empty_search =>
+      'Nothing found. Try another search or category.';
+
+  @override
+  String get communities_empty_mine => 'You haven\'t joined any community yet.';
+
+  @override
+  String get communities_browse_catalog => 'Browse the catalog';
+
+  @override
+  String get communities_offline_banner =>
+      'You\'re offline — showing saved data. Joining and rankings need a connection.';
+
+  @override
+  String get communities_load_failed => 'Couldn\'t load communities.';
+
+  @override
+  String get communities_retry => 'Retry';
+
+  @override
+  String unit_pages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pages',
+      one: '$count page',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_minutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes',
+      one: '$count minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_steps(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count steps',
+      one: '$count step',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_glasses(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count glasses',
+      one: '$count glass',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unit_hours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '$count hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String community_recommended_target(String target) {
+    return 'Recommended target: $target a day';
+  }
+
+  @override
+  String get community_schedule_daily => 'Every day';
+
+  @override
+  String get community_join => 'Join';
+
+  @override
+  String get community_leave => 'Leave community';
+
+  @override
+  String get community_leave_title => 'Leave this community?';
+
+  @override
+  String get community_leave_message =>
+      'Your ranked habit stays in your list with its history. If you come back, days of this week before rejoining won\'t count.';
+
+  @override
+  String get community_leave_confirm => 'Leave';
+
+  @override
+  String community_member_since(DateTime date) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat.yMMMd(localeName);
+    final String dateString = dateDateFormat.format(date);
+
+    return 'Member since $dateString';
+  }
+
+  @override
+  String get community_leaderboard_title => 'This week\'s ranking';
+
+  @override
+  String get community_retired => 'This community is closed to new members.';
+
+  @override
+  String get community_joined => 'You joined the community';
+
+  @override
+  String get community_left => 'You left the community. Your habit is kept.';
+
+  @override
+  String get community_error_offline =>
+      'You\'re offline. Try again when you\'re connected.';
+
+  @override
+  String get community_error_network =>
+      'Couldn\'t reach the server. Please try again.';
+
+  @override
+  String get community_error_not_allowed =>
+      'Not available: the community is closed.';
+
+  @override
+  String get community_error_unauthorized =>
+      'Your session expired. Please sign in again.';
+
+  @override
+  String get community_error_unknown =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get community_rules_title => 'How the ranking works';
+
+  @override
+  String get community_rules_body =>
+      'One habit created from the community\'s template takes part in the ranking. The ranking is weekly, from Monday to today. It measures regularity: the share of counted days on which the habit was marked. Days before you joined or created the habit, and future days, are not counted. Time and effort are not compared. Others see only your profile name (or “Member”), your percentage and day count.';
+
+  @override
+  String community_ranked_habit(String title) {
+    return 'Ranked habit: “$title”';
+  }
+
+  @override
+  String get community_not_ranked =>
+      'You\'re not in the ranking yet. Create a habit from the template whenever you like.';
+
+  @override
+  String get community_ranked_habit_missing =>
+      'Your ranked habit was deleted or hasn\'t reached this device yet.';
+
+  @override
+  String get community_create_ranked_habit => 'Create a ranked habit';
+
+  @override
+  String community_week_progress(int completed, int eligible) {
+    return 'This week: $completed of $eligible days';
+  }
+
+  @override
+  String get community_week_progress_none => 'No counted days this week yet.';
+
+  @override
+  String get community_habit_paused =>
+      'The habit is paused — it isn\'t ranked.';
+
+  @override
+  String get community_leaderboard_empty =>
+      'Nobody has counted days this week yet.';
+
+  @override
+  String get community_leaderboard_offline =>
+      'The ranking needs an internet connection.';
+
+  @override
+  String get community_leaderboard_failed => 'Couldn\'t load the ranking.';
+
+  @override
+  String get community_member_fallback => 'Member';
+
+  @override
+  String get community_you => 'You';
+
+  @override
+  String community_days(int completed, int eligible) {
+    return '$completed of $eligible days';
+  }
+
+  @override
+  String community_rank(int rank) {
+    return 'Rank $rank';
+  }
+
+  @override
+  String community_my_rank(int rank, int total) {
+    return 'Your rank: $rank of $total';
+  }
+
+  @override
+  String get community_not_ranked_yet =>
+      'You\'ll appear in the ranking once your ranked habit has counted days.';
+
+  @override
+  String get community_unsynced_hint =>
+      'Some marks aren\'t synced yet — the ranking updates after sync.';
+
+  @override
+  String get join_sheet_title => 'How to take part';
+
+  @override
+  String get join_option_ranked => 'Create a habit and join the ranking';
+
+  @override
+  String get join_option_ranked_hint =>
+      'The habit is added to your list; its marks count for the ranking.';
+
+  @override
+  String get join_option_unranked => 'Join without the ranking';
+
+  @override
+  String get join_option_unranked_hint =>
+      'You can create a ranked habit later.';
+
+  @override
+  String get community_joined_ranked => 'Habit created, you\'re in the ranking';
+
+  @override
+  String get community_ranked_habit_created =>
+      'The habit was created and is ranked';
+
+  @override
+  String get community_error_not_synced =>
+      'Couldn\'t upload the habit — nothing was changed. Check your connection and try again.';
+
+  @override
+  String get community_create_habit_title => 'Habit for the ranking';
+
+  @override
+  String get community_create_habit_action => 'Create habit';
+
+  @override
+  String get create_habit_name_label => 'Name';
+
+  @override
+  String get create_habit_target_label => 'Daily target';
+
+  @override
+  String get create_habit_hint =>
+      'The target is saved in the habit\'s description. Schedule: every day.';
+
+  @override
+  String create_habit_similar(String title) {
+    return 'You already have a similar habit: “$title”.';
+  }
+
+  @override
+  String create_habit_description(String description, String target) {
+    return '$description Target: $target a day.';
+  }
+
+  @override
   String get profile_title => 'Profile';
 
   @override

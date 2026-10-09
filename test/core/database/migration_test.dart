@@ -9,6 +9,9 @@ import 'package:go_habit/core/utils/calendar_day.dart';
 
 import '../../generated_migrations/schema.dart';
 import '../../generated_migrations/schema_v1.dart' as v1;
+import '../../generated_migrations/schema_v2.dart' as v2;
+import '../../generated_migrations/schema_v3.dart' as v3;
+import '../../generated_migrations/schema_v4.dart' as v4;
 
 /// Regenerate helpers after a schema change:
 /// `dart run drift_dev schema dump lib/core/database/drift_database.dart drift_schemas/drift_schema_vN.json`
@@ -21,9 +24,9 @@ void main() {
   int seconds(DateTime dateTime) => dateTime.millisecondsSinceEpoch ~/ 1000;
 
   test('a fresh install matches the latest schema snapshot', () async {
-    final schema = await verifier.schemaAt(2);
+    final schema = await verifier.schemaAt(5);
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 2);
+    await verifier.migrateAndValidate(db, 5);
     await db.close();
   });
 
@@ -75,7 +78,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 2);
+    await verifier.migrateAndValidate(db, 5);
 
     final habits = {for (final h in await db.select(db.habits).get()) h.id: h};
     expect(habits.keys, unorderedEquals(['a', 'b', 'c']));
@@ -102,6 +105,79 @@ void main() {
     expect(categories.single.sortOrder, 0);
     expect(await db.select(db.syncState).get(), isEmpty, reason: 'no owner yet: adopted at first sign-in');
 
+    await db.close();
+  });
+
+  test('upgrading from v2 adds the community caches and keeps habits and completions', () async {
+    final schema = await verifier.schemaAt(2);
+    final old = v2.DatabaseAtV2(schema.newConnection());
+    await old
+        .into(old.habitCategories)
+        .insert(v2.HabitCategoriesCompanion.insert(id: 'health', name: 'H', color: '#FF0000'));
+    await old.into(old.habits).insert(
+          v2.HabitsCompanion.insert(
+            id: 'h1',
+            title: 'Walk',
+            categoryId: 'health',
+            createdAt: seconds(DateTime(2026, 9, 1)),
+            updatedAt: seconds(DateTime(2026, 9, 1)),
+            isPendingSync: const Value(1),
+          ),
+        );
+    await old.into(old.habitCompletions).insert(
+          v2.HabitCompletionsCompanion.insert(
+            id: 'c1',
+            habitId: 'h1',
+            completedOn: '2026-10-05',
+            updatedAt: seconds(DateTime(2026, 10, 5)),
+          ),
+        );
+    await old.close();
+
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 5);
+
+    final habit = await (db.select(db.habits)..where((t) => t.id.equals('h1'))).getSingle();
+    expect(habit.isPendingSync, isTrue, reason: 'pending uploads survive the upgrade');
+    expect(await db.select(db.habitCompletions).get(), hasLength(1));
+    expect(await db.select(db.habitTemplates).get(), isEmpty);
+    expect(await db.select(db.communityMemberships).get(), isEmpty);
+    await db.close();
+  });
+
+  test('upgrading from v3 keeps cached memberships and their ranked habit', () async {
+    final schema = await verifier.schemaAt(3);
+    final old = v3.DatabaseAtV3(schema.newConnection());
+    await old.into(old.communityMemberships).insert(
+          v3.CommunityMembershipsCompanion.insert(
+              templateId: 'reading', habitId: const Value('h1'), joinedOn: '2026-10-09'),
+        );
+    await old.close();
+
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 5);
+
+    final membership = (await db.select(db.communityMemberships).get()).single;
+    expect(membership.templateId, 'reading');
+    expect(membership.habitId, 'h1');
+    expect(membership.joinedOn, '2026-10-09');
+    await db.close();
+  });
+
+  test('upgrading from v4 adds the ranked habit column back and keeps memberships', () async {
+    final schema = await verifier.schemaAt(4);
+    final old = v4.DatabaseAtV4(schema.newConnection());
+    await old
+        .into(old.communityMemberships)
+        .insert(v4.CommunityMembershipsCompanion.insert(templateId: 'reading', joinedOn: '2026-10-09'));
+    await old.close();
+
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 5);
+
+    final membership = (await db.select(db.communityMemberships).get()).single;
+    expect(membership.templateId, 'reading');
+    expect(membership.habitId, isNull);
     await db.close();
   });
 }

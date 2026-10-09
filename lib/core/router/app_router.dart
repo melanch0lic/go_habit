@@ -9,6 +9,8 @@ import 'package:go_habit/feature/auth/view/registration_screen.dart';
 import 'package:go_habit/feature/auth/view/reset_password_screen.dart';
 import 'package:go_habit/feature/auth/view/splash_screen.dart';
 import 'package:go_habit/feature/auth/view/welcome_screen.dart';
+import 'package:go_habit/feature/communities/view/communities_screen.dart';
+import 'package:go_habit/feature/communities/view/community_detail_screen.dart';
 import 'package:go_habit/feature/habits/view/habits_page.dart';
 import 'package:go_habit/feature/home/view/home_screen.dart';
 import 'package:go_habit/feature/notifications/view/notifications_screen.dart';
@@ -20,6 +22,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' show AuthChangeEvent, Au
 
 part 'routes/auth_routes.dart';
 part 'routes/calendar_routes.dart';
+part 'routes/community_routes.dart';
 part 'routes/home_routes.dart';
 part 'routes/notifications_routes.dart';
 part 'routes/profile_routes.dart';
@@ -27,6 +30,7 @@ part 'routes/profile_routes.dart';
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'RootNavigatorKey');
 final _homeRoutesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'HomeRoutesNavigatorKey');
 final _calendarRoutesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'CalendarRoutesNavigatorKey');
+final _communityRoutesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'CommunityRoutesNavigatorKey');
 final _notificationRoutesBranchNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'NotificationRoutesBranchNavigatorKey');
 final _profileRoutesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'ProfileRoutesNavigatorKey');
@@ -125,6 +129,7 @@ final _commonBottomNavigationBarShellRoute = StatefulShellRoute.indexedStack(
   branches: [
     _homeRoutesBranch,
     _calendarRoutesBranch,
+    _communityRoutesBranch,
     _notificationRoutesBranch,
     _profileRoutesBranch,
   ],
@@ -149,6 +154,15 @@ final _calendarRoutesBranch = StatefulShellBranch(
   initialLocation: CalendarRoutes.calendar.path,
   routes: [
     ..._calendarRoutes,
+  ],
+);
+
+final _communityRoutesBranch = StatefulShellBranch(
+  observers: [MyRouteObserver()],
+  navigatorKey: _communityRoutesNavigatorKey,
+  initialLocation: CommunityRoutes.communities.path,
+  routes: [
+    ..._communityRoutes,
   ],
 );
 
