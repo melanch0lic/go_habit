@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/ui_kit/app_haptics.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
+import 'package:go_habit/feature/habit_stats/widget/habit_completion_button.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:go_habit/feature/habits/view/components/habit_stats_grid.dart';
@@ -81,12 +83,6 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     final cardColor = hexToColor(widget.habitCategory.color);
     final isActive = widget.habit.isActive;
-    final completedToday = context.select<HabitStatsBloc, bool>(
-      (bloc) => switch (bloc.state) {
-        final HabitStatsLoaded loaded => loaded.isCompletedToday(widget.habit.id),
-        _ => false,
-      },
-    );
 
     return Dismissible(
       key: ValueKey(widget.habit.id),
@@ -170,19 +166,10 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                         ),
                       ),
                       if (isActive)
-                        InkWell(
-                          onTap: () => context.read<HabitStatsBloc>().add(HabitCompletionToggled(widget.habit.id)),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: completedToday ? Colors.grey : cardColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              completedToday ? Icons.close : Icons.check,
-                              color: Colors.black,
-                            ),
-                          ),
+                        HabitCompletionButton(
+                          habitId: widget.habit.id,
+                          color: cardColor,
+                          iconColor: Colors.black,
                         ),
                     ],
                   ),
@@ -249,6 +236,7 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                       Switch(
                         value: widget.habit.isActive,
                         onChanged: (value) {
+                          AppHaptics.selection();
                           context.read<HabitsBloc>().add(ToggleActiveHabit(widget.habit.id));
                         },
                         activeColor: cardColor,

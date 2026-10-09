@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_habit/l10n/app_localizations.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 
 /// Создает обертку MaterialApp с темой для тестирования виджетов
@@ -9,6 +10,9 @@ Widget makeTestableWidget({
   bool useDarkTheme = true,
 }) {
   return MaterialApp(
+    locale: const Locale('ru'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     theme: ThemeData(
       useMaterial3: true,
       brightness: useDarkTheme ? Brightness.dark : Brightness.light,

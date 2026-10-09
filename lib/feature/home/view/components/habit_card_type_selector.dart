@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_habit/core/ui_kit/app_haptics.dart';
 import 'package:go_habit/core/ui_kit/habit_card_types.dart';
+import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 
 class HabitCardTypeSelector extends StatelessWidget {
   final HabitCardDisplayMode selectedMode;
@@ -44,35 +46,40 @@ class HabitCardTypeSelector extends StatelessWidget {
     final isSelected = selectedMode == config.displayMode;
     final theme = Theme.of(context);
 
-    return InkWell(
-      onTap: () => onModeSelected(config.displayMode),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.primaryColor.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? theme.primaryColor : Colors.grey.withOpacity(0.3),
+    return PressableScale(
+      child: InkWell(
+        onTap: () {
+          if (!isSelected) AppHaptics.selection();
+          onModeSelected(config.displayMode);
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isSelected ? theme.primaryColor.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? theme.primaryColor : Colors.grey.withOpacity(0.3),
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              config.icon,
-              color: isSelected ? theme.primaryColor : Colors.grey,
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              config.title,
-              style: TextStyle(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                config.icon,
                 color: isSelected ? theme.primaryColor : Colors.grey,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                size: 24,
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                config.title,
+                style: TextStyle(
+                  color: isSelected ? theme.primaryColor : Colors.grey,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

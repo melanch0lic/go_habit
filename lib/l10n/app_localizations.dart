@@ -266,6 +266,30 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get profile_title;
 
+  /// No description provided for @nav_home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get nav_home;
+
+  /// No description provided for @nav_habits.
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get nav_habits;
+
+  /// No description provided for @habit_mark_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done for today'**
+  String get habit_mark_done;
+
+  /// No description provided for @habit_unmark_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo today\'s completion'**
+  String get habit_unmark_done;
+
   /// No description provided for @theme_settings.
   ///
   /// In en, this message translates to:

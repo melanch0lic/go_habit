@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/feature/categories/bloc/habit_category_bloc.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
+import 'package:go_habit/feature/habit_stats/widget/habit_completion_button.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -60,10 +61,6 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
       }
     }
     return Icons.category;
-  }
-
-  void _toggleCompletion() {
-    context.read<HabitStatsBloc>().add(HabitCompletionToggled(widget.habit.id));
   }
 
   Widget _buildProgressIndicator(Color cardColor, double progress) {
@@ -219,19 +216,10 @@ class _HabitHomeCardState extends State<HabitHomeCard> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8, bottom: 40),
-                  child: InkWell(
-                    onTap: _toggleCompletion,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: completedToday ? Colors.grey : cardColor.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        completedToday ? Icons.close : Icons.check,
-                        color: Colors.white,
-                      ),
-                    ),
+                  child: HabitCompletionButton(
+                    habitId: widget.habit.id,
+                    color: cardColor.withValues(alpha: 0.9),
+                    iconColor: Colors.white,
                   ),
                 ),
               ],

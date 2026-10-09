@@ -100,6 +100,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_title => 'Profile';
 
   @override
+  String get nav_home => 'Home';
+
+  @override
+  String get nav_habits => 'Habits';
+
+  @override
+  String get habit_mark_done => 'Mark as done for today';
+
+  @override
+  String get habit_unmark_done => 'Undo today\'s completion';
+
+  @override
   String get theme_settings => 'Dark theme';
 
   @override

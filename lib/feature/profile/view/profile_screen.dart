@@ -37,7 +37,8 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               body: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                // The bottom inset includes the floating navigation bar.
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.paddingOf(context).bottom),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

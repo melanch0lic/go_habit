@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_habit/core/ui_kit/app_haptics.dart';
+import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/categories/bloc/habit_category_bloc.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 
@@ -113,29 +115,32 @@ class _AddHabitBottomSheetState extends State<AddHabitBottomSheet> {
                     runSpacing: 8,
                     children: state.categories.map((category) {
                       final isSelected = _selectedCategory == category.id;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() => _selectedCategory = category.id);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isSelected ? hexToColor(category.color).withOpacity(0.8) : Colors.grey.shade800,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(getCategoryIcon(category.id), color: Colors.white),
-                              const SizedBox(height: 4),
-                              Text(
-                                category.name,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      return PressableScale(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (!isSelected) AppHaptics.selection();
+                            setState(() => _selectedCategory = category.id);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isSelected ? hexToColor(category.color).withOpacity(0.8) : Colors.grey.shade800,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(getCategoryIcon(category.id), color: Colors.white),
+                                const SizedBox(height: 4),
+                                Text(
+                                  category.name,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -151,15 +156,17 @@ class _AddHabitBottomSheetState extends State<AddHabitBottomSheet> {
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _onAddPressed,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: PressableScale(
+                child: ElevatedButton(
+                  onPressed: _onAddPressed,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  child: const Text('Добавить'),
                 ),
-                child: const Text('Добавить'),
               ),
             ),
           ],

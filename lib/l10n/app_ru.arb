@@ -39,6 +39,10 @@
     "email_invalid": "Пожалуйста, введите корректный email",
     
     "profile_title": "Профиль",
+    "nav_home": "Главная",
+    "nav_habits": "Привычки",
+    "habit_mark_done": "Отметить выполненной сегодня",
+    "habit_unmark_done": "Отменить отметку за сегодня",
     "theme_settings": "Темная тема",
     "archive": "Архив",
     "notifications": "Уведомления",

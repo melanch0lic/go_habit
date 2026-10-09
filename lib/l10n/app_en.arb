@@ -39,6 +39,10 @@
     "email_invalid": "Please enter a valid email",
     
     "profile_title": "Profile",
+    "nav_home": "Home",
+    "nav_habits": "Habits",
+    "habit_mark_done": "Mark as done for today",
+    "habit_unmark_done": "Undo today's completion",
     "theme_settings": "Dark theme",
     "archive": "Archive",
     "notifications": "Notifications",
