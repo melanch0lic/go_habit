@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_habit/core/utils/calendar_day.dart';
 
 class HabitGridPainterWidget extends StatelessWidget {
   final Color color;
-  final List<DateTime> completedDates;
+  final List<CalendarDay> completedDays;
+  final CalendarDay today;
 
-  const HabitGridPainterWidget({required this.color, required this.completedDates, super.key});
+  const HabitGridPainterWidget({required this.color, required this.completedDays, required this.today, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +18,11 @@ class HabitGridPainterWidget extends StatelessWidget {
   }
 
   List<List<bool>> _generateData() {
-    final today = DateTime.now();
     final grid = List<List<bool>>.generate(5, (_) => List.generate(20, (_) => false));
-    for (final date in completedDates) {
-      final dayDiff = today.difference(date).inDays;
+    for (final day in completedDays) {
+      final dayDiff = today.differenceInDays(day);
       if (dayDiff >= 0 && dayDiff < 20) {
-        final row = date.weekday % 5;
+        final row = day.toDateTime().weekday % 5;
         final col = 19 - dayDiff;
         grid[row][col] = true;
       }

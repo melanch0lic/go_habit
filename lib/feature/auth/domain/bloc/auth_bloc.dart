@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_habit/core/sync/sync_service.dart';
 import 'package:go_habit/feature/auth/domain/repositories/i_authentication_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,9 +11,10 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IAuthenticationRepository _authenticationRepository;
+  final SessionDataManager _sessionData;
   StreamSubscription<User?>? _userSubscription;
 
-  AuthBloc(this._authenticationRepository) : super(AuthInitial()) {
+  AuthBloc(this._authenticationRepository, this._sessionData) : super(AuthInitial()) {
     on<AuthEvent>((event, emit) async {
       switch (event) {
         case AuthInitialCheckRequested():
@@ -73,8 +75,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     signedInUser != null ? emit(AuthUserAuthenticated(signedInUser)) : emit(AuthUserUnauthenticated());
   }
 
+  /// Local data is removed on sign-out so the next account never sees it. Unsynced
+  /// changes would be lost, so they are uploaded first and, if that is not possible,
+  /// the user has to confirm (`force`).
   Future<void> _onLogoutButtonPressed(AuthLogoutButtonPressed event, Emitter<AuthState> emit) async {
-    await _authenticationRepository.signOut();
+    final current = state;
+    try {
+      if (!event.force) {
+        await _sessionData.syncNow();
+        final pending = await _sessionData.pendingChangesCount();
+        if (pending > 0 && current is AuthUserAuthenticated) {
+          emit(AuthLogoutConfirmationRequired(current.user, pendingChanges: pending));
+          return;
+        }
+      }
+      try {
+        await _authenticationRepository.signOut();
+      } on Object catch (e) {
+        // The SDK removes the local session before revoking it on the server, so the
+        // user is signed out on this device even if the revoke request failed.
+        debugPrint('Remote sign-out failed: $e');
+      }
+      await _sessionData.clearLocalData();
+    } on Object catch (e) {
+      debugPrint(e.toString());
+      emit(AuthError('Ошибка выхода из системы'));
+    }
   }
 
   Future<void> _onCurrentUserChanged(AuthOnCurrentUserChanged event, Emitter<AuthState> emit) async =>

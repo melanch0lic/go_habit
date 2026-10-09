@@ -1,60 +1,22 @@
-import 'package:drift/drift.dart';
 import 'package:go_habit/core/database/dao/habit_completion_dao.dart';
-import 'package:go_habit/core/database/dao/habit_streak_dao.dart';
+import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/habit_stats/domain/models/habit_completion.dart';
-import 'package:go_habit/feature/habit_stats/domain/models/habit_streak.dart';
 
 abstract interface class LocalHabitStatsDataSource {
-  Future<List<HabitCompletionModel>> getAllCompletions();
-  Future<HabitStreakModel?> getStreak(String habitId);
-  Future<void> saveCompletions(List<HabitCompletionModel> completions);
-  Future<void> saveStreak(HabitStreakModel streak);
-  Stream<List<HabitCompletionModel>> watchAllCompletions();
+  Stream<List<HabitCompletionModel>> watchCompletions();
+  Future<void> setCompleted(String habitId, CalendarDay day, {required bool completed});
 }
 
 class LocalStatsDataSourceImpl implements LocalHabitStatsDataSource {
   final HabitCompletionDao _completionDao;
-  final HabitStreakDao _streakDao;
 
-  LocalStatsDataSourceImpl(this._completionDao, this._streakDao);
-
-  @override
-  Future<List<HabitCompletionModel>> getAllCompletions() async {
-    final completions = await _completionDao.getAllCompletions();
-
-    return completions.map(HabitCompletionModel.fromDriftModel).toList();
-  }
+  LocalStatsDataSourceImpl(this._completionDao);
 
   @override
-  Future<HabitStreakModel?> getStreak(String habitId) async {
-    final streak = await _streakDao.getStreak(habitId);
-    return streak != null ? HabitStreakModel.fromDriftModel(streak) : null;
-  }
+  Stream<List<HabitCompletionModel>> watchCompletions() =>
+      _completionDao.watchCompletions().map((rows) => rows.map(HabitCompletionModel.fromDriftModel).toList());
 
   @override
-  Future<void> saveCompletions(List<HabitCompletionModel> completions) async {
-    await _completionDao.db.batch((batch) {
-      batch.insertAll(
-        _completionDao.habitCompletions,
-        completions.map((e) => e.toDriftModel()).toList(),
-        mode: InsertMode.insertOrReplace,
-      );
-    });
-  }
-
-  @override
-  Future<void> saveStreak(HabitStreakModel streak) async {
-    await _streakDao.upsertStreak(
-      streak.habitId,
-      streak.currentStreak,
-      streak.lastUpdate,
-    );
-  }
-
-  @override
-  Stream<List<HabitCompletionModel>> watchAllCompletions() {
-    return _completionDao
-        .watchHabitCompletions()
-        .map((event) => event.map(HabitCompletionModel.fromDriftModel).toList());
-  }
+  Future<void> setCompleted(String habitId, CalendarDay day, {required bool completed}) =>
+      _completionDao.setCompleted(habitId, day, completed: completed);
 }

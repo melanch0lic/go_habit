@@ -16,6 +16,7 @@ class AuthScope extends StatelessWidget {
       return BlocProvider<app_auth.AuthBloc>(
         create: (context) => app_auth.AuthBloc(
           scope.authRepositoryDep.get,
+          scope.syncService.get,
         )..add(AuthInitialCheckRequested()),
         child: child,
       );

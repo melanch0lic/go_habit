@@ -81,6 +81,12 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     final cardColor = hexToColor(widget.habitCategory.color);
     final isActive = widget.habit.isActive;
+    final completedToday = context.select<HabitStatsBloc, bool>(
+      (bloc) => switch (bloc.state) {
+        final HabitStatsLoaded loaded => loaded.isCompletedToday(widget.habit.id),
+        _ => false,
+      },
+    );
 
     return Dismissible(
       key: ValueKey(widget.habit.id),
@@ -165,36 +171,15 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                       ),
                       if (isActive)
                         InkWell(
-                          onTap: DateTime.parse(widget.habit.lastCompletedTime ?? '2023-03-31T00:00:00.000')
-                                      .difference(DateTime.now())
-                                      .inDays ==
-                                  0
-                              ? () {
-                                  context.read<HabitsBloc>().add(UnFinishHabit(widget.habit.id));
-                                }
-                              : () {
-                                  context.read<HabitsBloc>().add(FinishHabit(widget.habit.id));
-                                },
+                          onTap: () => context.read<HabitStatsBloc>().add(HabitCompletionToggled(widget.habit.id)),
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: DateTime.now()
-                                          .difference(DateTime.parse(
-                                              widget.habit.lastCompletedTime ?? '2023-03-31T00:00:00.000'))
-                                          .inDays ==
-                                      0
-                                  ? Colors.grey
-                                  : cardColor,
+                              color: completedToday ? Colors.grey : cardColor,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
-                              DateTime.now()
-                                          .difference(DateTime.parse(
-                                              widget.habit.lastCompletedTime ?? '2023-03-31T00:00:00.000'))
-                                          .inDays ==
-                                      0
-                                  ? Icons.close
-                                  : Icons.check,
+                              completedToday ? Icons.close : Icons.check,
                               color: Colors.black,
                             ),
                           ),
@@ -208,13 +193,11 @@ class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMix
                         ? BlocBuilder<HabitStatsBloc, HabitStatsState>(
                             builder: (context, state) {
                               switch (state) {
-                                case HabitStatsLoaded(:final completions):
+                                case final HabitStatsLoaded loaded:
                                   return HabitGridPainterWidget(
                                     color: cardColor,
-                                    completedDates: completions
-                                        .where((c) => c.habitId == widget.habit.id)
-                                        .map((c) => c.dateComplete)
-                                        .toList(),
+                                    today: loaded.today,
+                                    completedDays: loaded.completedDaysOf(widget.habit.id),
                                   );
                                 case _:
                                   return const Center(

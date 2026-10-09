@@ -24,7 +24,12 @@ class AuthOnCurrentUserChanged extends AuthEvent {
   AuthOnCurrentUserChanged(this.user);
 }
 
-class AuthLogoutButtonPressed extends AuthEvent {}
+class AuthLogoutButtonPressed extends AuthEvent {
+  /// Sign out even if local changes could not be synced (they are discarded).
+  final bool force;
+
+  AuthLogoutButtonPressed({this.force = false});
+}
 
 class AuthErrorOccurred extends AuthEvent {
   final String errorMessage;

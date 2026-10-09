@@ -48,7 +48,6 @@ void main() {
       description: '30 минут чтения каждый день',
       categoryId: 'education',
       icon: 'G',
-      lastCompletedTime: DateHelper.getStableYesterdayIso(),
     );
 
     final category = HabitCategory(
@@ -60,6 +59,7 @@ void main() {
     // Рендерим виджет с моками блоков и темой
     await tester.pumpWidget(
       MockBlocWrapper(
+        statsState: loadedStats(completedDays: {'test-habit-1': [DateHelper.stableYesterday]}),
         child: makeTestableWidget(
           child: HabitCard(
             habit: habit,
@@ -89,7 +89,6 @@ void main() {
       categoryId: 'selv-development',
       isActive: false,
       icon: 'Z',
-      lastCompletedTime: DateHelper.getStableTwoDaysAgoIso(),
     );
 
     final category = HabitCategory(
@@ -101,6 +100,7 @@ void main() {
     // Рендерим виджет с моками блоков и темой
     await tester.pumpWidget(
       MockBlocWrapper(
+        statsState: loadedStats(completedDays: {'test-habit-2': [DateHelper.stableTwoDaysAgo]}),
         child: makeTestableWidget(
           child: HabitCard(
             habit: habit,
@@ -130,7 +130,6 @@ void main() {
       description: '5 км каждый день',
       categoryId: 'sport',
       icon: 'J',
-      lastCompletedTime: DateHelper.getStableTodayIso(),
     );
 
     final category = HabitCategory(
@@ -142,6 +141,7 @@ void main() {
     // Рендерим виджет с моками блоков и темой
     await tester.pumpWidget(
       MockBlocWrapper(
+        statsState: loadedStats(completedDays: {'test-habit-3': [DateHelper.stableToday]}),
         child: makeTestableWidget(
           child: HabitCard(
             habit: habit,

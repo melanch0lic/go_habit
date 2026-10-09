@@ -1,0 +1,11 @@
+import 'package:drift/drift.dart';
+
+/// Key-value store for synchronization metadata (pull cursors, data owner).
+@DataClassName('SyncStateEntry')
+class SyncState extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}

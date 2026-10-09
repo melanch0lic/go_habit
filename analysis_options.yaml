@@ -1,2 +1,10 @@
 # include: package:flutter_lints/flutter.yaml
 include: package:surf_lint_rules/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.mocks.dart"
+    - "lib/core/resources/assets.gen.dart"
+    - "lib/l10n/app_localizations*.dart"
+    - "test/generated_migrations/**"

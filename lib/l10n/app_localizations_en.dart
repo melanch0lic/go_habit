@@ -38,28 +38,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get app_description_title => 'Go Habit app will help you:';
 
   @override
-  String get habit_tracking_feature => 'Track your habits and completion streaks!';
+  String get habit_tracking_feature =>
+      'Track your habits and completion streaks!';
 
   @override
-  String get daily_habits_feature => 'Create and track daily habits to achieve goals';
+  String get daily_habits_feature =>
+      'Create and track daily habits to achieve goals';
 
   @override
   String get analytics_feature => 'Progress analysis with charts and cubes!';
 
   @override
-  String get visualization_feature => 'Visualize your progress and stay motivated';
+  String get visualization_feature =>
+      'Visualize your progress and stay motivated';
 
   @override
   String get reminders_feature => 'Get reminders and motivational phrases!';
 
   @override
-  String get notifications_feature => 'Customize notifications to remember your habits';
+  String get notifications_feature =>
+      'Customize notifications to remember your habits';
 
   @override
   String get widgets_feature => 'Habit widgets right on your home screen!';
 
   @override
-  String get customWidgets_feature => 'Customize widgets you want to see on home screen';
+  String get customWidgets_feature =>
+      'Customize widgets you want to see on home screen';
 
   @override
   String get start_tracking_button => 'Start habit tracking';
@@ -128,7 +133,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sign_out_confirmation_title => 'Sign Out';
 
   @override
-  String get sign_out_confirmation_message => 'Are you sure you want to sign out?';
+  String get sign_out_confirmation_message =>
+      'Are you sure you want to sign out?';
+
+  @override
+  String sign_out_unsynced_message(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count changes have not been synced yet and will be lost. Sign out anyway?',
+      one:
+          '1 change has not been synced yet and will be lost. Sign out anyway?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sign_out_anyway => 'Sign out anyway';
 
   @override
   String get cancel => 'Cancel';
@@ -142,7 +164,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get about_app_description => 'Go Habit is an app designed to help you build and maintain good habits. Track your progress, set reminders, and visualize your journey.';
+  String get about_app_description =>
+      'Go Habit is an app designed to help you build and maintain good habits. Track your progress, set reminders, and visualize your journey.';
 
   @override
   String privacy_policy_last_updated(String date) {
@@ -153,31 +176,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacy_policy_section1_title => '1. Information Collection';
 
   @override
-  String get privacy_policy_section1_content => 'Go Habit app collects the following information:\n• Account information (email)\n• Habit and activity data\n• Device information (for diagnostics)';
+  String get privacy_policy_section1_content =>
+      'Go Habit app collects the following information:\n• Account information (email)\n• Habit and activity data\n• Device information (for diagnostics)';
 
   @override
   String get privacy_policy_section2_title => '2. Information Usage';
 
   @override
-  String get privacy_policy_section2_content => 'We use the collected information for:\n• Providing core app functionality\n• Improving user experience\n• Sending notifications (only with your permission)';
+  String get privacy_policy_section2_content =>
+      'We use the collected information for:\n• Providing core app functionality\n• Improving user experience\n• Sending notifications (only with your permission)';
 
   @override
   String get privacy_policy_section3_title => '3. Data Security';
 
   @override
-  String get privacy_policy_section3_content => 'We implement modern security measures to protect your personal data. All data is stored in encrypted form and is not shared with third parties without your consent.';
+  String get privacy_policy_section3_content =>
+      'We implement modern security measures to protect your personal data. All data is stored in encrypted form and is not shared with third parties without your consent.';
 
   @override
   String get privacy_policy_section4_title => '4. Cookies';
 
   @override
-  String get privacy_policy_section4_content => 'Our app does not use cookies in the traditional sense. However, we store local data on your device for optimal app performance.';
+  String get privacy_policy_section4_content =>
+      'Our app does not use cookies in the traditional sense. However, we store local data on your device for optimal app performance.';
 
   @override
   String get privacy_policy_section5_title => '5. Consent';
 
   @override
-  String get privacy_policy_section5_content => 'By using the Go Habit app, you agree to our privacy policy. If you have any questions, please contact us at support@gohabit.app';
+  String get privacy_policy_section5_content =>
+      'By using the Go Habit app, you agree to our privacy policy. If you have any questions, please contact us at support@gohabit.app';
 
   @override
   String privacy_policy_copyright(String year) {

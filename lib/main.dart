@@ -13,13 +13,13 @@ void main() async {
 
   // Загрузка переменных окружения
   await dotenv.load();
+  EnvConfig.validate();
 
   Bloc.observer = AppBlocObserver.instance();
 
-  //supabase init
   await Supabase.initialize(
     url: EnvConfig.supabaseUrl,
-    anonKey: EnvConfig.supabaseAnonKey,
+    publishableKey: EnvConfig.supabaseKey,
   );
 
   final prefs = await SharedPreferences.getInstance();

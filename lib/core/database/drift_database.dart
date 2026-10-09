@@ -1,84 +1,110 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:go_habit/core/database/dao/habit_completion_dao.dart';
 import 'package:go_habit/core/database/dao/habits_dao.dart';
 import 'package:go_habit/core/database/tables/habit_categories.dart';
 import 'package:go_habit/core/database/tables/habit_completions.dart';
-import 'package:go_habit/core/database/tables/habit_streaks.dart';
 import 'package:go_habit/core/database/tables/habits.dart';
+import 'package:go_habit/core/database/tables/sync_state.dart';
+import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'drift_database.g.dart';
 
-@DriftDatabase(tables: [Habits, HabitCategories, HabitCompletions, HabitStreaks], daos: [HabitsDao])
+@DriftDatabase(tables: [Habits, HabitCategories, HabitCompletions, SyncState], daos: [HabitsDao])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  /// [executor] is for tests; the app uses the on-device database.
+  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
+  /// Schema history (snapshots in `drift_schemas/`):
+  /// 1 — initial release.
+  /// 2 — completions keyed by calendar day, tombstones, per-row sync versions,
+  ///     sync metadata table; `habit_streaks`, `habits.sync_status` and
+  ///     `habits.last_time_completed` removed.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onCreate: (m) async {
-        await m.createAll();
-
-        // // Добавляем триггеры
-        // await customStatement('''
-        //   CREATE TRIGGER IF NOT EXISTS on_habit_last_completed_update
-        //   AFTER UPDATE OF last_completed_time ON habits
-        //   FOR EACH ROW
-        //   BEGIN
-        //     -- При установке нового времени выполнения
-        //     DELETE FROM habit_completions
-        //     WHERE habit_id = NEW.id
-        //       AND date(date_complete) = date(NEW.last_completed_time);
-
-        //     -- Добавляем новую запись только если время установлено
-        //     INSERT INTO habit_completions (habit_id, user_id, date_complete)
-        //     SELECT NEW.id, NEW.user_id, date(NEW.last_completed_time)
-        //     WHERE NEW.last_completed_time IS NOT NULL;
-
-        //     -- При сбросе времени выполнения (NULL)
-        //     DELETE FROM habit_completions
-        //     WHERE id IN (
-        //       SELECT id FROM habit_completions
-        //       WHERE habit_id = NEW.id
-        //       ORDER BY date_complete DESC
-        //       LIMIT 1
-        //     ) AND NEW.last_completed_time IS NULL;
-        //   END;
-        // ''');
-      },
+      onCreate: (m) => m.createAll(),
       onUpgrade: (m, from, to) async {
-        // if (from < 2) {
-        //   // Добавляем триггер при обновлении базы
-        //   await customStatement('''
-        //     CREATE TRIGGER IF NOT EXISTS on_habit_last_completed_update
-        //     AFTER UPDATE OF last_completed_time ON habits
-        //     FOR EACH ROW
-        //     BEGIN
-        //       -- Тот же код триггера, что и в onCreate
-        //       DELETE FROM habit_completions
-        //       WHERE habit_id = NEW.id
-        //         AND date(date_complete) = date(NEW.last_completed_time);
-
-        //       INSERT INTO habit_completions (habit_id, user_id, date_complete)
-        //       SELECT NEW.id, NEW.user_id, date(NEW.last_completed_time)
-        //       WHERE NEW.last_completed_time IS NOT NULL;
-
-        //       DELETE FROM habit_completions
-        //       WHERE id IN (
-        //         SELECT id FROM habit_completions
-        //         WHERE habit_id = NEW.id
-        //         ORDER BY date_complete DESC
-        //         LIMIT 1
-        //       ) AND NEW.last_completed_time IS NULL;
-        //     END;
-        //   ''');
-        // }
+        if (from < 2) await _migrateFrom1To2(m);
       },
     );
   }
+
+  /// Keeps every habit and completion. The previous backend no longer exists, so all
+  /// local data is queued for upload to the new one and adopted by the first account
+  /// that signs in on this device.
+  Future<void> _migrateFrom1To2(Migrator m) async {
+    // v1 stored DateTime as unix seconds.
+    DateTime fromSeconds(int seconds) => DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+    // v1 wrote this date to mean "not completed" when a completion was undone.
+    final undoSentinel = CalendarDay(2023, 3, 31);
+
+    final legacyHabits = await customSelect(
+      'SELECT id, sync_status, is_pending_sync, last_time_completed FROM habits',
+    ).get();
+    final legacyCompletions = await customSelect('SELECT habit_id, date_complete FROM habit_completions').get();
+
+    final habitIds = legacyHabits.map((row) => row.read<String>('id')).toSet();
+    final pendingDeletes = legacyHabits
+        .where((row) => row.read<String>('sync_status') == 'delete' && row.read<bool>('is_pending_sync'))
+        .map((row) => row.read<String>('id'))
+        .toList();
+
+    final completedDays = <(String, CalendarDay)>{};
+    for (final row in legacyHabits) {
+      final seconds = row.readNullable<int>('last_time_completed');
+      if (seconds != null) completedDays.add((row.read<String>('id'), CalendarDay.fromDateTime(fromSeconds(seconds))));
+    }
+    for (final row in legacyCompletions) {
+      completedDays
+          .add((row.read<String>('habit_id'), CalendarDay.fromDateTime(fromSeconds(row.read<int>('date_complete')))));
+    }
+    completedDays.removeWhere((entry) => entry.$2 == undoSentinel || !habitIds.contains(entry.$1));
+
+    await m.alterTable(
+      TableMigration(
+        habits,
+        newColumns: [habits.deletedAt, habits.localVersion],
+        columnTransformer: {habits.isPendingSync: const Constant(true)},
+      ),
+    );
+    await update(habits).write(const HabitsCompanion(localVersion: Value(1)));
+    if (pendingDeletes.isNotEmpty) {
+      await (update(habits)..where((t) => t.id.isIn(pendingDeletes)))
+          .write(HabitsCompanion(deletedAt: Value(DateTime.now())));
+    }
+
+    await m.deleteTable('habit_streaks');
+    await m.deleteTable('habit_completions');
+    await m.createTable(habitCompletions);
+    await m.createTable(syncState);
+    await m.addColumn(habitCategories, habitCategories.sortOrder);
+
+    await batch((batch) {
+      batch.insertAll(habitCompletions, [
+        for (final (habitId, day) in completedDays)
+          HabitCompletionsCompanion.insert(
+            id: HabitCompletionDao.completionId(habitId, day),
+            habitId: habitId,
+            completedOn: day.toIsoString(),
+            isPendingSync: const Value(true),
+            localVersion: const Value(1),
+          ),
+      ]);
+    });
+  }
+
+  /// Removes everything that belongs to the signed-in user. Categories are shared
+  /// reference data and are kept.
+  Future<void> clearUserData() => transaction(() async {
+        await delete(habitCompletions).go();
+        await delete(habits).go();
+        await delete(syncState).go();
+      });
 
   static QueryExecutor _openConnection() {
     return driftDatabase(

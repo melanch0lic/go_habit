@@ -12,6 +12,14 @@ class AuthUserAuthenticated extends AuthState {
   AuthUserAuthenticated(this.user);
 }
 
+/// Still signed in: sign-out is on hold because [pendingChanges] local changes have
+/// not reached the server.
+class AuthLogoutConfirmationRequired extends AuthUserAuthenticated {
+  final int pendingChanges;
+
+  AuthLogoutConfirmationRequired(super.user, {required this.pendingChanges});
+}
+
 class AuthUserUnauthenticated extends AuthState {}
 
 class AuthError extends AuthState {

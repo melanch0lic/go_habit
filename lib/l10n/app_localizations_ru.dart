@@ -38,28 +38,34 @@ class AppLocalizationsRu extends AppLocalizations {
   String get app_description_title => 'Приложение Go Habit поможет вам:';
 
   @override
-  String get habit_tracking_feature => 'Отслеживайте ваши привычки и серию их выполнения!';
+  String get habit_tracking_feature =>
+      'Отслеживайте ваши привычки и серию их выполнения!';
 
   @override
-  String get daily_habits_feature => 'Создавайте и отслеживайте ежедневные привычки для достижения целей';
+  String get daily_habits_feature =>
+      'Создавайте и отслеживайте ежедневные привычки для достижения целей';
 
   @override
   String get analytics_feature => 'Анализ прогресса в виде графиков и кубиков!';
 
   @override
-  String get visualization_feature => 'Визуализируйте свой прогресс и получайте мотивацию';
+  String get visualization_feature =>
+      'Визуализируйте свой прогресс и получайте мотивацию';
 
   @override
   String get reminders_feature => 'Получать напоминания и мотивационные фразы!';
 
   @override
-  String get notifications_feature => 'Настраивайте уведомления, чтобы не забывать о своих привычках';
+  String get notifications_feature =>
+      'Настраивайте уведомления, чтобы не забывать о своих привычках';
 
   @override
-  String get widgets_feature => 'Виджеты для ваших привычек прямо на главном экране!';
+  String get widgets_feature =>
+      'Виджеты для ваших привычек прямо на главном экране!';
 
   @override
-  String get customWidgets_feature => 'Настраивайте виджеты, которые хотите видеть на главном экране';
+  String get customWidgets_feature =>
+      'Настраивайте виджеты, которые хотите видеть на главном экране';
 
   @override
   String get start_tracking_button => 'Начать отслеживание привычек';
@@ -128,7 +134,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sign_out_confirmation_title => 'Выход';
 
   @override
-  String get sign_out_confirmation_message => 'Вы уверены, что хотите выйти из аккаунта?';
+  String get sign_out_confirmation_message =>
+      'Вы уверены, что хотите выйти из аккаунта?';
+
+  @override
+  String sign_out_unsynced_message(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count изменений ещё не синхронизированы и будут потеряны. Всё равно выйти?',
+      few:
+          '$count изменения ещё не синхронизированы и будут потеряны. Всё равно выйти?',
+      one:
+          '$count изменение ещё не синхронизировано и будет потеряно. Всё равно выйти?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sign_out_anyway => 'Всё равно выйти';
 
   @override
   String get cancel => 'Отмена';
@@ -142,7 +167,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get about_app_description => 'Go Habit - это приложение, разработанное для формирования и поддержания полезных привычек. Отслеживайте свой прогресс, устанавливайте напоминания и визуализируйте свой путь.';
+  String get about_app_description =>
+      'Go Habit - это приложение, разработанное для формирования и поддержания полезных привычек. Отслеживайте свой прогресс, устанавливайте напоминания и визуализируйте свой путь.';
 
   @override
   String privacy_policy_last_updated(String date) {
@@ -153,31 +179,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String get privacy_policy_section1_title => '1. Сбор информации';
 
   @override
-  String get privacy_policy_section1_content => 'Приложение Go Habit собирает следующую информацию:\n• Информацию об аккаунте (email)\n• Данные о привычках и активности\n• Информацию о устройстве (для диагностики)';
+  String get privacy_policy_section1_content =>
+      'Приложение Go Habit собирает следующую информацию:\n• Информацию об аккаунте (email)\n• Данные о привычках и активности\n• Информацию о устройстве (для диагностики)';
 
   @override
   String get privacy_policy_section2_title => '2. Использование информации';
 
   @override
-  String get privacy_policy_section2_content => 'Мы используем собранную информацию для:\n• Предоставления основных функций приложения\n• Улучшения пользовательского опыта\n• Отправки уведомлений (только с вашего разрешения)';
+  String get privacy_policy_section2_content =>
+      'Мы используем собранную информацию для:\n• Предоставления основных функций приложения\n• Улучшения пользовательского опыта\n• Отправки уведомлений (только с вашего разрешения)';
 
   @override
   String get privacy_policy_section3_title => '3. Безопасность данных';
 
   @override
-  String get privacy_policy_section3_content => 'Мы применяем современные меры безопасности для защиты ваших персональных данных. Все данные хранятся в зашифрованном виде и не передаются третьим лицам без вашего согласия.';
+  String get privacy_policy_section3_content =>
+      'Мы применяем современные меры безопасности для защиты ваших персональных данных. Все данные хранятся в зашифрованном виде и не передаются третьим лицам без вашего согласия.';
 
   @override
   String get privacy_policy_section4_title => '4. Файлы cookie';
 
   @override
-  String get privacy_policy_section4_content => 'Наше приложение не использует файлы cookie в традиционном понимании. Однако мы сохраняем локальные данные на вашем устройстве для оптимальной работы приложения.';
+  String get privacy_policy_section4_content =>
+      'Наше приложение не использует файлы cookie в традиционном понимании. Однако мы сохраняем локальные данные на вашем устройстве для оптимальной работы приложения.';
 
   @override
   String get privacy_policy_section5_title => '5. Согласие';
 
   @override
-  String get privacy_policy_section5_content => 'Используя приложение Go Habit, вы соглашаетесь с нашей политикой конфиденциальности. Если у вас есть вопросы, свяжитесь с нами по адресу support@gohabit.app';
+  String get privacy_policy_section5_content =>
+      'Используя приложение Go Habit, вы соглашаетесь с нашей политикой конфиденциальности. Если у вас есть вопросы, свяжитесь с нами по адресу support@gohabit.app';
 
   @override
   String privacy_policy_copyright(String year) {
