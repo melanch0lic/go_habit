@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_habit/core/ui_kit/app_haptics.dart';
 import 'package:go_habit/feature/theme/theme_cubit.dart';
 
 class ThemeSwitch extends StatelessWidget {
@@ -28,6 +29,7 @@ class ThemeSwitch extends StatelessWidget {
         return Switch(
           value: isDarkMode,
           onChanged: (_) {
+            AppHaptics.selection();
             // Вызываем переключатель темы при изменении значения
             context.read<ThemeCubit>().toggleTheme();
           },

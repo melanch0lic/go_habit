@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/home/domain/bloc/home_bloc.dart';
 import 'package:go_habit/feature/home/view/components/habit_home_list.dart';
 import 'package:go_habit/feature/home/view/components/loading_quote_widget.dart';
@@ -231,29 +232,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => context.read<HomeBloc>().add(TigerClicked()),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 1),
-                    child: SizedBox(
-                      height: 300,
-                      child: Center(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: BlocBuilder<ThemeCubit, ThemeState>(
-                              builder: (context, state) {
-                                return Lottie.asset(
-                                    state.themeMode == ThemeMode.light
-                                        ? 'animation/tiger_orange.json'
-                                        : 'animation/tiger_white.json',
-                                    fit: BoxFit.contain,
-                                    repeat: true,
-                                    reverse: true);
-                              },
+                PressableScale(
+                  child: GestureDetector(
+                    onTap: () => context.read<HomeBloc>().add(TigerClicked()),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 1),
+                      child: SizedBox(
+                        height: 300,
+                        child: Center(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: BlocBuilder<ThemeCubit, ThemeState>(
+                                builder: (context, state) {
+                                  return Lottie.asset(
+                                      state.themeMode == ThemeMode.light
+                                          ? 'animation/tiger_orange.json'
+                                          : 'animation/tiger_white.json',
+                                      fit: BoxFit.contain,
+                                      repeat: true,
+                                      reverse: true);
+                                },
+                              ),
                             ),
                           ),
                         ),

@@ -101,6 +101,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_title => 'Профиль';
 
   @override
+  String get nav_home => 'Главная';
+
+  @override
+  String get nav_habits => 'Привычки';
+
+  @override
+  String get habit_mark_done => 'Отметить выполненной сегодня';
+
+  @override
+  String get habit_unmark_done => 'Отменить отметку за сегодня';
+
+  @override
   String get theme_settings => 'Темная тема';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/view/components/habit_list.dart';
 import 'package:go_habit/feature/habits/view/components/modal_bottom_sheet.dart';
@@ -16,29 +17,32 @@ class HabitsPage extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: context.themeOf.primaryColor,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.add,
-                color: Colors.white,
+          PressableScale(
+            pressedScale: 0.9,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.themeOf.primaryColor,
+                shape: BoxShape.circle,
               ),
-              onPressed: () {
-                showModalBottomSheet(
-                  backgroundColor: context.themeOf.scaffoldBackgroundColor,
-                  useRootNavigator: true,
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  builder: (_) => const AddHabitBottomSheet(),
-                );
-              },
+              child: IconButton(
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  showModalBottomSheet(
+                    backgroundColor: context.themeOf.scaffoldBackgroundColor,
+                    useRootNavigator: true,
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    builder: (_) => const AddHabitBottomSheet(),
+                  );
+                },
+              ),
             ),
           ),
           const SizedBox(width: 8),
