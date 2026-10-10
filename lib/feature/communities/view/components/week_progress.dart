@@ -8,6 +8,7 @@ import 'package:go_habit/feature/communities/domain/weekly_consistency.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
 /// Whether a membership's ranked habit is available on this device.
 enum RankedHabitStatus { none, missing, available }
@@ -63,6 +64,7 @@ class MembershipProgress extends StatelessWidget {
       habitCreatedAt: habit.createdAt,
       completedDays: completedDays,
       habitActive: habit.isActive,
+      schedule: habit.schedule,
     );
 
     return Column(
@@ -81,6 +83,7 @@ class MembershipProgress extends StatelessWidget {
               habitCreatedAt: habit.createdAt,
             ),
             completedDays: completedDays.toSet(),
+            schedule: habit.schedule,
           ),
           const SizedBox(height: 6),
           line(
@@ -95,12 +98,20 @@ class MembershipProgress extends StatelessWidget {
 }
 
 /// Seven pixel squares, Monday to Sunday: completed, missed (eligible), or not counted.
+/// Days off of a weekday schedule are not counted.
 class WeekStrip extends StatelessWidget {
   final CalendarDay today;
   final CalendarDay eligibleFrom;
   final Set<CalendarDay> completedDays;
+  final HabitSchedule schedule;
 
-  const WeekStrip({required this.today, required this.eligibleFrom, required this.completedDays, super.key});
+  const WeekStrip({
+    required this.today,
+    required this.eligibleFrom,
+    required this.completedDays,
+    this.schedule = HabitSchedule.daily,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +128,7 @@ class WeekStrip extends StatelessWidget {
               padding: const EdgeInsets.only(right: 6),
               child: Builder(builder: (context) {
                 final day = monday.addDays(i);
-                final counted = day.compareTo(eligibleFrom) >= 0 && day.compareTo(today) <= 0;
+                final counted = day.compareTo(eligibleFrom) >= 0 && day.compareTo(today) <= 0 && schedule.countsOn(day);
                 final done = counted && completedDays.contains(day);
                 return Column(
                   children: [

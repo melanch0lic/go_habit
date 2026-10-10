@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/communities/domain/weekly_consistency.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
 void main() {
   // Monday 2026-10-05 .. Sunday 2026-10-11.
@@ -106,6 +107,62 @@ void main() {
         habitActive: false,
       );
       expect(result, WeeklyConsistency.notScored);
+    });
+  });
+
+  // The same cases as supabase/tests/database/04_schedules.test.sql, so the device and
+  // the server rankings agree.
+  group('schedules', () {
+    final mwf = HabitSchedule.weekdays({DateTime.monday, DateTime.wednesday, DateTime.friday});
+    WeeklyConsistency score(HabitSchedule schedule, List<CalendarDay> done, {CalendarDay? today}) =>
+        WeeklyConsistency.compute(
+          today: today ?? sunday,
+          joinedOn: monday.addDays(-4),
+          habitCreatedAt: longAgo,
+          completedDays: done,
+          schedule: schedule,
+        );
+
+    test('weekdays: only the selected days are scheduled; a mark on a day off does not count', () {
+      expect(score(mwf, days(monday, 3)), const WeeklyConsistency(completedDays: 2, eligibleDays: 3));
+    });
+
+    test('weekdays: future selected days are not missed', () {
+      expect(
+        score(mwf, days(monday, 2), today: monday.addDays(1)),
+        const WeeklyConsistency(completedDays: 1, eligibleDays: 1),
+      );
+    });
+
+    test('weekly target: marks beyond the target do not count', () {
+      final result = score(HabitSchedule.weeklyTarget(3), days(monday, 5));
+      expect(result, const WeeklyConsistency(completedDays: 3, eligibleDays: 3));
+      expect(result.percentage, 100);
+    });
+
+    test('weekly target: progress towards the target', () {
+      expect(
+        score(HabitSchedule.weeklyTarget(3), [monday.addDays(1)]),
+        const WeeklyConsistency(completedDays: 1, eligibleDays: 3),
+      );
+    });
+
+    test('weekly target: a new week starts on Monday', () {
+      expect(
+        score(HabitSchedule.weeklyTarget(3), days(monday, 5), today: sunday.addDays(1)),
+        const WeeklyConsistency(completedDays: 0, eligibleDays: 3),
+      );
+    });
+
+    test('a schedule does not score a period that has not started', () {
+      final result = WeeklyConsistency.compute(
+        today: sunday,
+        joinedOn: sunday.addDays(1),
+        habitCreatedAt: longAgo,
+        completedDays: [sunday],
+        schedule: HabitSchedule.weeklyTarget(3),
+      );
+      expect(result.isScored, isFalse);
     });
   });
 }

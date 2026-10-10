@@ -44,6 +44,10 @@ class DriftHabitDataSource implements LocalHabitDataSource {
           steps: Value(habit.steps),
           icon: Value(habit.icon ?? '🎯'),
           createdAt: Value(habit.createdAt),
+          scheduleType: Value(habit.schedule.type.wire),
+          weeklyTarget: Value(habit.schedule.weeklyTarget),
+          scheduleDays: Value(habit.schedule.daysMask),
+          streakResetOn: Value(habit.streakResetOn?.toIsoString()),
         ),
       );
 
@@ -57,6 +61,12 @@ class DriftHabitDataSource implements LocalHabitDataSource {
       steps: habit.steps,
       isActive: habit.isActive,
       icon: habit.icon,
+      schedule: (
+        type: habit.schedule.type.wire,
+        weeklyTarget: habit.schedule.weeklyTarget,
+        days: habit.schedule.daysMask
+      ),
+      streakResetOn: habit.streakResetOn?.toIsoString(),
     );
     if (updated == 0) throw StateError('Habit ${habit.id} does not exist');
   }

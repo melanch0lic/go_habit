@@ -13,6 +13,7 @@ import '../../generated_migrations/schema_v2.dart' as v2;
 import '../../generated_migrations/schema_v3.dart' as v3;
 import '../../generated_migrations/schema_v4.dart' as v4;
 import '../../generated_migrations/schema_v5.dart' as v5;
+import '../../generated_migrations/schema_v6.dart' as v6;
 
 /// Regenerate helpers after a schema change:
 /// `dart run drift_dev schema dump lib/core/database/drift_database.dart drift_schemas/drift_schema_vN.json`
@@ -25,9 +26,9 @@ void main() {
   int seconds(DateTime dateTime) => dateTime.millisecondsSinceEpoch ~/ 1000;
 
   test('a fresh install matches the latest schema snapshot', () async {
-    final schema = await verifier.schemaAt(6);
+    final schema = await verifier.schemaAt(7);
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
     await db.close();
   });
 
@@ -79,7 +80,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
 
     final habits = {for (final h in await db.select(db.habits).get()) h.id: h};
     expect(habits.keys, unorderedEquals(['a', 'b', 'c']));
@@ -136,7 +137,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
 
     final habit = await (db.select(db.habits)..where((t) => t.id.equals('h1'))).getSingle();
     expect(habit.isPendingSync, isTrue, reason: 'pending uploads survive the upgrade');
@@ -156,7 +157,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
@@ -174,7 +175,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
@@ -192,10 +193,44 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
 
     expect((await db.select(db.communityMemberships).get()).single.habitId, 'h1');
     expect(await db.select(db.socialCache).get(), isEmpty);
+    await db.close();
+  });
+
+  test('upgrading from v6 makes every existing habit daily and keeps its data', () async {
+    final schema = await verifier.schemaAt(6);
+    final old = v6.DatabaseAtV6(schema.newConnection());
+    final created = seconds(DateTime(2026, 9, 1));
+    await old
+        .into(old.habitCategories)
+        .insert(v6.HabitCategoriesCompanion.insert(id: 'health', name: 'H', color: '#FF0000'));
+    await old.into(old.habits).insert(
+          v6.HabitsCompanion.insert(
+            id: 'h1',
+            title: 'Walk',
+            categoryId: 'health',
+            createdAt: created,
+            updatedAt: created,
+            isPendingSync: const Value(1),
+          ),
+        );
+    await old.into(old.habitCompletions).insert(
+          v6.HabitCompletionsCompanion.insert(id: 'c1', habitId: 'h1', completedOn: '2026-10-05', updatedAt: created),
+        );
+    await old.close();
+
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 7);
+
+    final habit = (await db.select(db.habits).get()).single;
+    expect(habit.scheduleType, 'daily');
+    expect(habit.weeklyTarget, isNull);
+    expect(habit.streakResetOn, isNull);
+    expect(habit.isPendingSync, isTrue, reason: 'pending uploads survive');
+    expect(await db.select(db.habitCompletions).get(), hasLength(1), reason: 'history is kept');
     await db.close();
   });
 }

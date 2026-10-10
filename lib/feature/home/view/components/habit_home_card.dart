@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_habit/feature/categories/bloc/habit_category_bloc.dart';
+import 'package:go_habit/core/extension/locale_extension.dart';
+import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/ui_kit/habit_card_types.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
 import 'package:go_habit/feature/habit_stats/widget/habit_completion_button.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
+import 'package:go_habit/feature/habits/view/components/habit_actions.dart';
+import 'package:go_habit/feature/habits/view/components/modal_bottom_sheet.dart' show hexToColor;
+import 'package:go_habit/feature/habits/view/habit_texts.dart';
 
-enum HabitCardDisplayMode {
-  linear,
-  circular,
-  none,
-}
-
-class HabitHomeCard extends StatefulWidget {
+/// A habit on the home screen, in the same style as the habits list: icon, name,
+/// category and streak, and the round completion control. The chosen display mode
+/// (settings) adds this week's progress as a bar, as a ring around the icon, or nothing.
+class HabitHomeCard extends StatelessWidget {
   final Habit habit;
   final HabitCategory category;
   final HabitCardDisplayMode displayMode;
@@ -27,206 +28,186 @@ class HabitHomeCard extends StatefulWidget {
   });
 
   @override
-  State<HabitHomeCard> createState() => _HabitHomeCardState();
-}
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = context.themeOf;
+    final color = hexToColor(category.color);
+    final green = context.theme.commonColors.green100;
+    final stats = context.watch<HabitStatsBloc>().state;
+    final loaded = stats is HabitStatsLoaded ? stats : null;
+    final completed = loaded?.isCompletedToday(habit.id) ?? false;
+    final streak = loaded == null ? null : l10n.streakText(loaded.streakOf(habit));
+    final schedule = habit.schedule;
+    final week = loaded?.weekProgressOf(habit);
+    final description = habit.description?.trim();
+    final meta = [
+      category.name,
+      if (schedule.type != ScheduleType.daily) l10n.scheduleShort(schedule),
+      if (streak != null) streak,
+    ].join(' · ');
+    final weekText = week == null || week.goal == 0
+        ? null
+        : l10n.weekProgressText(schedule, week) ?? l10n.community_week_progress(week.done, week.goal);
+    final fraction = week == null || week.goal == 0 ? null : week.done / week.goal;
 
-class _HabitHomeCardState extends State<HabitHomeCard> {
-  Color _getColorFromHex(String hexColor) {
-    hexColor = hexColor.replaceAll('#', '');
-    if (hexColor.length == 6) {
-      hexColor = 'FF$hexColor';
-    }
-    return Color(int.parse(hexColor, radix: 16));
-  }
-
-  IconData _getCategoryIcon(String categoryId, HabitCategoryState state) {
-    if (state is HabitCategoryError || state is HabitCategoryLoaded) {
-      switch (categoryId) {
-        case 'art':
-          return Icons.brush;
-        case 'education':
-          return Icons.school;
-        case 'health':
-          return Icons.fitness_center;
-        case 'money':
-          return Icons.attach_money;
-        case 'selv-development':
-          return Icons.self_improvement;
-        case 'sport':
-          return Icons.sports_soccer;
-        case 'work':
-          return Icons.work;
-        default:
-          return Icons.category;
-      }
-    }
-    return Icons.category;
-  }
-
-  Widget _buildProgressIndicator(Color cardColor, double progress) {
-    switch (widget.displayMode) {
-      case HabitCardDisplayMode.linear:
-        return LinearPercentIndicator(
-          lineHeight: 10,
-          percent: progress,
-          backgroundColor: Colors.white.withValues(alpha: .5),
-          progressColor: cardColor.withValues(alpha: 0.9),
-          barRadius: const Radius.circular(4),
-          padding: EdgeInsets.zero,
-          animation: true,
-        );
-      case HabitCardDisplayMode.circular:
-        return const SizedBox.shrink();
-      case HabitCardDisplayMode.none:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildHabitIcon(Color cardColor, double progress) {
-    if (widget.displayMode == HabitCardDisplayMode.circular) {
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          CircularPercentIndicator(
-            radius: 32,
-            lineWidth: 4,
-            percent: progress,
-            backgroundColor: Colors.white.withValues(alpha: .5),
-            progressColor: cardColor.withValues(alpha: 0.9),
-            animation: true,
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: cardColor.withValues(alpha: 0.3),
-              shape: BoxShape.circle,
-            ),
-            child: SizedBox(
-              width: 48,
-              height: 48,
-              child: Center(
-                child: Text(
-                  widget.habit.icon ?? '🎯',
-                  style: const TextStyle(fontSize: 32),
-                ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Semantics(
+        container: true,
+        label: [
+          habit.title,
+          meta,
+          if (completed) l10n.habits_done_today else l10n.habits_not_done_today,
+          if (displayMode != HabitCardDisplayMode.none && weekText != null) weekText,
+        ].join(', '),
+        child: Material(
+          color: completed ? Color.alphaBlend(green.withValues(alpha: 0.08), theme.cardColor) : theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => editHabit(context, habit),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
+              child: Row(
+                children: [
+                  ExcludeSemantics(
+                    child: _Icon(
+                      emoji: habit.icon ?? '🎯',
+                      color: color,
+                      // The ring shows this week's progress in the circular mode.
+                      ring: displayMode == HabitCardDisplayMode.circular && fraction != null ? fraction * 100 : null,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ExcludeSemantics(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            habit.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.2),
+                          ),
+                          if (description != null && description.isNotEmpty)
+                            Text(description,
+                                maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
+                          const SizedBox(height: 4),
+                          Text(
+                            meta,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w600),
+                          ),
+                          if (displayMode == HabitCardDisplayMode.linear && fraction != null) ...[
+                            const SizedBox(height: 8),
+                            _WeekBar(fraction: fraction, color: color),
+                            if (weekText != null) ...[
+                              const SizedBox(height: 4),
+                              Text(weekText, style: theme.textTheme.bodySmall),
+                            ],
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  HabitCompletionButton(
+                    habitId: habit.id,
+                    round: true,
+                    color: color,
+                    completedColor: green,
+                    iconColor: Colors.white,
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: cardColor.withValues(alpha: 0.3),
-        shape: BoxShape.circle,
-      ),
-      child: SizedBox(
-        width: 48,
-        height: 48,
-        child: Center(
-          child: Text(
-            widget.habit.icon ?? '🎯',
-            style: const TextStyle(fontSize: 32),
           ),
         ),
       ),
     );
   }
+}
+
+class _Icon extends StatelessWidget {
+  final String emoji;
+  final Color color;
+
+  /// 0–100 to draw a progress ring around the icon.
+  final double? ring;
+
+  const _Icon({required this.emoji, required this.color, this.ring});
 
   @override
   Widget build(BuildContext context) {
-    final cardColor = _getColorFromHex(widget.category.color);
-    final completedToday = context.select<HabitStatsBloc, bool>(
-      (bloc) => switch (bloc.state) {
-        final HabitStatsLoaded loaded => loaded.isCompletedToday(widget.habit.id),
-        _ => false,
-      },
+    final icon = Container(
+      width: 44,
+      height: 44,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.18), shape: BoxShape.circle),
+      child: Text(emoji, style: const TextStyle(fontSize: 22)),
     );
-    final progress = completedToday ? 1.0 : 0.0;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: cardColor.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.black.withValues(alpha: 0.1),
+    final ring = this.ring;
+    if (ring == null) return icon;
+    return SizedBox.square(
+      dimension: 56,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox.expand(
+            child: _Animated(
+              value: ring / 100,
+              builder: (value) => CircularProgressIndicator(
+                value: value,
+                strokeWidth: 4,
+                strokeCap: StrokeCap.round,
+                color: color,
+                backgroundColor: color.withValues(alpha: 0.15),
+              ),
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: BlocBuilder<HabitCategoryBloc, HabitCategoryState>(
-                builder: (context, state) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _getCategoryIcon(widget.category.id, state),
-                        color: cardColor,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        widget.category.name,
-                        style: TextStyle(
-                          color: cardColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildHabitIcon(cardColor, progress),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.habit.title,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600, color: cardColor.withValues(alpha: 0.8)),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.habit.description ?? '',
-                        style: TextStyle(fontSize: 14, color: cardColor.withValues(alpha: 0.6)),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildProgressIndicator(cardColor, progress),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8, bottom: 40),
-                  child: HabitCompletionButton(
-                    habitId: widget.habit.id,
-                    color: cardColor.withValues(alpha: 0.9),
-                    iconColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          icon,
+        ],
       ),
     );
   }
+}
+
+class _WeekBar extends StatelessWidget {
+  final double fraction;
+  final Color color;
+
+  const _WeekBar({required this.fraction, required this.color});
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: _Animated(
+          value: fraction,
+          builder: (value) => LinearProgressIndicator(
+            value: value,
+            minHeight: 6,
+            color: color,
+            backgroundColor: color.withValues(alpha: 0.15),
+          ),
+        ),
+      );
+}
+
+/// Animates progress changes; instant with reduced motion.
+class _Animated extends StatelessWidget {
+  final double value;
+  final Widget Function(double value) builder;
+
+  const _Animated({required this.value, required this.builder});
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+        tween: Tween(end: value),
+        duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, _) => builder(value),
+      );
 }

@@ -358,6 +358,10 @@ class SyncService implements SyncScheduler, SessionDataManager {
         isActive: h.isActive,
         createdAt: h.createdAt,
         deletedAt: h.deletedAt,
+        scheduleType: h.scheduleType,
+        weeklyTarget: h.weeklyTarget,
+        scheduleDays: h.scheduleDays,
+        streakResetOn: h.streakResetOn,
       );
 
   static HabitsCompanion _toHabitCompanion(RemoteHabit h) => HabitsCompanion(
@@ -370,6 +374,10 @@ class SyncService implements SyncScheduler, SessionDataManager {
         isActive: Value(h.isActive),
         createdAt: Value(h.createdAt.toLocal()),
         updatedAt: Value(h.updatedAt!.toLocal()),
+        scheduleType: Value(h.scheduleType),
+        weeklyTarget: Value(h.weeklyTarget),
+        scheduleDays: Value(h.scheduleDays),
+        streakResetOn: Value(h.streakResetOn),
       );
 
   static RemoteCompletion _toRemoteCompletion(HabitCompletion c) => RemoteCompletion(

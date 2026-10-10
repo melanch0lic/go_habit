@@ -40,6 +40,13 @@ class CalendarDay implements Comparable<CalendarDay> {
 
   CalendarDay addDays(int days) => CalendarDay(year, month, day + days);
 
+  /// [DateTime.monday] (1) … [DateTime.sunday] (7). Calendar arithmetic, so it does
+  /// not depend on time zones or daylight-saving changes.
+  int get weekday => DateTime.utc(year, month, day).weekday;
+
+  /// Monday of the week containing this day (weeks run Monday–Sunday).
+  CalendarDay get weekStart => addDays(DateTime.monday - weekday);
+
   /// Whole days from [other] to this day (positive if this day is later).
   int differenceInDays(CalendarDay other) =>
       DateTime.utc(year, month, day).difference(DateTime.utc(other.year, other.month, other.day)).inDays;

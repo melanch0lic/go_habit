@@ -23,6 +23,18 @@ class Habits extends Table {
   /// Tombstone of a local deletion waiting to be pushed. Synced deletions are removed.
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
+  /// `daily`, `weekly_target` or `weekdays` (see HabitSchedule).
+  TextColumn get scheduleType => text().withDefault(const Constant('daily'))();
+
+  /// Completions per week (1–7) for `weekly_target`.
+  IntColumn get weeklyTarget => integer().nullable()();
+
+  /// Bit (weekday - 1) per selected day for `weekdays`.
+  IntColumn get scheduleDays => integer().nullable()();
+
+  /// `YYYY-MM-DD`: completions before this day do not count for the streak.
+  TextColumn get streakResetOn => text().nullable()();
+
   /// Incremented on every local write, so a push only clears [isPendingSync] if the
   /// row was not modified again while the request was in flight.
   IntColumn get localVersion => integer().withDefault(const Constant(0))();

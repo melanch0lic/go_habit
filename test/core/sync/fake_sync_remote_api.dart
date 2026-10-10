@@ -88,6 +88,10 @@ class FakeSyncRemoteApi implements SyncRemoteApi {
         createdAt: h.createdAt,
         updatedAt: _tick(),
         deletedAt: keepDeletedAt ?? h.deletedAt,
+        scheduleType: h.scheduleType,
+        weeklyTarget: h.weeklyTarget,
+        scheduleDays: h.scheduleDays,
+        streakResetOn: h.streakResetOn,
       );
 
   @override

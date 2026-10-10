@@ -255,6 +255,115 @@ void main() {
     });
   });
 
+  group('schedules', () {
+    test('an offline schedule change with a streak reset is uploaded together, history intact', () async {
+      await signIn(alice);
+      await addLocalHabit('h1');
+      await completionDao.setCompleted('h1', day.addDays(-1), completed: true);
+      await completionDao.setCompleted('h1', day, completed: true);
+      await sync.syncNow();
+
+      connect.goOffline();
+      await habitsDao.updateLocal(
+        'h1',
+        schedule: (type: 'weekly_target', weeklyTarget: 3, days: null),
+        streakResetOn: day.toString(),
+      );
+      expect(await sync.syncNow(), isFalse);
+      expect(await sync.pendingChangesCount(), 1, reason: 'only the habit row changed');
+      expect(remote.habitsOf(alice)['h1']!.scheduleType, 'daily', reason: 'nothing is sent while offline');
+
+      connect.goOnline();
+      expect(await sync.syncNow(), isTrue);
+      final pushed = remote.habitsOf(alice)['h1']!;
+      expect((pushed.scheduleType, pushed.weeklyTarget, pushed.scheduleDays, pushed.streakResetOn),
+          ('weekly_target', 3, null, '2026-10-09'));
+      expect(remote.completionsOf(alice), hasLength(2), reason: 'a streak reset never deletes completions');
+      expect(await completionDao.getAllCompletions(), hasLength(2));
+    });
+
+    test('switching type clears the parameters of the old one', () async {
+      await signIn(alice);
+      await addLocalHabit('h1');
+      await habitsDao.updateLocal('h1', schedule: (type: 'weekdays', weeklyTarget: null, days: 21));
+      await habitsDao.updateLocal('h1', schedule: (type: 'weekly_target', weeklyTarget: 2, days: null));
+      await sync.syncNow();
+
+      final pushed = remote.habitsOf(alice)['h1']!;
+      expect((pushed.scheduleType, pushed.weeklyTarget, pushed.scheduleDays), ('weekly_target', 2, null));
+    });
+
+    test('a schedule and reset day from another device are applied locally', () async {
+      await signIn(alice);
+      remote.serverPutHabit(
+        alice,
+        RemoteHabit(
+          id: 'r1',
+          categoryId: 'sport',
+          title: 'Gym',
+          description: null,
+          icon: '🏋️',
+          steps: 0,
+          isActive: true,
+          createdAt: DateTime.utc(2026),
+          scheduleType: 'weekdays',
+          scheduleDays: 21,
+          streakResetOn: '2026-10-05',
+        ),
+      );
+      await sync.syncNow();
+
+      final local = (await habitsDao.getHabitById('r1'))!;
+      expect((local.scheduleType, local.weeklyTarget, local.scheduleDays, local.streakResetOn),
+          ('weekdays', null, 21, '2026-10-05'));
+      expect(await sync.pendingChangesCount(), 0);
+    });
+
+    test('older rows without schedule columns read as daily', () {
+      final habit = RemoteHabit.fromJson({
+        'id': 'h1',
+        'category_id': 'sport',
+        'title': 'Old',
+        'description': null,
+        'icon': '🏃',
+        'steps': 0,
+        'is_active': true,
+        'created_at': '2026-01-01T00:00:00Z',
+        'updated_at': '2026-01-01T00:00:00Z',
+        'deleted_at': null,
+      });
+      expect((habit.scheduleType, habit.weeklyTarget, habit.scheduleDays, habit.streakResetOn),
+          ('daily', null, null, null));
+    });
+
+    test('schedule fields survive the wire format', () {
+      final habit = RemoteHabit(
+        id: 'h1',
+        categoryId: 'sport',
+        title: 'Run',
+        description: null,
+        icon: '🏃',
+        steps: 0,
+        isActive: true,
+        createdAt: DateTime.utc(2026),
+        scheduleType: 'weekly_target',
+        weeklyTarget: 4,
+        streakResetOn: '2026-10-09',
+      );
+      final json = habit.toJson();
+      expect(json, containsPair('schedule_type', 'weekly_target'));
+      expect(json, containsPair('weekly_target', 4));
+      expect(json, containsPair('schedule_days', null));
+      expect(json, containsPair('streak_reset_on', '2026-10-09'));
+      final back = RemoteHabit.fromJson({...json, 'updated_at': '2026-10-09T00:00:00Z'});
+      expect((back.scheduleType, back.weeklyTarget, back.scheduleDays, back.streakResetOn),
+          ('weekly_target', 4, null, '2026-10-09'));
+      for (final column in ['schedule_type', 'weekly_target', 'schedule_days', 'streak_reset_on']) {
+        expect(RemoteHabit.columns, contains(column));
+      }
+    });
+  });
+
   group('accounts', () {
     test('data created before sign-in is adopted by the first account', () async {
       await addLocalHabit('legacy');
