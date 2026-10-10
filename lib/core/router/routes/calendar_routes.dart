@@ -5,6 +5,11 @@ final _calendarRoutes = [
     parentNavigatorKey: _calendarRoutesNavigatorKey,
     path: CalendarRoutes.calendar.path,
     name: CalendarRoutes.calendar.name,
-    builder: (_, state) => HabitsPage(key: state.pageKey),
+    // `open` (a habit id) and `request` come from a tapped reminder.
+    builder: (_, state) => HabitsPage(
+      key: state.pageKey,
+      openHabitId: state.uri.queryParameters['open'],
+      openRequest: state.uri.queryParameters['request'],
+    ),
   ),
 ];

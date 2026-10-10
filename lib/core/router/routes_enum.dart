@@ -34,6 +34,10 @@ enum HomeRoutes {
 enum CalendarRoutes {
   calendar(path: '${_calendarRoutesKey}calendar');
 
+  /// The habits tab, opening [habitId]'s form once for this [request].
+  static String openHabit(String habitId, {required String request}) =>
+      Uri(path: calendar.path, queryParameters: {'open': habitId, 'request': request}).toString();
+
   final String path;
 
   const CalendarRoutes({
@@ -63,7 +67,8 @@ enum ProfileRoutes {
   settings(path: '${_profileRoutesKey}settings'),
   friends(path: '${_profileRoutesKey}profile/friends'),
   edit(path: '${_profileRoutesKey}profile/edit'),
-  privacy(path: '${_profileRoutesKey}profile/privacy');
+  privacy(path: '${_profileRoutesKey}profile/privacy'),
+  notificationSettings(path: '${_profileRoutesKey}profile/notifications');
 
   final String path;
 

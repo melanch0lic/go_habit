@@ -15,6 +15,7 @@ class HabitsScope extends StatelessWidget {
       return BlocProvider<HabitsBloc>(
         create: (context) => HabitsBloc(
           scope.habitRepositoryDep.get,
+          reminders: scope.notificationRepository.get,
         ),
         child: child,
       );

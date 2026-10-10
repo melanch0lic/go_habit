@@ -1436,4 +1436,234 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notifications_empty => 'Нет новых уведомлений';
+
+  @override
+  String get notifications_habit_title => 'Время для привычки';
+
+  @override
+  String notifications_habit_body(String name) {
+    return '$name — уделите этому несколько минут сегодня.';
+  }
+
+  @override
+  String get notifications_progress_title => 'Как проходит день?';
+
+  @override
+  String notifications_progress_body(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'На сегодня осталось $count привычек.',
+      few: 'На сегодня осталось $count привычки.',
+      one: 'На сегодня осталась $count привычка.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifications_progress_body_general =>
+      'Загляните, что запланировано на сегодня.';
+
+  @override
+  String get notifications_streak_title => 'Серия под угрозой';
+
+  @override
+  String notifications_streak_body_one(String title) {
+    return 'Отметьте «$title» сегодня, чтобы не прервать серию.';
+  }
+
+  @override
+  String notifications_streak_body_many(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count привычек ещё не отмечены — их серии прервутся, если пропустить сегодня.',
+      few:
+          '$count привычки ещё не отмечены — их серии прервутся, если пропустить сегодня.',
+      one:
+          '$count привычка ещё не отмечена — её серия прервётся, если пропустить сегодня.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifications_channel_habits => 'Напоминания о привычках';
+
+  @override
+  String get notifications_channel_habits_description =>
+      'Напоминания в выбранное для привычки время';
+
+  @override
+  String get notifications_channel_progress => 'Итоги дня и серии';
+
+  @override
+  String get notifications_channel_progress_description =>
+      'Необязательные напоминания об оставшихся привычках и сериях';
+
+  @override
+  String get notifications_empty_hint =>
+      'Здесь появятся напоминания, которые вы увидели или открыли.';
+
+  @override
+  String get notifications_today => 'Сегодня';
+
+  @override
+  String get notifications_yesterday => 'Вчера';
+
+  @override
+  String get notifications_earlier => 'Ранее';
+
+  @override
+  String get notifications_just_now => 'только что';
+
+  @override
+  String notifications_minutes_ago(int count) {
+    return '$count мин назад';
+  }
+
+  @override
+  String notifications_hours_ago(int count) {
+    return '$count ч назад';
+  }
+
+  @override
+  String get notifications_mark_all_read => 'Отметить все прочитанными';
+
+  @override
+  String get notifications_clear_all => 'Очистить историю';
+
+  @override
+  String get notifications_clear_title => 'Очистить историю уведомлений?';
+
+  @override
+  String get notifications_clear_message =>
+      'Записи будут удалены. Запланированные напоминания останутся.';
+
+  @override
+  String get notifications_clear_confirm => 'Очистить';
+
+  @override
+  String get notifications_delete => 'Удалить';
+
+  @override
+  String get notifications_unread => 'Не прочитано';
+
+  @override
+  String get notifications_category_habit => 'Привычка';
+
+  @override
+  String get notifications_category_progress => 'Итоги дня';
+
+  @override
+  String get notifications_category_streak => 'Серия';
+
+  @override
+  String get notifications_category_system => 'Системное';
+
+  @override
+  String get notifications_habit_missing => 'Эта привычка уже удалена.';
+
+  @override
+  String get notifications_load_failed => 'Не удалось загрузить уведомления.';
+
+  @override
+  String get notifications_settings_title => 'Настройки уведомлений';
+
+  @override
+  String get notifications_master => 'Уведомления Go Habit';
+
+  @override
+  String get notifications_master_hint =>
+      'Выключите, чтобы отменить все напоминания приложения. Настройки сохранятся.';
+
+  @override
+  String get notifications_permission_request =>
+      'Разрешите уведомления, чтобы напоминания приходили в выбранное время.';
+
+  @override
+  String get notifications_permission_denied =>
+      'Уведомления запрещены в настройках системы — напоминания не будут показаны.';
+
+  @override
+  String get notifications_permission_unsupported =>
+      'На этом устройстве уведомления недоступны.';
+
+  @override
+  String get notifications_allow => 'Разрешить';
+
+  @override
+  String get notifications_open_settings => 'Открыть настройки';
+
+  @override
+  String get notifications_habit_reminders => 'Напоминания о привычках';
+
+  @override
+  String get notifications_habit_reminders_hint =>
+      'Время и дни напоминания настраиваются в форме каждой привычки.';
+
+  @override
+  String get notifications_progress_setting => 'Итоги дня';
+
+  @override
+  String get notifications_progress_setting_hint =>
+      'Напомнить, если на сегодня остались привычки';
+
+  @override
+  String get notifications_streak_setting => 'Серия под угрозой';
+
+  @override
+  String get notifications_streak_setting_hint =>
+      'Предупредить, если без сегодняшней отметки серия прервётся';
+
+  @override
+  String notifications_time(String time) {
+    return 'Время: $time';
+  }
+
+  @override
+  String get notifications_delivery_hint =>
+      'Система может немного задержать уведомление, чтобы беречь заряд.';
+
+  @override
+  String get habits_reminder_label => 'Напоминание';
+
+  @override
+  String get habits_reminder_toggle => 'Напоминать';
+
+  @override
+  String get habits_reminder_days => 'Дни напоминания';
+
+  @override
+  String get habits_reminder_days_required => 'Выберите хотя бы один день';
+
+  @override
+  String get habits_reminder_weekly_hint =>
+      'У цели на неделю нет фиксированных дней — выберите, когда напоминать.';
+
+  @override
+  String get habits_reminder_off_hint =>
+      'Уведомления выключены — напоминание не придёт. Включить их можно в «Профиль → Уведомления».';
+
+  @override
+  String get profile_notifications => 'Уведомления';
+
+  @override
+  String get notifications_extra_reminders => 'Дополнительные напоминания';
+
+  @override
+  String get habits_choose_icon => 'Выбрать иконку';
+
+  @override
+  String get habits_reminder_time => 'Время напоминания';
+
+  @override
+  String get habits_reminder_off => 'Выключено';
+
+  @override
+  String get habits_reminder_every_day => 'каждый день';
+
+  @override
+  String get habits_reminder_independent_hint =>
+      'Дни напоминания настраиваются отдельно от расписания.';
 }

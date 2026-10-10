@@ -798,5 +798,115 @@
     "profile_section_about": "App",
     "profile_show_welcome": "Show the welcome screen",
     "profile_email_hint": "Only you can see your account email",
-    "notifications_empty": "No new notifications"
+    "notifications_empty": "No new notifications",
+    "notifications_habit_title": "Time for your habit",
+    "notifications_habit_body": "{name} — take a few minutes for it today.",
+    "@notifications_habit_body": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "notifications_progress_title": "How is your day going?",
+    "notifications_progress_body": "{count, plural, one{{count} habit is left for today.} other{{count} habits are left for today.}}",
+    "@notifications_progress_body": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "notifications_progress_body_general": "Take a look at today's habits.",
+    "notifications_streak_title": "Your streak is at risk",
+    "notifications_streak_body_one": "Mark “{title}” today to keep your streak.",
+    "@notifications_streak_body_one": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "notifications_streak_body_many": "{count, plural, one{{count} habit is not marked yet — its streak ends if today is skipped.} other{{count} habits are not marked yet — their streaks end if today is skipped.}}",
+    "@notifications_streak_body_many": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "notifications_channel_habits": "Habit reminders",
+    "notifications_channel_habits_description": "Reminders at the time you chose for a habit",
+    "notifications_channel_progress": "Daily progress and streaks",
+    "notifications_channel_progress_description": "Optional reminders about remaining habits and streaks",
+    "notifications_empty_hint": "Reminders you saw or opened will appear here.",
+    "notifications_today": "Today",
+    "notifications_yesterday": "Yesterday",
+    "notifications_earlier": "Earlier",
+    "notifications_just_now": "just now",
+    "notifications_minutes_ago": "{count} min ago",
+    "@notifications_minutes_ago": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "notifications_hours_ago": "{count} h ago",
+    "@notifications_hours_ago": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "notifications_mark_all_read": "Mark all as read",
+    "notifications_clear_all": "Clear history",
+    "notifications_clear_title": "Clear notification history?",
+    "notifications_clear_message": "The records will be deleted. Scheduled reminders stay.",
+    "notifications_clear_confirm": "Clear",
+    "notifications_delete": "Delete",
+    "notifications_unread": "Unread",
+    "notifications_category_habit": "Habit",
+    "notifications_category_progress": "Daily progress",
+    "notifications_category_streak": "Streak",
+    "notifications_category_system": "System",
+    "notifications_habit_missing": "This habit has been deleted.",
+    "notifications_load_failed": "Couldn't load notifications.",
+    "notifications_settings_title": "Notification settings",
+    "notifications_master": "Go Habit notifications",
+    "notifications_master_hint": "Turn off to cancel all of the app's reminders. Your settings are kept.",
+    "notifications_permission_request": "Allow notifications so reminders arrive at the times you choose.",
+    "notifications_permission_denied": "Notifications are turned off in the system settings — reminders won't be shown.",
+    "notifications_permission_unsupported": "Notifications aren't available on this device.",
+    "notifications_allow": "Allow",
+    "notifications_open_settings": "Open settings",
+    "notifications_habit_reminders": "Habit reminders",
+    "notifications_habit_reminders_hint": "Set the time and days in each habit's form.",
+    "notifications_progress_setting": "Daily progress",
+    "notifications_progress_setting_hint": "Remind me if habits are left for today",
+    "notifications_streak_setting": "Streak at risk",
+    "notifications_streak_setting_hint": "Warn me if a streak would end without today's mark",
+    "notifications_time": "Time: {time}",
+    "@notifications_time": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "notifications_delivery_hint": "The system may delay a notification slightly to save battery.",
+    "habits_reminder_label": "Reminder",
+    "habits_reminder_toggle": "Remind me",
+    "habits_reminder_days": "Reminder days",
+    "habits_reminder_days_required": "Choose at least one day",
+    "habits_reminder_weekly_hint": "A weekly goal has no fixed days — choose when to be reminded.",
+    "habits_reminder_off_hint": "Notifications are off — the reminder won't arrive. Turn them on in Profile → Notifications.",
+    "profile_notifications": "Notifications",
+    "notifications_extra_reminders": "More reminders",
+    "habits_choose_icon": "Choose an icon",
+    "habits_reminder_time": "Reminder time",
+    "habits_reminder_off": "Off",
+    "habits_reminder_every_day": "every day",
+    "habits_reminder_independent_hint": "Reminder days are set separately from the schedule."
 }

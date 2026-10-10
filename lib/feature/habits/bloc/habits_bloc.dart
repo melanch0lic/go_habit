@@ -6,6 +6,9 @@ import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 import 'package:go_habit/feature/habits/domain/repositories/habit_repository.dart';
+import 'package:go_habit/feature/notifications/data/notification_repository.dart';
+import 'package:go_habit/feature/notifications/domain/models/reminder_settings.dart';
+import 'package:l/l.dart';
 
 part 'habits_event.dart';
 part 'habits_state.dart';
@@ -13,10 +16,14 @@ part 'habits_state.dart';
 class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
   final HabitRepository _habitRepository;
   final CalendarDay Function() _today;
+
+  /// Device-local reminders; absent where notifications are not set up (tests).
+  final NotificationRepository? _reminders;
   StreamSubscription<List<Habit>>? _subscription;
 
-  HabitsBloc(this._habitRepository, {CalendarDay Function()? today})
+  HabitsBloc(this._habitRepository, {CalendarDay Function()? today, NotificationRepository? reminders})
       : _today = today ?? CalendarDay.today,
+        _reminders = reminders,
         super(HabitsInitial()) {
     // Writes read `state.habits`; handling one event at a time avoids acting on stale state.
     on<HabitsEvent>((event, emit) async {
@@ -31,6 +38,8 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
           await _onUpdateHabit(event, emit);
         case DeleteHabit():
           await _onDeleteHabit(event, emit);
+        case SetHabitReminder(:final habitId, :final reminder):
+          await _saveReminder(habitId, reminder);
         case ToggleActiveHabit():
           await _onToggleHabitActive(event, emit);
       }
@@ -87,6 +96,7 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
         schedule: event.schedule,
       );
       await _habitRepository.addHabit(habit);
+      if (event.reminder case final reminder?) await _saveReminder(habit.id, reminder);
       emit(HabitsOperationSuccess(message: 'Habit is added', habits: state.habits));
     } catch (error, stackTrace) {
       addError(error, stackTrace);
@@ -131,10 +141,27 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
     if (!state.habits.any((habit) => habit.id == event.id)) return;
     try {
       await _habitRepository.deleteHabit(event.id);
+      await _saveReminder(event.id, null);
       emit(HabitsOperationSuccess(message: 'Habit is deleted', habits: state.habits));
     } catch (error, stackTrace) {
       addError(error, stackTrace);
       emit(HabitsOperationFailure(error: error.toString(), habits: state.habits, operation: HabitOperation.delete));
+    }
+  }
+
+  /// A reminder is a device setting: failing to store it never fails the habit change.
+  /// The notification service reschedules from the stored reminders.
+  Future<void> _saveReminder(String habitId, ReminderDraft? reminder) async {
+    final repository = _reminders;
+    if (repository == null) return;
+    try {
+      if (reminder == null) {
+        await repository.deleteReminder(habitId);
+      } else {
+        await repository.saveReminder(reminder.forHabit(habitId));
+      }
+    } on Object catch (error, stackTrace) {
+      l.e('Could not save the reminder of $habitId: $error', stackTrace);
     }
   }
 

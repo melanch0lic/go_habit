@@ -29,6 +29,11 @@ class SettingsSection extends StatelessWidget {
             const ThemeModeSelector(),
             const LanguageSelector(),
             AppSettingsTile(
+              icon: Icons.notifications_outlined,
+              title: l10n.profile_notifications,
+              onTap: () => context.push(ProfileRoutes.notificationSettings.path),
+            ),
+            AppSettingsTile(
               icon: Icons.widgets_outlined,
               title: l10n.widgets,
               onTap: () => context.pushNamed(ProfileRoutes.settings.name),

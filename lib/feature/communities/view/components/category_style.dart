@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_habit/core/theme/app_theme.dart';
 import 'package:go_habit/feature/categories/bloc/habit_category_bloc.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/habits/view/components/modal_bottom_sheet.dart' show getCategoryIcon, hexToColor;
@@ -39,7 +40,8 @@ class CategoryPill extends StatelessWidget {
     final style = CategoryStyle.of(context, categoryId);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: style.color, borderRadius: BorderRadius.circular(20)),
+      // Darkened just enough for the white label (WCAG AA); the hue stays recognizable.
+      decoration: BoxDecoration(color: style.color.readableOn(Colors.white), borderRadius: BorderRadius.circular(20)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

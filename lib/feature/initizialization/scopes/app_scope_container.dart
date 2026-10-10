@@ -5,6 +5,7 @@ import 'package:go_habit/core/database/dao/habit_category_dao.dart';
 import 'package:go_habit/core/database/dao/social_cache_dao.dart';
 import 'package:go_habit/core/database/dao/habit_completion_dao.dart';
 import 'package:go_habit/core/database/dao/habits_dao.dart';
+import 'package:go_habit/core/database/dao/notifications_dao.dart';
 import 'package:go_habit/core/database/drift_database.dart';
 import 'package:go_habit/core/router/app_router.dart';
 import 'package:go_habit/core/sync/supabase_sync_remote_api.dart';
@@ -26,6 +27,9 @@ import 'package:go_habit/feature/habits/data/repositories/habit_repository_imple
 import 'package:go_habit/feature/habits/domain/repositories/habit_repository.dart';
 import 'package:go_habit/feature/home/data/repositories/quote_repository_implementation.dart';
 import 'package:go_habit/feature/home/domain/repositories/quote_repository.dart';
+import 'package:go_habit/feature/notifications/data/notification_gateway.dart';
+import 'package:go_habit/feature/notifications/data/notification_repository.dart';
+import 'package:go_habit/feature/notifications/notification_service.dart';
 import 'package:go_habit/feature/social/data/social_remote_data_source.dart';
 import 'package:go_habit/feature/social/data/social_repository_impl.dart';
 import 'package:go_habit/feature/social/domain/repositories/social_repository.dart';
@@ -36,6 +40,7 @@ class AppScopeContainer extends ScopeContainer {
   @override
   List<Set<AsyncDep<Object?>>> get initializeQueue => [
         {syncService},
+        {notificationService},
       ];
 
   late final appConnect = dep<IAppConnect>(() => const AppConnect());
@@ -106,6 +111,22 @@ class AppScopeContainer extends ScopeContainer {
       cache: SocialCacheDao(appDatabase.get),
       appConnect: appConnect.get,
     ),
+  );
+
+  late final notificationRepository = dep<NotificationRepository>(
+    () => LocalNotificationRepository(NotificationsDao(appDatabase.get)),
+  );
+
+  /// Local reminders and the notification history; never needs the network.
+  late final notificationService = rawAsyncDep<NotificationService>(
+    () => NotificationService(
+      gateway: PluginNotificationGateway(),
+      repository: notificationRepository.get,
+      habits: habitRepositoryDep.get,
+      stats: habitStatsRepository.get,
+    ),
+    init: (service) => service.start(),
+    dispose: (service) => service.dispose(),
   );
 
   late final routerConfig = dep(() {

@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 import 'package:go_habit/feature/habits/domain/today_progress.dart';
+import 'package:go_habit/feature/notifications/domain/models/reminder_settings.dart';
 
+import '../notifications/notification_fakes.dart';
 import 'habits_fakes.dart';
 
 void main() {
@@ -166,6 +169,54 @@ void main() {
       final failure = await bloc.stream.firstWhere((s) => s is HabitsOperationFailure);
       expect((failure as HabitsOperationFailure).operation, HabitOperation.update);
       expect(repository.habits.single.title, 'Habit a', reason: 'nothing changed');
+    });
+
+    group('reminders', () {
+      late FakeNotificationRepository reminders;
+
+      Future<void> startWith(List<Habit> initial) async {
+        reminders = FakeNotificationRepository();
+        repository = FakeHabitRepository(initial);
+        bloc = HabitsBloc(repository, today: () => today, reminders: reminders);
+        await pumpEventQueue();
+      }
+
+      tearDown(() => reminders.dispose());
+
+      const draft = ReminderDraft(enabled: true, time: TimeOfDay(hour: 8, minute: 30), weekdays: {1, 3});
+
+      test('a new habit stores its reminder under its own id', () async {
+        await startWith(const []);
+        bloc.add(AddHabit(title: 'Бег', description: '', categoryKey: 'sport', emojiIcon: '🏃', reminder: draft));
+        await pumpEventQueue();
+        final habitId = repository.habits.single.id;
+        expect(reminders.reminders[habitId], draft.forHabit(habitId));
+      });
+
+      test('a reminder is changed, turned off and removed', () async {
+        await startWith([habit('a')]);
+        bloc.add(SetHabitReminder('a', draft));
+        await pumpEventQueue();
+        expect(reminders.reminders['a']!.weekdays, {1, 3});
+
+        bloc.add(SetHabitReminder(
+            'a', const ReminderDraft(enabled: false, time: TimeOfDay(hour: 8, minute: 30), weekdays: {1, 3})));
+        await pumpEventQueue();
+        expect(reminders.reminders['a']!.enabled, isFalse, reason: 'switched off, settings kept');
+
+        bloc.add(SetHabitReminder('a', null));
+        await pumpEventQueue();
+        expect(reminders.reminders, isEmpty);
+      });
+
+      test('deleting a habit removes its reminder', () async {
+        await startWith([habit('a')]);
+        bloc.add(SetHabitReminder('a', draft));
+        await pumpEventQueue();
+        bloc.add(DeleteHabit('a'));
+        await pumpEventQueue();
+        expect(reminders.reminders, isEmpty);
+      });
     });
 
     group('schedule changes', () {

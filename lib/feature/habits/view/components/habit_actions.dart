@@ -7,6 +7,8 @@ import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:go_habit/feature/habits/view/components/modal_bottom_sheet.dart';
+import 'package:go_habit/feature/notifications/data/notification_repository.dart';
+import 'package:go_habit/feature/notifications/domain/models/reminder_settings.dart';
 
 enum HabitMenuAction { edit, togglePause, delete }
 
@@ -21,7 +23,18 @@ Future<void> addHabit(BuildContext context) async {
     categoryKey: draft.categoryId,
     emojiIcon: draft.icon,
     schedule: draft.schedule,
+    reminder: draft.reminder,
   ));
+}
+
+/// The habit's reminder on this device, or null where notifications are not set up.
+Future<ReminderDraft?> _reminderOf(BuildContext context, String habitId) async {
+  try {
+    final reminders = await context.read<NotificationRepository>().getReminders();
+    return switch (reminders[habitId]) { final reminder? => ReminderDraft.of(reminder), null => null };
+  } on ProviderNotFoundException {
+    return null;
+  }
 }
 
 /// Opens the form for [habit] and saves the changes through [HabitsBloc]. The id,
@@ -29,7 +42,10 @@ Future<void> addHabit(BuildContext context) async {
 /// of schedule type also starts the streak over (see HabitFormSheet).
 Future<void> editHabit(BuildContext context, Habit habit) async {
   final bloc = context.read<HabitsBloc>();
-  final draft = await HabitFormSheet.show(context, categories: _categories(context), habit: habit);
+  final categories = _categories(context);
+  final reminder = await _reminderOf(context, habit.id);
+  if (!context.mounted) return;
+  final draft = await HabitFormSheet.show(context, categories: categories, habit: habit, reminder: reminder);
   if (draft == null) return;
   bloc.add(UpdateHabit(
     habit.id,
@@ -40,6 +56,7 @@ Future<void> editHabit(BuildContext context, Habit habit) async {
     draft.schedule,
     draft.resetStreak,
   ));
+  if (draft.reminder != reminder) bloc.add(SetHabitReminder(habit.id, draft.reminder));
 }
 
 /// Asks before deleting [habit]. Offers pausing instead, since deleting also removes

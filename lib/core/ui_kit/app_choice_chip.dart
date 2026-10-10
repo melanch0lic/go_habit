@@ -28,7 +28,9 @@ class AppChoiceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final fill = color ?? scheme.primary;
+    // Category colors are darkened until white text reads on them; the brand green
+    // stays as it is, like the primary buttons.
+    final fill = color?.readableOn(Colors.white) ?? scheme.primary;
     // Category colors are mid-tone; white text keeps enough contrast on them.
     final foreground = selected ? Colors.white : scheme.onSurface;
     final leading = selected ? Icons.check : icon;

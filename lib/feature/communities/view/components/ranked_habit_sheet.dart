@@ -53,6 +53,8 @@ class RankedHabitSheet extends StatefulWidget {
         context: context,
         useRootNavigator: true,
         isScrollControlled: true,
+        // A tall form stays below the status bar and the notch.
+        useSafeArea: true,
         backgroundColor: context.themeOf.scaffoldBackgroundColor,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
         builder: (_) => RankedHabitSheet(template: template, habits: habits, joining: joining),
