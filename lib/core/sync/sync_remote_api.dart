@@ -30,6 +30,12 @@ class RemoteHabit {
   /// Assigned by the server; null for rows that are being pushed.
   final DateTime? updatedAt;
   final DateTime? deletedAt;
+  final String scheduleType;
+  final int? weeklyTarget;
+  final int? scheduleDays;
+
+  /// `YYYY-MM-DD`.
+  final String? streakResetOn;
 
   const RemoteHabit({
     required this.id,
@@ -42,10 +48,14 @@ class RemoteHabit {
     required this.createdAt,
     this.updatedAt,
     this.deletedAt,
+    this.scheduleType = 'daily',
+    this.weeklyTarget,
+    this.scheduleDays,
+    this.streakResetOn,
   });
 
-  static const columns =
-      'id, category_id, title, description, icon, steps, is_active, created_at, updated_at, deleted_at';
+  static const columns = 'id, category_id, title, description, icon, steps, is_active, created_at, updated_at, '
+      'deleted_at, schedule_type, weekly_target, schedule_days, streak_reset_on';
 
   factory RemoteHabit.fromJson(Map<String, dynamic> json) => RemoteHabit(
         id: json['id'] as String,
@@ -58,6 +68,10 @@ class RemoteHabit {
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: DateTime.parse(json['updated_at'] as String),
         deletedAt: _parseNullable(json['deleted_at']),
+        scheduleType: json['schedule_type'] as String? ?? 'daily',
+        weeklyTarget: json['weekly_target'] as int?,
+        scheduleDays: json['schedule_days'] as int?,
+        streakResetOn: json['streak_reset_on'] as String?,
       );
 
   /// `user_id` and `updated_at` are deliberately absent: the server assigns them.
@@ -71,6 +85,10 @@ class RemoteHabit {
         'is_active': isActive,
         'created_at': createdAt.toUtc().toIso8601String(),
         'deleted_at': deletedAt?.toUtc().toIso8601String(),
+        'schedule_type': scheduleType,
+        'weekly_target': weeklyTarget,
+        'schedule_days': scheduleDays,
+        'streak_reset_on': streakResetOn,
       };
 }
 

@@ -6,6 +6,7 @@ import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/habit_stats/domain/models/habit_completion.dart';
 import 'package:go_habit/feature/habit_stats/domain/repositories/habit_stats_repository.dart';
 import 'package:go_habit/feature/habit_stats/domain/streak.dart';
+import 'package:go_habit/feature/habits/data/models/habit.dart';
 import 'package:meta/meta.dart';
 
 part 'habit_stats_event.dart';
@@ -21,7 +22,7 @@ class HabitStatsBloc extends Bloc<HabitStatsEvent, HabitStatsState> {
       : _now = now ?? DateTime.now,
         super(HabitStatsInitial()) {
     on<HabitsStatsInitialLoad>(_onInitialLoad, transformer: restartable());
-    // Sequential: a double tap must toggle twice based on the result of the first toggle.
+    // Sequential: each request sees the result of the previous one.
     on<HabitCompletionToggled>(_onToggled, transformer: sequential());
     on<_HabitStatsDayChanged>(_onDayChanged);
   }
@@ -47,11 +48,17 @@ class HabitStatsBloc extends Bloc<HabitStatsEvent, HabitStatsState> {
   Future<void> _onToggled(HabitCompletionToggled event, Emitter<HabitStatsState> emit) async {
     final today = _today;
     final completed = _completions.any((c) => c.habitId == event.habitId && c.completedOn == today);
+    final target = event.completed ?? !completed;
+    // Already in the requested state (e.g. a repeated tap): nothing to write.
+    if (target == completed) return;
     try {
-      await _repository.setCompleted(habitId: event.habitId, day: today, completed: !completed);
+      await _repository.setCompleted(habitId: event.habitId, day: today, completed: target);
       // The watch stream emits the new state.
     } on Object catch (error, stackTrace) {
       addError(error, stackTrace);
+      if (state is HabitStatsLoaded) {
+        emit(HabitStatsLoaded(_completions, today: today, failedHabitId: event.habitId));
+      }
     }
   }
 

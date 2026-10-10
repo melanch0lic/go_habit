@@ -194,6 +194,198 @@
     "community_error_not_allowed": "Not available: the community is closed.",
     "community_error_unauthorized": "Your session expired. Please sign in again.",
     "community_error_unknown": "Something went wrong. Please try again.",
+    "habits_schedule_label": "Schedule",
+    "habits_schedule_option_daily": "Every day",
+    "habits_schedule_option_weekly": "Weekly goal",
+    "habits_schedule_option_weekdays": "On days",
+    "habits_schedule_daily": "Every day",
+    "habits_schedule_times_per_week": "{count, plural, one{once a week} =2{twice a week} other{{count} times a week}}",
+    "@habits_schedule_times_per_week": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_schedule_weekly_summary": "{count, plural, one{Once a week, any day} =2{Twice a week, any days} other{{count} times a week, any days}}",
+    "@habits_schedule_weekly_summary": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_weekly_target_label": "Times per week",
+    "habits_weekdays_label": "Weekdays",
+    "habits_weekdays_required": "Choose at least one day",
+    "habits_weekday_1": "Mon",
+    "habits_weekday_2": "Tue",
+    "habits_weekday_3": "Wed",
+    "habits_weekday_4": "Thu",
+    "habits_weekday_5": "Fri",
+    "habits_weekday_6": "Sat",
+    "habits_weekday_7": "Sun",
+    "habits_streak_weeks": "{count, plural, one{{count}-week streak} other{{count}-week streak}}",
+    "@habits_streak_weeks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_streak_occurrences": "{count, plural, one{{count} in a row} other{{count} in a row}}",
+    "@habits_streak_occurrences": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_week_target_progress": "{done}/{goal} this week",
+    "@habits_week_target_progress": {
+        "placeholders": {
+            "done": {
+                "type": "int"
+            },
+            "goal": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_weekdays_progress": "{done} of {goal} days this week",
+    "@habits_weekdays_progress": {
+        "placeholders": {
+            "done": {
+                "type": "int"
+            },
+            "goal": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_not_today": "Not scheduled today",
+    "habits_section_week": "Weekly goals",
+    "habits_section_other_days": "On other days",
+    "habits_week_goals": "Weekly goals: {done} of {total}",
+    "@habits_week_goals": {
+        "placeholders": {
+            "done": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_schedule_change_title": "Change the schedule type?",
+    "habits_schedule_change_message": "Your current streak will start over: each schedule type counts streaks differently. Your completion history is kept.",
+    "habits_schedule_change_confirm": "Change schedule",
+    "social_best_streak_days": "{count, plural, one{day} other{days}} in a row — best streak",
+    "@social_best_streak_days": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "social_best_streak_weeks": "{count, plural, one{week} other{weeks}} in a row — best streak",
+    "@social_best_streak_weeks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "social_best_streak_occurrences": "{count, plural, one{time} other{times}} in a row — best streak",
+    "@social_best_streak_occurrences": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_title": "Habits",
+    "habits_add": "Add habit",
+    "habits_actions": "Actions for “{title}”",
+    "@habits_actions": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "habits_category_label": "Category",
+    "habits_category_other": "Other",
+    "habits_delete": "Delete",
+    "habits_delete_title": "Delete “{title}”?",
+    "@habits_delete_title": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "habits_delete_message": "The habit and its whole history will be deleted on all devices. To take a break instead, pause it — the history is kept.",
+    "habits_description_label": "Description (optional)",
+    "habits_discard": "Discard",
+    "habits_discard_message": "Your changes haven't been saved.",
+    "habits_discard_title": "Leave without saving?",
+    "habits_keep_editing": "Keep editing",
+    "habits_done_today": "done today",
+    "habits_not_done_today": "not done today",
+    "habits_edit": "Edit",
+    "habits_edit_title": "Edit habit",
+    "habits_new_title": "New habit",
+    "habits_empty_title": "Start with your first habit",
+    "habits_empty_body": "One small daily step — in a couple of weeks it becomes part of your day.",
+    "habits_empty_catalog": "Pick one from the community catalog",
+    "habits_error_add": "Couldn't add the habit. Please try again.",
+    "habits_error_completion": "Couldn't save the mark. Please try again.",
+    "habits_error_delete": "Couldn't delete the habit. Please try again.",
+    "habits_error_generic": "Couldn't save the change. Please try again.",
+    "habits_error_load": "Couldn't load your habits.",
+    "habits_error_update": "Couldn't save the habit. Please try again.",
+    "habits_icon_custom": "Your own emoji",
+    "habits_icon_label": "Icon",
+    "habits_icon_single": "Enter a single emoji",
+    "habits_loading": "Loading habits",
+    "habits_name_label": "Name",
+    "habits_name_required": "Enter a name",
+    "habits_nothing_today": "{count, plural, one{Nothing scheduled today: {count} habit is paused.} other{Nothing scheduled today: {count} habits are paused.}}",
+    "@habits_nothing_today": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_pause": "Pause",
+    "habits_paused_label": "Paused",
+    "habits_resume": "Resume",
+    "habits_section_paused": "Paused",
+    "habits_section_today": "Today",
+    "habits_streak": "{count, plural, one{{count}-day streak} other{{count}-day streak}}",
+    "@habits_streak": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "habits_today_all_done": "All done for today 🎉",
+    "habits_today_loading": "Counting progress…",
+    "habits_today_nothing": "Nothing scheduled for today",
+    "habits_today_progress": "{completed} of {total} done",
+    "@habits_today_progress": {
+        "placeholders": {
+            "completed": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
     "social_accept": "Accept",
     "social_add_friend": "Add friend",
     "social_already_accepted": "Already accepted — you're friends",

@@ -10,7 +10,11 @@ final class HabitsStatsInitialLoad extends HabitStatsEvent {}
 final class HabitCompletionToggled extends HabitStatsEvent {
   final String habitId;
 
-  HabitCompletionToggled(this.habitId);
+  /// The state the user asked for. Repeated taps carry the same intent, so they
+  /// cannot flip the mark back and forth. Null toggles the current state.
+  final bool? completed;
+
+  HabitCompletionToggled(this.habitId, {this.completed});
 }
 
 /// The calendar day changed while the app was running.

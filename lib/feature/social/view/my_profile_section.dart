@@ -6,6 +6,7 @@ import 'package:go_habit/core/router/routes_enum.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/communities/domain/weekly_consistency.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
+import 'package:go_habit/feature/habit_stats/domain/streak.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/social/bloc/friends_bloc.dart';
 import 'package:go_habit/feature/social/bloc/my_profile_bloc.dart';
@@ -123,18 +124,21 @@ class _OwnStats extends StatelessWidget {
     final active = context.watch<HabitsBloc>().state.habits.where((habit) => habit.isActive).toList();
     final stats = context.watch<HabitStatsBloc>().state;
 
-    var bestStreak = 0;
+    // Streaks of different schedules have different units; the longest one is shown
+    // with its own unit.
+    HabitStreak? bestStreak;
     var completed = 0;
     var eligible = 0;
     if (stats is HabitStatsLoaded) {
       for (final habit in active) {
-        final streak = stats.streakOf(habit.id);
-        if (streak > bestStreak) bestStreak = streak;
+        final streak = stats.streakOf(habit);
+        if (streak.count > (bestStreak?.count ?? 0)) bestStreak = streak;
         final week = WeeklyConsistency.compute(
           today: stats.today,
           joinedOn: CalendarDay(2000, 1, 1),
           habitCreatedAt: habit.createdAt,
           completedDays: stats.completedDaysOf(habit.id),
+          schedule: habit.schedule,
         );
         completed += week.completedDays;
         eligible += week.eligibleDays;
@@ -159,7 +163,15 @@ class _OwnStats extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             stat('${active.length}', l10n.social_stat_active_habits),
-            stat('$bestStreak', l10n.social_stat_best_streak),
+            stat(
+              '${bestStreak?.count ?? 0}',
+              switch (bestStreak?.unit) {
+                null => l10n.social_stat_best_streak,
+                StreakUnit.days => l10n.social_best_streak_days(bestStreak!.count),
+                StreakUnit.weeks => l10n.social_best_streak_weeks(bestStreak!.count),
+                StreakUnit.occurrences => l10n.social_best_streak_occurrences(bestStreak!.count),
+              },
+            ),
             stat(eligible == 0 ? '—' : '${(completed * 100 / eligible).round()}%',
                 l10n.social_stat_week(completed, eligible)),
           ],

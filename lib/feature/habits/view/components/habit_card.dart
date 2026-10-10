@@ -1,319 +1,243 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
 import 'package:go_habit/core/ui_kit/app_haptics.dart';
+import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
 import 'package:go_habit/feature/habit_stats/widget/habit_completion_button.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
-import 'package:go_habit/feature/habits/view/components/habit_stats_grid.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
+import 'package:go_habit/feature/habits/view/components/habit_actions.dart';
+import 'package:go_habit/feature/habits/view/components/modal_bottom_sheet.dart';
+import 'package:go_habit/feature/habits/view/habit_texts.dart';
 
-class HabitCard extends StatefulWidget {
+/// A habit in the list: icon, name, category and streak, this week's marks, the
+/// completion control and a menu with edit, pause and delete. Tapping the card edits
+/// the habit; completing never needs another screen.
+class HabitCard extends StatelessWidget {
   final Habit habit;
   final HabitCategory habitCategory;
 
   const HabitCard({required this.habit, required this.habitCategory, super.key});
 
   @override
-  State<HabitCard> createState() => _HabitCardState();
-}
-
-class _HabitCardState extends State<HabitCard> with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _opacityAnimation;
-  late Animation<Color?> _colorAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _opacityAnimation = Tween<double>(
-      begin: widget.habit.isActive ? 1.0 : 0.5,
-      end: widget.habit.isActive ? 1.0 : 0.5,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    _colorAnimation = ColorTween(
-      begin: widget.habit.isActive ? Colors.white : Colors.grey,
-      end: widget.habit.isActive ? Colors.white : Colors.grey,
-    ).animate(_animationController);
-
-    _animationController.forward();
-  }
-
-  @override
-  void didUpdateWidget(covariant HabitCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.habit.isActive != widget.habit.isActive) {
-      _opacityAnimation = Tween<double>(
-        begin: oldWidget.habit.isActive ? 1.0 : 0.5,
-        end: widget.habit.isActive ? 1.0 : 0.5,
-      ).animate(CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ));
-
-      _colorAnimation = ColorTween(
-        begin: oldWidget.habit.isActive ? Colors.white : Colors.grey,
-        end: widget.habit.isActive ? Colors.white : Colors.grey,
-      ).animate(_animationController);
-
-      _animationController
-        ..reset()
-        ..forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final cardColor = hexToColor(widget.habitCategory.color);
-    final isActive = widget.habit.isActive;
+    final l10n = context.l10n;
+    final theme = context.themeOf;
+    final color = hexToColor(habitCategory.color);
+    final green = context.theme.commonColors.green100;
+    final stats = context.watch<HabitStatsBloc>().state;
+    final loaded = stats is HabitStatsLoaded ? stats : null;
+    final completed = loaded?.isCompletedToday(habit.id) ?? false;
+    final streak = loaded == null ? null : l10n.streakText(loaded.streakOf(habit));
+    final active = habit.isActive;
+    final schedule = habit.schedule;
+    // Weekday habits are only marked on their days; daily and weekly ones any day.
+    final canComplete =
+        active && (schedule.type != ScheduleType.weekdays || loaded == null || schedule.isDueOn(loaded.today));
+    final description = habit.description?.trim();
+    final progress = !active || loaded == null
+        ? null
+        : schedule.type == ScheduleType.weekdays && !schedule.isDueOn(loaded.today)
+            ? '${l10n.habits_not_today} · ${l10n.weekProgressText(schedule, loaded.weekProgressOf(habit))}'
+            : l10n.weekProgressText(schedule, loaded.weekProgressOf(habit));
 
-    return Dismissible(
-      key: ValueKey(widget.habit.id),
-      direction: DismissDirection.endToStart,
-      confirmDismiss: (direction) async {
-        return _showConfirmDialog(context);
-      },
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      onDismissed: (direction) {
-        context.read<HabitsBloc>().add(DeleteHabit(widget.habit.id));
-      },
-      child: AnimatedBuilder(
-        animation: _animationController,
-        builder: (context, child) {
-          return Opacity(
-            opacity: _opacityAnimation.value,
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: context.themeOf.focusColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isActive ? Colors.transparent : Colors.grey.withOpacity(0.5),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    final meta = [
+      habitCategory.name,
+      if (schedule.type != ScheduleType.daily) l10n.scheduleShort(schedule),
+      if (!active) l10n.habits_paused_label,
+      if (active && streak != null) streak,
+    ].join(' · ');
+
+    return Semantics(
+      container: true,
+      label: [
+        habit.title,
+        meta,
+        if (progress != null) progress,
+        if (canComplete) completed ? l10n.habits_done_today : l10n.habits_not_done_today,
+      ].join(', '),
+      child: AnimatedOpacity(
+        duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 200),
+        opacity: active ? 1 : 0.6,
+        child: Material(
+          color: completed ? Color.alphaBlend(green.withValues(alpha: 0.08), theme.cardColor) : theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => editHabit(context, habit),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.black87.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Center(
-                            child: Text(
-                              widget.habit.icon ?? '',
-                              style: TextStyle(
-                                fontSize: 32,
-                                color: _colorAnimation.value,
-                              ),
-                            ),
+                  ExcludeSemantics(
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(color: color.withValues(alpha: 0.18), shape: BoxShape.circle),
+                      child: Text(habit.icon ?? '🎯', style: const TextStyle(fontSize: 22)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ExcludeSemantics(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            habit.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.2),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
+                          if (description != null && description.isNotEmpty)
                             Text(
-                              widget.habit.title,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: _colorAnimation.value,
-                                decoration: isActive ? null : TextDecoration.lineThrough,
-                              ),
+                              description,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall,
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              widget.habit.description ?? '',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: _colorAnimation.value,
-                              ),
+                          const SizedBox(height: 4),
+                          Text(
+                            meta,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w600),
+                          ),
+                          if (progress != null) ...[
+                            const SizedBox(height: 2),
+                            Text(progress,
+                                maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
+                          ],
+                          if (active && loaded != null) ...[
+                            const SizedBox(height: 6),
+                            _WeekMarks(
+                              color: color,
+                              schedule: schedule,
+                              today: loaded.today,
+                              completedDays: loaded.completedDaysOf(habit.id),
                             ),
                           ],
-                        ),
+                        ],
                       ),
-                      if (isActive)
-                        HabitCompletionButton(
-                          habitId: widget.habit.id,
-                          color: cardColor,
-                          iconColor: Colors.black,
-                        ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 70,
-                    child: isActive
-                        ? BlocBuilder<HabitStatsBloc, HabitStatsState>(
-                            builder: (context, state) {
-                              switch (state) {
-                                case final HabitStatsLoaded loaded:
-                                  return HabitGridPainterWidget(
-                                    color: cardColor,
-                                    today: loaded.today,
-                                    completedDays: loaded.completedDaysOf(widget.habit.id),
-                                  );
-                                case _:
-                                  return const Center(
-                                    child: CircularProgressIndicator.adaptive(
-                                      backgroundColor: Colors.white,
-                                    ),
-                                  );
-                              }
-                            },
-                          )
-                        : Container(
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'Привычка неактивна',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: cardColor.withOpacity(isActive ? 1.0 : 0.5),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              getCategoryIcon(widget.habitCategory.id),
-                              color: _colorAnimation.value,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              widget.habitCategory.name,
-                              style: TextStyle(
-                                color: _colorAnimation.value,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Switch(
-                        value: widget.habit.isActive,
-                        onChanged: (value) {
-                          AppHaptics.selection();
-                          context.read<HabitsBloc>().add(ToggleActiveHabit(widget.habit.id));
-                        },
-                        activeColor: cardColor,
-                        inactiveThumbColor: Colors.grey,
-                      ),
-                    ],
-                  ),
+                  if (canComplete)
+                    HabitCompletionButton(
+                      habitId: habit.id,
+                      round: true,
+                      color: color,
+                      completedColor: green,
+                      iconColor: Colors.white,
+                    ),
+                  HabitMenuButton(habit: habit),
                 ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 }
 
-Color getRandomColor() {
-  final random = Random();
-  final red = random.nextInt(156) + 100; // Диапазон 100-255
-  final green = random.nextInt(156) + 100; // Диапазон 100-255
-  final blue = random.nextInt(156) + 100; // Диапазон 100-255
+/// This week, Monday to Sunday, as small pixels: marked days filled, today underlined.
+/// For a weekday schedule, its days are outlined and the days off faded.
+class _WeekMarks extends StatelessWidget {
+  final Color color;
+  final HabitSchedule schedule;
+  final CalendarDay today;
+  final List<CalendarDay> completedDays;
 
-  return Color.fromARGB(255, red, green, blue);
-}
+  const _WeekMarks({required this.color, required this.schedule, required this.today, required this.completedDays});
 
-Color hexToColor(String hexString) {
-  // Удаляем возможный префикс '#'
-  final buffer = StringBuffer();
-  if (hexString.length == 6 || hexString.length == 7) {
-    buffer.write('ff'); // Добавляем непрозрачность (alpha) по умолчанию
+  @override
+  Widget build(BuildContext context) {
+    final done = completedDays.toSet();
+    final empty = context.themeOf.dividerColor;
+    final monday = today.weekStart;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < 7; i++)
+          Builder(builder: (context) {
+            final day = monday.addDays(i);
+            final counts = schedule.countsOn(day);
+            final marked = done.contains(day) && counts;
+            return Padding(
+              padding: const EdgeInsets.only(right: 3),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: marked ? color : (counts ? empty : empty.withValues(alpha: 0.35)),
+                      // Only a weekday schedule tells due days from days off.
+                      border: schedule.type == ScheduleType.weekdays && counts && !marked
+                          ? Border.all(color: color.withValues(alpha: 0.6))
+                          : null,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Container(width: 8, height: 2, color: day == today ? color : Colors.transparent),
+                ],
+              ),
+            );
+          }),
+      ],
+    );
   }
-  buffer.write(hexString.replaceFirst('#', ''));
-
-  // Преобразуем в целое число и создаем Color
-  return Color(int.parse(buffer.toString(), radix: 16));
 }
 
-Future<bool> _showConfirmDialog(BuildContext context) async {
-  return await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: context.themeOf.scaffoldBackgroundColor,
-          title: const Text('Удалить привычку?'),
-          content: const Text('Вы уверены, что хотите удалить эту привычку?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Отмена'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Удалить', style: TextStyle(color: Colors.red)),
-            ),
-          ],
+/// The "⋮" menu of a habit: edit, pause or resume, delete.
+class HabitMenuButton extends StatelessWidget {
+  final Habit habit;
+
+  const HabitMenuButton({required this.habit, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return PopupMenuButton<HabitMenuAction>(
+      tooltip: l10n.habits_actions(habit.title),
+      icon: const Icon(Icons.more_vert),
+      onOpened: AppHaptics.selection,
+      onSelected: (action) => switch (action) {
+        HabitMenuAction.edit => editHabit(context, habit),
+        HabitMenuAction.togglePause => context.read<HabitsBloc>().add(ToggleActiveHabit(habit.id)),
+        HabitMenuAction.delete => deleteHabit(context, habit),
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: HabitMenuAction.edit,
+          child: ListTile(
+              leading: const Icon(Icons.edit_outlined), title: Text(l10n.habits_edit), contentPadding: EdgeInsets.zero),
         ),
-      ) ??
-      false;
-}
-
-IconData getCategoryIcon(String categoryId) {
-  switch (categoryId) {
-    case 'art':
-      return Icons.brush; // Иконка творчества
-    case 'education':
-      return Icons.school; // Иконка обучения
-    case 'health':
-      return Icons.fitness_center; // Иконка здоровья
-    case 'money':
-      return Icons.attach_money; // Иконка финансов
-    case 'selv-development':
-      return Icons.self_improvement; // Саморазвитие
-    case 'sport':
-      return Icons.sports_soccer; // Иконка спорта
-    case 'work':
-      return Icons.work; // Иконка работы
-    default:
-      return Icons.category; // Иконка по умолчанию
+        PopupMenuItem(
+          value: HabitMenuAction.togglePause,
+          child: ListTile(
+            leading: Icon(habit.isActive ? Icons.pause_circle_outline : Icons.play_circle_outline),
+            title: Text(habit.isActive ? l10n.habits_pause : l10n.habits_resume),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        PopupMenuItem(
+          value: HabitMenuAction.delete,
+          child: ListTile(
+            leading: const Icon(Icons.delete_outline, color: Colors.red),
+            title: Text(l10n.habits_delete, style: const TextStyle(color: Colors.red)),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+      ],
+    );
   }
 }

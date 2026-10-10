@@ -421,6 +421,324 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong. Please try again.';
 
   @override
+  String get habits_schedule_label => 'Schedule';
+
+  @override
+  String get habits_schedule_option_daily => 'Every day';
+
+  @override
+  String get habits_schedule_option_weekly => 'Weekly goal';
+
+  @override
+  String get habits_schedule_option_weekdays => 'On days';
+
+  @override
+  String get habits_schedule_daily => 'Every day';
+
+  @override
+  String habits_schedule_times_per_week(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times a week',
+      two: 'twice a week',
+      one: 'once a week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habits_schedule_weekly_summary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times a week, any days',
+      two: 'Twice a week, any days',
+      one: 'Once a week, any day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get habits_weekly_target_label => 'Times per week';
+
+  @override
+  String get habits_weekdays_label => 'Weekdays';
+
+  @override
+  String get habits_weekdays_required => 'Choose at least one day';
+
+  @override
+  String get habits_weekday_1 => 'Mon';
+
+  @override
+  String get habits_weekday_2 => 'Tue';
+
+  @override
+  String get habits_weekday_3 => 'Wed';
+
+  @override
+  String get habits_weekday_4 => 'Thu';
+
+  @override
+  String get habits_weekday_5 => 'Fri';
+
+  @override
+  String get habits_weekday_6 => 'Sat';
+
+  @override
+  String get habits_weekday_7 => 'Sun';
+
+  @override
+  String habits_streak_weeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count-week streak',
+      one: '$count-week streak',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habits_streak_occurrences(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count in a row',
+      one: '$count in a row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habits_week_target_progress(int done, int goal) {
+    return '$done/$goal this week';
+  }
+
+  @override
+  String habits_weekdays_progress(int done, int goal) {
+    return '$done of $goal days this week';
+  }
+
+  @override
+  String get habits_not_today => 'Not scheduled today';
+
+  @override
+  String get habits_section_week => 'Weekly goals';
+
+  @override
+  String get habits_section_other_days => 'On other days';
+
+  @override
+  String habits_week_goals(int done, int total) {
+    return 'Weekly goals: $done of $total';
+  }
+
+  @override
+  String get habits_schedule_change_title => 'Change the schedule type?';
+
+  @override
+  String get habits_schedule_change_message =>
+      'Your current streak will start over: each schedule type counts streaks differently. Your completion history is kept.';
+
+  @override
+  String get habits_schedule_change_confirm => 'Change schedule';
+
+  @override
+  String social_best_streak_days(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'days',
+      one: 'day',
+    );
+    return '$_temp0 in a row — best streak';
+  }
+
+  @override
+  String social_best_streak_weeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'weeks',
+      one: 'week',
+    );
+    return '$_temp0 in a row — best streak';
+  }
+
+  @override
+  String social_best_streak_occurrences(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'times',
+      one: 'time',
+    );
+    return '$_temp0 in a row — best streak';
+  }
+
+  @override
+  String get habits_title => 'Habits';
+
+  @override
+  String get habits_add => 'Add habit';
+
+  @override
+  String habits_actions(String title) {
+    return 'Actions for “$title”';
+  }
+
+  @override
+  String get habits_category_label => 'Category';
+
+  @override
+  String get habits_category_other => 'Other';
+
+  @override
+  String get habits_delete => 'Delete';
+
+  @override
+  String habits_delete_title(String title) {
+    return 'Delete “$title”?';
+  }
+
+  @override
+  String get habits_delete_message =>
+      'The habit and its whole history will be deleted on all devices. To take a break instead, pause it — the history is kept.';
+
+  @override
+  String get habits_description_label => 'Description (optional)';
+
+  @override
+  String get habits_discard => 'Discard';
+
+  @override
+  String get habits_discard_message => 'Your changes haven\'t been saved.';
+
+  @override
+  String get habits_discard_title => 'Leave without saving?';
+
+  @override
+  String get habits_keep_editing => 'Keep editing';
+
+  @override
+  String get habits_done_today => 'done today';
+
+  @override
+  String get habits_not_done_today => 'not done today';
+
+  @override
+  String get habits_edit => 'Edit';
+
+  @override
+  String get habits_edit_title => 'Edit habit';
+
+  @override
+  String get habits_new_title => 'New habit';
+
+  @override
+  String get habits_empty_title => 'Start with your first habit';
+
+  @override
+  String get habits_empty_body =>
+      'One small daily step — in a couple of weeks it becomes part of your day.';
+
+  @override
+  String get habits_empty_catalog => 'Pick one from the community catalog';
+
+  @override
+  String get habits_error_add => 'Couldn\'t add the habit. Please try again.';
+
+  @override
+  String get habits_error_completion =>
+      'Couldn\'t save the mark. Please try again.';
+
+  @override
+  String get habits_error_delete =>
+      'Couldn\'t delete the habit. Please try again.';
+
+  @override
+  String get habits_error_generic =>
+      'Couldn\'t save the change. Please try again.';
+
+  @override
+  String get habits_error_load => 'Couldn\'t load your habits.';
+
+  @override
+  String get habits_error_update =>
+      'Couldn\'t save the habit. Please try again.';
+
+  @override
+  String get habits_icon_custom => 'Your own emoji';
+
+  @override
+  String get habits_icon_label => 'Icon';
+
+  @override
+  String get habits_icon_single => 'Enter a single emoji';
+
+  @override
+  String get habits_loading => 'Loading habits';
+
+  @override
+  String get habits_name_label => 'Name';
+
+  @override
+  String get habits_name_required => 'Enter a name';
+
+  @override
+  String habits_nothing_today(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Nothing scheduled today: $count habits are paused.',
+      one: 'Nothing scheduled today: $count habit is paused.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get habits_pause => 'Pause';
+
+  @override
+  String get habits_paused_label => 'Paused';
+
+  @override
+  String get habits_resume => 'Resume';
+
+  @override
+  String get habits_section_paused => 'Paused';
+
+  @override
+  String get habits_section_today => 'Today';
+
+  @override
+  String habits_streak(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count-day streak',
+      one: '$count-day streak',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get habits_today_all_done => 'All done for today 🎉';
+
+  @override
+  String get habits_today_loading => 'Counting progress…';
+
+  @override
+  String get habits_today_nothing => 'Nothing scheduled for today';
+
+  @override
+  String habits_today_progress(int completed, int total) {
+    return '$completed of $total done';
+  }
+
+  @override
   String get social_accept => 'Accept';
 
   @override

@@ -30,8 +30,9 @@ class AppDatabase extends _$AppDatabase {
   /// 4 — community memberships no longer link a personal habit.
   /// 5 — community memberships link the ranked habit again.
   /// 6 — offline cache of the user's social profile, friends and requests.
+  /// 7 — habit schedules (daily, weekly target, weekdays) and the streak reset day.
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -46,6 +47,13 @@ class AppDatabase extends _$AppDatabase {
         // v3 already has `habit_id` (v4 removed it), so only v4 needs it added back.
         if (from == 4) await m.addColumn(communityMemberships, communityMemberships.habitId);
         if (from < 6) await m.createTable(socialCache);
+        // v1 habits were rebuilt with the current columns in _migrateFrom1To2.
+        if (from >= 2 && from < 7) {
+          await m.addColumn(habits, habits.scheduleType);
+          await m.addColumn(habits, habits.weeklyTarget);
+          await m.addColumn(habits, habits.scheduleDays);
+          await m.addColumn(habits, habits.streakResetOn);
+        }
       },
     );
   }
@@ -84,7 +92,15 @@ class AppDatabase extends _$AppDatabase {
     await m.alterTable(
       TableMigration(
         habits,
-        newColumns: [habits.deletedAt, habits.localVersion],
+        newColumns: [
+          habits.deletedAt,
+          habits.localVersion,
+          // Added in v7; the table is rebuilt with today's columns.
+          habits.scheduleType,
+          habits.weeklyTarget,
+          habits.scheduleDays,
+          habits.streakResetOn,
+        ],
         columnTransformer: {habits.isPendingSync: const Constant(true)},
       ),
     );

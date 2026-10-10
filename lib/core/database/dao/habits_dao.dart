@@ -38,9 +38,16 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
     int? steps,
     bool? isActive,
     String? icon,
+    ({String type, int? weeklyTarget, int? days})? schedule,
+    String? streakResetOn,
   }) {
     return (update(habits)..where((t) => t.id.equals(habitId) & t.deletedAt.isNull())).write(
       HabitsCompanion.custom(
+        // A schedule is written as a whole, so switching types clears the old values.
+        scheduleType: schedule == null ? null : Variable(schedule.type),
+        weeklyTarget: schedule == null ? null : Variable(schedule.weeklyTarget),
+        scheduleDays: schedule == null ? null : Variable(schedule.days),
+        streakResetOn: streakResetOn == null ? null : Variable(streakResetOn),
         title: title == null ? null : Variable(title),
         description: description == null ? null : Variable(description),
         categoryId: categoryId == null ? null : Variable(categoryId),

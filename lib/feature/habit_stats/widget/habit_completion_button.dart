@@ -9,10 +9,11 @@ import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
 
 /// Marks a habit as done for today, or undoes today's mark.
 ///
-/// Press feedback is immediate; the "done" feedback (haptic and icon transition)
-/// follows the confirmed state from [HabitStatsBloc], so it never claims success
-/// for a write that did not happen. A completion arriving from synchronization
-/// updates the icon silently.
+/// A tap shows the requested state at once and asks [HabitStatsBloc] for exactly that
+/// state, so a repeated tap cannot flip the mark back. Taps are ignored until the
+/// result arrives. The "done" haptic follows the confirmed state; if saving fails, the
+/// control returns to the stored state (the screen explains the failure). A completion
+/// arriving from synchronization updates the control silently.
 class HabitCompletionButton extends StatefulWidget {
   final String habitId;
 
@@ -23,11 +24,19 @@ class HabitCompletionButton extends StatefulWidget {
   final Color completedColor;
   final Color iconColor;
 
+  /// A round check control (habits list) instead of the square toggle (home cards).
+  final bool round;
+
+  /// Diameter of the round control; also its touch target.
+  final double size;
+
   const HabitCompletionButton({
     required this.habitId,
     required this.color,
     required this.iconColor,
     this.completedColor = Colors.grey,
+    this.round = false,
+    this.size = 48,
     super.key,
   });
 
@@ -36,79 +45,116 @@ class HabitCompletionButton extends StatefulWidget {
 }
 
 class _HabitCompletionButtonState extends State<HabitCompletionButton> {
-  /// Set by a tap and consumed by the resulting state change.
-  bool _awaitingResult = false;
-  Timer? _awaitTimeout;
+  /// The state requested by the last tap, shown until the bloc confirms or fails.
+  bool? _pending;
+  Timer? _pendingTimeout;
 
   static const _duration = Duration(milliseconds: 180);
   static const _resultTimeout = Duration(seconds: 3);
 
   bool _isCompleted(HabitStatsState state) => state is HabitStatsLoaded && state.isCompletedToday(widget.habitId);
 
-  void _onTap() {
-    _awaitingResult = true;
-    _awaitTimeout?.cancel();
-    _awaitTimeout = Timer(_resultTimeout, () => _awaitingResult = false);
-    context.read<HabitStatsBloc>().add(HabitCompletionToggled(widget.habitId));
+  void _onTap(bool shown) {
+    if (_pending != null) return; // a request is still running
+    final target = !shown;
+    setState(() => _pending = target);
+    _pendingTimeout?.cancel();
+    _pendingTimeout = Timer(_resultTimeout, () {
+      if (mounted) setState(() => _pending = null);
+    });
+    context.read<HabitStatsBloc>().add(HabitCompletionToggled(widget.habitId, completed: target));
   }
 
-  void _onCompletionChanged(BuildContext context, HabitStatsState state) {
-    if (!_awaitingResult) return;
-    _awaitingResult = false;
-    _awaitTimeout?.cancel();
-    if (_isCompleted(state)) AppHaptics.success();
+  void _onStateChanged(BuildContext context, HabitStatsState state) {
+    final pending = _pending;
+    if (pending == null) return;
+    final failed = state is HabitStatsLoaded && state.failedHabitId == widget.habitId;
+    final confirmed = _isCompleted(state) == pending;
+    if (!failed && !confirmed) return;
+    _pendingTimeout?.cancel();
+    setState(() => _pending = null);
+    if (confirmed && pending) AppHaptics.success();
   }
 
   @override
   void dispose() {
-    _awaitTimeout?.cancel();
+    _pendingTimeout?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final completed = context.select<HabitStatsBloc, bool>((bloc) => _isCompleted(bloc.state));
+    final stored = context.select<HabitStatsBloc, bool>((bloc) => _isCompleted(bloc.state));
+    final completed = _pending ?? stored;
     final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : _duration;
 
     return BlocListener<HabitStatsBloc, HabitStatsState>(
-      listenWhen: (previous, current) => _isCompleted(previous) != _isCompleted(current),
-      listener: _onCompletionChanged,
+      listener: _onStateChanged,
       child: Semantics(
         button: true,
+        toggled: completed,
         label: completed ? context.l10n.habit_unmark_done : context.l10n.habit_mark_done,
         excludeSemantics: true,
-        onTap: _onTap,
+        onTap: () => _onTap(completed),
         child: PressableScale(
           pressedScale: 0.92,
-          child: InkWell(
-            onTap: _onTap,
-            borderRadius: BorderRadius.circular(8),
-            child: AnimatedContainer(
-              duration: duration,
-              curve: Curves.easeOut,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: completed ? widget.completedColor : widget.color,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: AnimatedSwitcher(
-                duration: duration,
-                switchInCurve: Curves.easeOutBack,
-                switchOutCurve: Curves.easeIn,
-                transitionBuilder: (child, animation) => ScaleTransition(
-                  scale: animation,
-                  child: FadeTransition(opacity: animation, child: child),
-                ),
-                child: Icon(
-                  completed ? Icons.close : Icons.check,
-                  key: ValueKey(completed),
-                  color: widget.iconColor,
-                ),
-              ),
-            ),
-          ),
+          child: widget.round ? _round(completed, duration) : _square(completed, duration),
         ),
       ),
     );
   }
+
+  Widget _icon(bool completed, Duration duration, {required IconData done, required IconData notDone, double? size}) =>
+      AnimatedSwitcher(
+        duration: duration,
+        switchInCurve: Curves.easeOutBack,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) => ScaleTransition(
+          scale: animation,
+          child: FadeTransition(opacity: animation, child: child),
+        ),
+        child: Icon(completed ? done : notDone, key: ValueKey(completed), color: widget.iconColor, size: size),
+      );
+
+  Widget _square(bool completed, Duration duration) => InkWell(
+        onTap: () => _onTap(completed),
+        borderRadius: BorderRadius.circular(8),
+        child: AnimatedContainer(
+          duration: duration,
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: completed ? widget.completedColor : widget.color,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: _icon(completed, duration, done: Icons.close, notDone: Icons.check),
+        ),
+      );
+
+  Widget _round(bool completed, Duration duration) => Material(
+        type: MaterialType.transparency,
+        child: InkResponse(
+          onTap: () => _onTap(completed),
+          radius: widget.size / 2,
+          child: SizedBox.square(
+            dimension: widget.size,
+            child: Center(
+              child: AnimatedContainer(
+                duration: duration,
+                curve: Curves.easeOut,
+                width: widget.size - 12,
+                height: widget.size - 12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: completed ? widget.completedColor : Colors.transparent,
+                  border: Border.all(color: completed ? widget.completedColor : widget.color, width: 2),
+                ),
+                child: completed
+                    ? _icon(completed, duration, done: Icons.check, notDone: Icons.check, size: 20)
+                    : const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        ),
+      );
 }

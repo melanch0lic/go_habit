@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_habit/core/theme/app_theme.dart';
 import 'package:go_habit/l10n/app_localizations.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 
@@ -21,6 +22,10 @@ Widget makeTestableWidget({
           useDarkTheme ? Colors.grey[900] : Colors.grey[100],
       cardColor: useDarkTheme ? Colors.grey[800] : Colors.white,
       focusColor: useDarkTheme ? Colors.black54 : Colors.grey[800],
+      // The app's design tokens (colors, text styles) used by its widgets.
+      extensions: [
+        if (useDarkTheme) AppThemeExtension.darkThemeExtension() else AppThemeExtension.lightThemeExtension(),
+      ],
     ),
     home: Scaffold(
       body: Center(

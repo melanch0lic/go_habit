@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
 /// Weekly consistency (`weekly_consistency_v1`), the same rule the server ranks by
 /// (`public._community_scores` on the server):
@@ -7,8 +8,10 @@ import 'package:go_habit/core/utils/calendar_day.dart';
 /// - the week runs from Monday to today (the user's local calendar date);
 /// - a day is eligible from the latest of: week start, join day, the day the habit
 ///   was created (UTC, as on the server) — up to and including today;
-/// - every day is scheduled, because habits are daily;
-/// - each eligible day counts once if it has a completion;
+/// - daily habits: every eligible day is scheduled; each counts once if marked;
+/// - selected weekdays: only the selected days in that range are scheduled;
+/// - weekly target: the week asks for the target number of marked days, and marks
+///   beyond the target do not count;
 /// - a paused habit is not scored.
 ///
 /// Used for the user's own progress on the device, which may include completions that
@@ -52,14 +55,30 @@ class WeeklyConsistency {
     required DateTime habitCreatedAt,
     required Iterable<CalendarDay> completedDays,
     bool habitActive = true,
+    HabitSchedule schedule = HabitSchedule.daily,
   }) {
     if (!habitActive) return notScored;
     final start = eligibleFrom(today: today, joinedOn: joinedOn, habitCreatedAt: habitCreatedAt);
-    final eligible = today.differenceInDays(start) + 1;
-    if (eligible <= 0) return notScored;
+    final span = today.differenceInDays(start) + 1;
+    if (span <= 0) return notScored;
+    final range = List.generate(span, start.addDays);
     // A set: duplicate records of one day count once.
     final completed = completedDays.where((day) => day.compareTo(start) >= 0 && day.compareTo(today) <= 0).toSet();
-    return WeeklyConsistency(completedDays: completed.length, eligibleDays: eligible);
+    switch (schedule.type) {
+      case ScheduleType.daily:
+        return WeeklyConsistency(completedDays: completed.length, eligibleDays: span);
+      case ScheduleType.weekdays:
+        final scheduled = range.where(schedule.isDueOn).toSet();
+        if (scheduled.isEmpty) return notScored;
+        return WeeklyConsistency(
+            completedDays: completed.intersection(scheduled).length, eligibleDays: scheduled.length);
+      case ScheduleType.weeklyTarget:
+        final target = schedule.weeklyTarget!;
+        return WeeklyConsistency(
+          completedDays: completed.length > target ? target : completed.length,
+          eligibleDays: target,
+        );
+    }
   }
 
   @override

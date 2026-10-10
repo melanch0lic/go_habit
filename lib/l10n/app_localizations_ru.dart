@@ -428,6 +428,332 @@ class AppLocalizationsRu extends AppLocalizations {
       'Что-то пошло не так. Попробуйте ещё раз.';
 
   @override
+  String get habits_schedule_label => 'Расписание';
+
+  @override
+  String get habits_schedule_option_daily => 'Каждый день';
+
+  @override
+  String get habits_schedule_option_weekly => 'Цель на неделю';
+
+  @override
+  String get habits_schedule_option_weekdays => 'По дням';
+
+  @override
+  String get habits_schedule_daily => 'Каждый день';
+
+  @override
+  String habits_schedule_times_per_week(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count раз в неделю',
+      few: '$count раза в неделю',
+      one: '$count раз в неделю',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habits_schedule_weekly_summary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count раз в неделю, в любые дни',
+      few: '$count раза в неделю, в любые дни',
+      one: '$count раз в неделю, в любой день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get habits_weekly_target_label => 'Сколько раз в неделю';
+
+  @override
+  String get habits_weekdays_label => 'Дни недели';
+
+  @override
+  String get habits_weekdays_required => 'Выберите хотя бы один день';
+
+  @override
+  String get habits_weekday_1 => 'Пн';
+
+  @override
+  String get habits_weekday_2 => 'Вт';
+
+  @override
+  String get habits_weekday_3 => 'Ср';
+
+  @override
+  String get habits_weekday_4 => 'Чт';
+
+  @override
+  String get habits_weekday_5 => 'Пт';
+
+  @override
+  String get habits_weekday_6 => 'Сб';
+
+  @override
+  String get habits_weekday_7 => 'Вс';
+
+  @override
+  String habits_streak_weeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count недель подряд',
+      few: '$count недели подряд',
+      one: '$count неделя подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habits_streak_occurrences(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count раз подряд',
+      few: '$count раза подряд',
+      one: '$count раз подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habits_week_target_progress(int done, int goal) {
+    return '$done/$goal на этой неделе';
+  }
+
+  @override
+  String habits_weekdays_progress(int done, int goal) {
+    return '$done из $goal дн. на этой неделе';
+  }
+
+  @override
+  String get habits_not_today => 'Сегодня не по расписанию';
+
+  @override
+  String get habits_section_week => 'Цели на неделю';
+
+  @override
+  String get habits_section_other_days => 'В другие дни';
+
+  @override
+  String habits_week_goals(int done, int total) {
+    return 'Цели недели: $done из $total';
+  }
+
+  @override
+  String get habits_schedule_change_title => 'Изменить тип расписания?';
+
+  @override
+  String get habits_schedule_change_message =>
+      'Текущая серия начнётся заново: у разных расписаний разные правила серий. История отметок сохранится.';
+
+  @override
+  String get habits_schedule_change_confirm => 'Изменить расписание';
+
+  @override
+  String social_best_streak_days(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'дней подряд',
+      few: 'дня подряд',
+      one: 'день подряд',
+    );
+    return '$_temp0 — лучшая серия';
+  }
+
+  @override
+  String social_best_streak_weeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'недель подряд',
+      few: 'недели подряд',
+      one: 'неделя подряд',
+    );
+    return '$_temp0 — лучшая серия';
+  }
+
+  @override
+  String social_best_streak_occurrences(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'раз подряд',
+      few: 'раза подряд',
+      one: 'раз подряд',
+    );
+    return '$_temp0 — лучшая серия';
+  }
+
+  @override
+  String get habits_title => 'Привычки';
+
+  @override
+  String get habits_add => 'Добавить привычку';
+
+  @override
+  String habits_actions(String title) {
+    return 'Действия с привычкой «$title»';
+  }
+
+  @override
+  String get habits_category_label => 'Категория';
+
+  @override
+  String get habits_category_other => 'Другое';
+
+  @override
+  String get habits_delete => 'Удалить';
+
+  @override
+  String habits_delete_title(String title) {
+    return 'Удалить «$title»?';
+  }
+
+  @override
+  String get habits_delete_message =>
+      'Привычка и вся история её отметок будут удалены на всех устройствах. Если хотите сделать перерыв, поставьте её на паузу — история сохранится.';
+
+  @override
+  String get habits_description_label => 'Описание (необязательно)';
+
+  @override
+  String get habits_discard => 'Не сохранять';
+
+  @override
+  String get habits_discard_message => 'Изменения не сохранены.';
+
+  @override
+  String get habits_discard_title => 'Выйти без сохранения?';
+
+  @override
+  String get habits_keep_editing => 'Продолжить';
+
+  @override
+  String get habits_done_today => 'выполнено сегодня';
+
+  @override
+  String get habits_not_done_today => 'не выполнено сегодня';
+
+  @override
+  String get habits_edit => 'Редактировать';
+
+  @override
+  String get habits_edit_title => 'Редактирование';
+
+  @override
+  String get habits_new_title => 'Новая привычка';
+
+  @override
+  String get habits_empty_title => 'Начните с первой привычки';
+
+  @override
+  String get habits_empty_body =>
+      'Маленький ежедневный шаг — и через пару недель он станет частью дня.';
+
+  @override
+  String get habits_empty_catalog => 'Выбрать из каталога сообществ';
+
+  @override
+  String get habits_error_add =>
+      'Не удалось добавить привычку. Попробуйте ещё раз.';
+
+  @override
+  String get habits_error_completion =>
+      'Не удалось сохранить отметку. Попробуйте ещё раз.';
+
+  @override
+  String get habits_error_delete =>
+      'Не удалось удалить привычку. Попробуйте ещё раз.';
+
+  @override
+  String get habits_error_generic =>
+      'Не удалось сохранить изменения. Попробуйте ещё раз.';
+
+  @override
+  String get habits_error_load => 'Не удалось загрузить привычки.';
+
+  @override
+  String get habits_error_update =>
+      'Не удалось сохранить привычку. Попробуйте ещё раз.';
+
+  @override
+  String get habits_icon_custom => 'Свой эмодзи';
+
+  @override
+  String get habits_icon_label => 'Иконка';
+
+  @override
+  String get habits_icon_single => 'Введите один эмодзи';
+
+  @override
+  String get habits_loading => 'Загрузка привычек';
+
+  @override
+  String get habits_name_label => 'Название';
+
+  @override
+  String get habits_name_required => 'Введите название';
+
+  @override
+  String habits_nothing_today(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'На сегодня ничего не запланировано: $count привычек на паузе.',
+      few: 'На сегодня ничего не запланировано: $count привычки на паузе.',
+      one: 'На сегодня ничего не запланировано: $count привычка на паузе.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get habits_pause => 'Поставить на паузу';
+
+  @override
+  String get habits_paused_label => 'На паузе';
+
+  @override
+  String get habits_resume => 'Возобновить';
+
+  @override
+  String get habits_section_paused => 'На паузе';
+
+  @override
+  String get habits_section_today => 'На сегодня';
+
+  @override
+  String habits_streak(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дней подряд',
+      few: '$count дня подряд',
+      one: '$count день подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get habits_today_all_done => 'Всё на сегодня выполнено 🎉';
+
+  @override
+  String get habits_today_loading => 'Считаем прогресс…';
+
+  @override
+  String get habits_today_nothing => 'На сегодня ничего не запланировано';
+
+  @override
+  String habits_today_progress(int completed, int total) {
+    return 'Выполнено $completed из $total';
+  }
+
+  @override
   String get social_accept => 'Принять';
 
   @override

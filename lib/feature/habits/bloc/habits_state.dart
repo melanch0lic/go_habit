@@ -30,10 +30,23 @@ class HabitsOperationSuccess extends HabitsState {
   HabitsOperationSuccess({required this.habits, required this.message});
 }
 
+/// What the user tried to do when an operation failed.
+enum HabitOperation { add, update, delete, toggleActive, unknown }
+
 class HabitsOperationFailure extends HabitsState {
   @override
   final List<Habit> habits;
+
+  /// Technical details for logs; the UI shows a message for [operation].
+  final String error;
+  final HabitOperation operation;
+
+  HabitsOperationFailure({required this.habits, required this.error, this.operation = HabitOperation.unknown});
+}
+
+/// The habits could not be read from the device at all.
+final class HabitsLoadFailure extends HabitsState {
   final String error;
 
-  HabitsOperationFailure({required this.habits, required this.error});
+  HabitsLoadFailure(this.error);
 }

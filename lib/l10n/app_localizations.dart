@@ -734,6 +734,456 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get community_error_unknown;
 
+  /// No description provided for @habits_schedule_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get habits_schedule_label;
+
+  /// No description provided for @habits_schedule_option_daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get habits_schedule_option_daily;
+
+  /// No description provided for @habits_schedule_option_weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly goal'**
+  String get habits_schedule_option_weekly;
+
+  /// No description provided for @habits_schedule_option_weekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'On days'**
+  String get habits_schedule_option_weekdays;
+
+  /// No description provided for @habits_schedule_daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get habits_schedule_daily;
+
+  /// No description provided for @habits_schedule_times_per_week.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{once a week} =2{twice a week} other{{count} times a week}}'**
+  String habits_schedule_times_per_week(int count);
+
+  /// No description provided for @habits_schedule_weekly_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Once a week, any day} =2{Twice a week, any days} other{{count} times a week, any days}}'**
+  String habits_schedule_weekly_summary(int count);
+
+  /// No description provided for @habits_weekly_target_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Times per week'**
+  String get habits_weekly_target_label;
+
+  /// No description provided for @habits_weekdays_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get habits_weekdays_label;
+
+  /// No description provided for @habits_weekdays_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one day'**
+  String get habits_weekdays_required;
+
+  /// No description provided for @habits_weekday_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get habits_weekday_1;
+
+  /// No description provided for @habits_weekday_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get habits_weekday_2;
+
+  /// No description provided for @habits_weekday_3.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get habits_weekday_3;
+
+  /// No description provided for @habits_weekday_4.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get habits_weekday_4;
+
+  /// No description provided for @habits_weekday_5.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get habits_weekday_5;
+
+  /// No description provided for @habits_weekday_6.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get habits_weekday_6;
+
+  /// No description provided for @habits_weekday_7.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get habits_weekday_7;
+
+  /// No description provided for @habits_streak_weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count}-week streak} other{{count}-week streak}}'**
+  String habits_streak_weeks(int count);
+
+  /// No description provided for @habits_streak_occurrences.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} in a row} other{{count} in a row}}'**
+  String habits_streak_occurrences(int count);
+
+  /// No description provided for @habits_week_target_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done}/{goal} this week'**
+  String habits_week_target_progress(int done, int goal);
+
+  /// No description provided for @habits_weekdays_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {goal} days this week'**
+  String habits_weekdays_progress(int done, int goal);
+
+  /// No description provided for @habits_not_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Not scheduled today'**
+  String get habits_not_today;
+
+  /// No description provided for @habits_section_week.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly goals'**
+  String get habits_section_week;
+
+  /// No description provided for @habits_section_other_days.
+  ///
+  /// In en, this message translates to:
+  /// **'On other days'**
+  String get habits_section_other_days;
+
+  /// No description provided for @habits_week_goals.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly goals: {done} of {total}'**
+  String habits_week_goals(int done, int total);
+
+  /// No description provided for @habits_schedule_change_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the schedule type?'**
+  String get habits_schedule_change_title;
+
+  /// No description provided for @habits_schedule_change_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current streak will start over: each schedule type counts streaks differently. Your completion history is kept.'**
+  String get habits_schedule_change_message;
+
+  /// No description provided for @habits_schedule_change_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Change schedule'**
+  String get habits_schedule_change_confirm;
+
+  /// No description provided for @social_best_streak_days.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{day} other{days}} in a row — best streak'**
+  String social_best_streak_days(int count);
+
+  /// No description provided for @social_best_streak_weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{week} other{weeks}} in a row — best streak'**
+  String social_best_streak_weeks(int count);
+
+  /// No description provided for @social_best_streak_occurrences.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{time} other{times}} in a row — best streak'**
+  String social_best_streak_occurrences(int count);
+
+  /// No description provided for @habits_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get habits_title;
+
+  /// No description provided for @habits_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add habit'**
+  String get habits_add;
+
+  /// No description provided for @habits_actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions for “{title}”'**
+  String habits_actions(String title);
+
+  /// No description provided for @habits_category_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get habits_category_label;
+
+  /// No description provided for @habits_category_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get habits_category_other;
+
+  /// No description provided for @habits_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get habits_delete;
+
+  /// No description provided for @habits_delete_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete “{title}”?'**
+  String habits_delete_title(String title);
+
+  /// No description provided for @habits_delete_message.
+  ///
+  /// In en, this message translates to:
+  /// **'The habit and its whole history will be deleted on all devices. To take a break instead, pause it — the history is kept.'**
+  String get habits_delete_message;
+
+  /// No description provided for @habits_description_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get habits_description_label;
+
+  /// No description provided for @habits_discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get habits_discard;
+
+  /// No description provided for @habits_discard_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes haven\'t been saved.'**
+  String get habits_discard_message;
+
+  /// No description provided for @habits_discard_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave without saving?'**
+  String get habits_discard_title;
+
+  /// No description provided for @habits_keep_editing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get habits_keep_editing;
+
+  /// No description provided for @habits_done_today.
+  ///
+  /// In en, this message translates to:
+  /// **'done today'**
+  String get habits_done_today;
+
+  /// No description provided for @habits_not_done_today.
+  ///
+  /// In en, this message translates to:
+  /// **'not done today'**
+  String get habits_not_done_today;
+
+  /// No description provided for @habits_edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get habits_edit;
+
+  /// No description provided for @habits_edit_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit habit'**
+  String get habits_edit_title;
+
+  /// No description provided for @habits_new_title.
+  ///
+  /// In en, this message translates to:
+  /// **'New habit'**
+  String get habits_new_title;
+
+  /// No description provided for @habits_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with your first habit'**
+  String get habits_empty_title;
+
+  /// No description provided for @habits_empty_body.
+  ///
+  /// In en, this message translates to:
+  /// **'One small daily step — in a couple of weeks it becomes part of your day.'**
+  String get habits_empty_body;
+
+  /// No description provided for @habits_empty_catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one from the community catalog'**
+  String get habits_empty_catalog;
+
+  /// No description provided for @habits_error_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add the habit. Please try again.'**
+  String get habits_error_add;
+
+  /// No description provided for @habits_error_completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the mark. Please try again.'**
+  String get habits_error_completion;
+
+  /// No description provided for @habits_error_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the habit. Please try again.'**
+  String get habits_error_delete;
+
+  /// No description provided for @habits_error_generic.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the change. Please try again.'**
+  String get habits_error_generic;
+
+  /// No description provided for @habits_error_load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your habits.'**
+  String get habits_error_load;
+
+  /// No description provided for @habits_error_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the habit. Please try again.'**
+  String get habits_error_update;
+
+  /// No description provided for @habits_icon_custom.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own emoji'**
+  String get habits_icon_custom;
+
+  /// No description provided for @habits_icon_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get habits_icon_label;
+
+  /// No description provided for @habits_icon_single.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a single emoji'**
+  String get habits_icon_single;
+
+  /// No description provided for @habits_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading habits'**
+  String get habits_loading;
+
+  /// No description provided for @habits_name_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get habits_name_label;
+
+  /// No description provided for @habits_name_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get habits_name_required;
+
+  /// No description provided for @habits_nothing_today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Nothing scheduled today: {count} habit is paused.} other{Nothing scheduled today: {count} habits are paused.}}'**
+  String habits_nothing_today(int count);
+
+  /// No description provided for @habits_pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get habits_pause;
+
+  /// No description provided for @habits_paused_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get habits_paused_label;
+
+  /// No description provided for @habits_resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get habits_resume;
+
+  /// No description provided for @habits_section_paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get habits_section_paused;
+
+  /// No description provided for @habits_section_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get habits_section_today;
+
+  /// No description provided for @habits_streak.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count}-day streak} other{{count}-day streak}}'**
+  String habits_streak(int count);
+
+  /// No description provided for @habits_today_all_done.
+  ///
+  /// In en, this message translates to:
+  /// **'All done for today 🎉'**
+  String get habits_today_all_done;
+
+  /// No description provided for @habits_today_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting progress…'**
+  String get habits_today_loading;
+
+  /// No description provided for @habits_today_nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing scheduled for today'**
+  String get habits_today_nothing;
+
+  /// No description provided for @habits_today_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} done'**
+  String habits_today_progress(int completed, int total);
+
   /// No description provided for @social_accept.
   ///
   /// In en, this message translates to:
