@@ -5,8 +5,9 @@ import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
 import 'package:go_habit/feature/communities/view/community_texts.dart';
 import 'package:go_habit/feature/communities/view/components/category_style.dart';
+import 'package:go_habit/feature/habits/view/habit_texts.dart';
 
-/// A catalog entry in the style of the habit cards.
+/// A catalog entry in the style of the habit cards, with its recommended frequency.
 class CommunityCard extends StatelessWidget {
   final HabitTemplate template;
 
@@ -72,6 +73,24 @@ class CommunityCard extends StatelessWidget {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             CategoryPill(categoryId: template.categoryId),
+                            // Wraps on narrow screens with large text.
+                            Text.rich(
+                              TextSpan(children: [
+                                WidgetSpan(
+                                  alignment: PlaceholderAlignment.middle,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 4),
+                                    child: Icon(
+                                      Icons.event_repeat,
+                                      size: 16,
+                                      color: Colors.white.withValues(alpha: 0.8),
+                                    ),
+                                  ),
+                                ),
+                                TextSpan(text: l10n.scheduleShort(template.recommendedSchedule)),
+                              ]),
+                              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
+                            ),
                             if (memberCount != null)
                               Text(
                                 memberCount > 0

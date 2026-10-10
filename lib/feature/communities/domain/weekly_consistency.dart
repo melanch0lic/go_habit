@@ -2,20 +2,21 @@ import 'package:flutter/foundation.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
-/// Weekly consistency (`weekly_consistency_v1`), the same rule the server ranks by
-/// (`public._community_scores` on the server):
+/// Weekly consistency, the same rule the server uses (`public._habit_period_counts`):
 ///
-/// - the week runs from Monday to today (the user's local calendar date);
+/// - weeks run Monday to Sunday (the user's local calendar dates);
 /// - a day is eligible from the latest of: week start, join day, the day the habit
-///   was created (UTC, as on the server) — up to and including today;
-/// - daily habits: every eligible day is scheduled; each counts once if marked;
-/// - selected weekdays: only the selected days in that range are scheduled;
-/// - weekly target: the week asks for the target number of marked days, and marks
-///   beyond the target do not count;
+///   was created (UTC, as on the server);
+/// - daily habits: every eligible day is one scheduled action; each counts once;
+/// - selected weekdays: only the selected days in that range are actions;
+/// - weekly target: the target, prorated when the eligible part starts after Monday
+///   (`ceil(target × days from start to Sunday / 7)`); marks beyond it do not count;
 /// - a paused habit is not scored.
 ///
-/// Used for the user's own progress on the device, which may include completions that
-/// have not been synchronized yet. Rankings always come from the server.
+/// [WeeklyConsistency.compute] is the current week up to today (live progress on the
+/// device, which may include completions not synchronized yet);
+/// [WeeklyConsistency.finishedWeek] is a whole finished week, as the community ranking
+/// scores it. Rankings themselves always come from the server.
 @immutable
 class WeeklyConsistency {
   final int completedDays;
@@ -49,6 +50,7 @@ class WeeklyConsistency {
   }) =>
       [weekStart(today), joinedOn, creationDay(habitCreatedAt)].reduce((a, b) => a.compareTo(b) >= 0 ? a : b);
 
+  /// The current week from its eligible start up to [today].
   factory WeeklyConsistency.compute({
     required CalendarDay today,
     required CalendarDay joinedOn,
@@ -58,12 +60,41 @@ class WeeklyConsistency {
     HabitSchedule schedule = HabitSchedule.daily,
   }) {
     if (!habitActive) return notScored;
-    final start = eligibleFrom(today: today, joinedOn: joinedOn, habitCreatedAt: habitCreatedAt);
-    final span = today.differenceInDays(start) + 1;
+    return WeeklyConsistency._score(
+      start: eligibleFrom(today: today, joinedOn: joinedOn, habitCreatedAt: habitCreatedAt),
+      end: today,
+      completedDays: completedDays,
+      schedule: schedule,
+    );
+  }
+
+  /// The whole week starting [weekStart] (a Monday), from its eligible start to Sunday.
+  factory WeeklyConsistency.finishedWeek({
+    required CalendarDay weekStart,
+    required CalendarDay joinedOn,
+    required DateTime habitCreatedAt,
+    required Iterable<CalendarDay> completedDays,
+    bool habitActive = true,
+    HabitSchedule schedule = HabitSchedule.daily,
+  }) {
+    if (!habitActive) return notScored;
+    final start = [weekStart, joinedOn, creationDay(habitCreatedAt)].reduce((a, b) => a.compareTo(b) >= 0 ? a : b);
+    return WeeklyConsistency._score(
+        start: start, end: weekStart.addDays(6), completedDays: completedDays, schedule: schedule);
+  }
+
+  /// Actions over [start] .. [end], a range within one Monday–Sunday week.
+  factory WeeklyConsistency._score({
+    required CalendarDay start,
+    required CalendarDay end,
+    required Iterable<CalendarDay> completedDays,
+    required HabitSchedule schedule,
+  }) {
+    final span = end.differenceInDays(start) + 1;
     if (span <= 0) return notScored;
     final range = List.generate(span, start.addDays);
     // A set: duplicate records of one day count once.
-    final completed = completedDays.where((day) => day.compareTo(start) >= 0 && day.compareTo(today) <= 0).toSet();
+    final completed = completedDays.where((day) => day.compareTo(start) >= 0 && day.compareTo(end) <= 0).toSet();
     switch (schedule.type) {
       case ScheduleType.daily:
         return WeeklyConsistency(completedDays: completed.length, eligibleDays: span);
@@ -71,12 +102,15 @@ class WeeklyConsistency {
         final scheduled = range.where(schedule.isDueOn).toSet();
         if (scheduled.isEmpty) return notScored;
         return WeeklyConsistency(
-            completedDays: completed.intersection(scheduled).length, eligibleDays: scheduled.length);
+          completedDays: completed.intersection(scheduled).length,
+          eligibleDays: scheduled.length,
+        );
       case ScheduleType.weeklyTarget:
-        final target = schedule.weeklyTarget!;
+        final daysLeftInWeek = weekStart(start).addDays(6).differenceInDays(start) + 1;
+        final expected = (schedule.weeklyTarget! * daysLeftInWeek / 7).ceil();
         return WeeklyConsistency(
-          completedDays: completed.length > target ? target : completed.length,
-          eligibleDays: target,
+          completedDays: completed.length > expected ? expected : completed.length,
+          eligibleDays: expected,
         );
     }
   }

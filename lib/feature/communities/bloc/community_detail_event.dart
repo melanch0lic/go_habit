@@ -27,8 +27,9 @@ final class CommunityJoinRequested extends _CommunityAction {
 final class RankedHabitRequested extends _CommunityAction {
   final String title;
   final String description;
+  final HabitSchedule schedule;
 
-  const RankedHabitRequested({required this.title, required this.description});
+  const RankedHabitRequested({required this.title, required this.description, this.schedule = HabitSchedule.daily});
 }
 
 final class CommunityLeaveRequested extends _CommunityAction {

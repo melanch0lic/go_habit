@@ -24,8 +24,9 @@ extension RankedHabitOf on CommunityMembership {
           : RankedHabitStatus.available;
 }
 
-/// The user's own weekly progress in a community, from the habits and completions
-/// on this device (including marks that are not synchronized yet). Drawn on the dark
+/// The user's own progress in the current week of a community, from the habits and
+/// completions on this device (including marks that are not synchronized yet). Shown
+/// apart from the ranking, which covers the last finished week. Drawn on the dark
 /// habit-card surface.
 class MembershipProgress extends StatelessWidget {
   final CommunityMembership membership;
@@ -88,7 +89,13 @@ class MembershipProgress extends StatelessWidget {
           const SizedBox(height: 6),
           line(
             progress.isScored
-                ? l10n.community_week_progress(progress.completedDays, progress.eligibleDays)
+                ? l10n.community_this_week(switch (habit.schedule.type) {
+                    ScheduleType.daily => l10n.community_progress_days(progress.completedDays, progress.eligibleDays),
+                    ScheduleType.weeklyTarget =>
+                      l10n.community_progress_target(progress.completedDays, progress.eligibleDays),
+                    ScheduleType.weekdays =>
+                      l10n.community_progress_weekdays(progress.completedDays, progress.eligibleDays),
+                  })
                 : l10n.community_week_progress_none,
           ),
         ],

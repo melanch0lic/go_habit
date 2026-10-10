@@ -365,11 +365,8 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String community_recommended_target(String target) {
-    return 'Рекомендуемая цель: $target в день';
+    return 'Рекомендуемая цель: $target за раз';
   }
-
-  @override
-  String get community_schedule_daily => 'Каждый день';
 
   @override
   String get community_join => 'Вступить';
@@ -382,7 +379,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get community_leave_message =>
-      'Привычка для рейтинга останется в вашем списке вместе с историей. Если вернётесь, дни этой недели до повторного вступления засчитаны не будут.';
+      'Привычка для рейтинга останется в вашем списке вместе с историей. Вы исчезнете из рейтинга; если вернётесь, дни до повторного вступления засчитаны не будут.';
 
   @override
   String get community_leave_confirm => 'Покинуть';
@@ -396,7 +393,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get community_leaderboard_title => 'Рейтинг недели';
+  String get community_leaderboard_title => 'Рейтинг прошлой недели';
 
   @override
   String get community_retired => 'Сообщество закрыто для новых участников.';
@@ -1087,7 +1084,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get community_rules_body =>
-      'В рейтинге участвует одна привычка, созданная по шаблону сообщества. Рейтинг недельный: с понедельника по сегодня. Считается регулярность — доля засчитываемых дней, в которые привычка отмечена. Дни до вступления и до создания привычки не учитываются, будущие дни тоже. Время и усилия не сравниваются. Другие участники видят только имя профиля (или «Участник»), процент и число дней.';
+      'В рейтинге участвует одна привычка, созданная по шаблону сообщества, со своим расписанием. Итоги подводятся за прошлую неделю, с понедельника по воскресенье. Считается регулярность по вашему расписанию: ежедневная привычка — все дни недели, «по дням» — только выбранные дни, «цель на неделю» — сама цель (отметки сверх неё баллов не добавляют). Дни до вступления и до создания привычки не учитываются, а цель на неделю при вступлении в середине недели уменьшается пропорционально. При равных процентах выше тот, у кого больше выполнено, затем — у кого больше успешных недель подряд. Текущая неделя показывается отдельно и попадает в рейтинг, только когда закончится. Другие участники видят только имя профиля (или «Участник»), процент и числа.';
 
   @override
   String community_ranked_habit(String title) {
@@ -1120,7 +1117,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get community_leaderboard_empty =>
-      'Пока ни у кого нет засчитываемых дней на этой неделе.';
+      'За прошлую неделю результатов пока нет: никто из участников ещё не был в рейтинге всю неделю или её часть.';
 
   @override
   String get community_leaderboard_offline =>
@@ -1136,11 +1133,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get community_you => 'Вы';
 
   @override
-  String community_days(int completed, int eligible) {
-    return '$completed из $eligible дн.';
-  }
-
-  @override
   String community_rank(int rank) {
     return 'Место $rank';
   }
@@ -1152,7 +1144,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get community_not_ranked_yet =>
-      'Вы появитесь в рейтинге, когда у привычки для рейтинга будут засчитываемые дни.';
+      'Ваши результаты появятся в рейтинге, когда закончится первая неделя с привычкой для рейтинга.';
 
   @override
   String get community_unsynced_hint =>
@@ -1197,11 +1189,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_habit_name_label => 'Название';
 
   @override
-  String get create_habit_target_label => 'Цель в день';
+  String get create_habit_target_label => 'Цель на одно выполнение';
 
   @override
   String get create_habit_hint =>
-      'Цель сохраняется в описании привычки. Расписание — каждый день.';
+      'Цель сохраняется в описании привычки. Расписание предложено шаблоном — его можно изменить, шаблон от этого не меняется.';
 
   @override
   String create_habit_similar(String title) {
@@ -1210,7 +1202,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String create_habit_description(String description, String target) {
-    return '$description Цель: $target в день.';
+    return '$description Цель: $target за раз.';
   }
 
   @override
@@ -1341,5 +1333,74 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String privacy_policy_copyright(String year) {
     return '© $year Go Habit. Все права защищены.';
+  }
+
+  @override
+  String community_recommended_schedule(String schedule) {
+    return 'Рекомендуемое расписание: $schedule';
+  }
+
+  @override
+  String community_leaderboard_period(String range) {
+    return 'Неделя $range';
+  }
+
+  @override
+  String community_percent(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString %';
+  }
+
+  @override
+  String community_actions(int completed, int expected) {
+    return '$completed/$expected';
+  }
+
+  @override
+  String community_actions_semantics(int completed, int expected) {
+    return 'выполнено $completed из $expected по расписанию';
+  }
+
+  @override
+  String community_success_weeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count успешных недель подряд',
+      few: '$count успешные недели подряд',
+      one: '$count успешная неделя подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get community_status_paused =>
+      'В конце прошлой недели привычка была на паузе — неделя не оценивалась.';
+
+  @override
+  String get community_status_no_actions =>
+      'На прошлой неделе по вашему расписанию ничего не было запланировано.';
+
+  @override
+  String community_this_week(String progress) {
+    return 'Эта неделя (идёт): $progress';
+  }
+
+  @override
+  String community_progress_days(int completed, int expected) {
+    return '$completed/$expected дн.';
+  }
+
+  @override
+  String community_progress_target(int completed, int expected) {
+    return '$completed/$expected цели недели';
+  }
+
+  @override
+  String community_progress_weekdays(int completed, int expected) {
+    return '$completed/$expected запланированных дн.';
   }
 }

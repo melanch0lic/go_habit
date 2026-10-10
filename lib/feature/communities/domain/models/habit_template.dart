@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/foundation.dart';
 import 'package:go_habit/core/database/drift_database.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
 /// Unit of a template's recommended daily target.
 enum TargetUnit {
@@ -34,6 +35,10 @@ class HabitTemplate {
   /// Retired templates remain visible to their members but cannot be joined.
   final bool isActive;
 
+  /// How often the habit is recommended. It only prefills a new personal habit; the
+  /// user's own schedule is never changed by the template.
+  final HabitSchedule recommendedSchedule;
+
   const HabitTemplate({
     required this.id,
     required this.categoryId,
@@ -44,9 +49,11 @@ class HabitTemplate {
     this.targetUnit,
     this.sortOrder = 0,
     this.isActive = true,
+    this.recommendedSchedule = HabitSchedule.daily,
   });
 
-  static const columns = 'id, category_id, title, description, icon, target_value, target_unit, sort_order, is_active';
+  static const columns = 'id, category_id, title, description, icon, target_value, target_unit, sort_order, is_active, '
+      'schedule, weekly_target, schedule_days';
 
   String titleFor(String languageCode) => _localized(title, languageCode);
 
@@ -71,6 +78,11 @@ class HabitTemplate {
         targetUnit: TargetUnit.tryParse(json['target_unit'] as String?),
         sortOrder: json['sort_order'] as int? ?? 0,
         isActive: json['is_active'] as bool? ?? true,
+        recommendedSchedule: HabitSchedule.fromStorage(
+          type: json['schedule'] as String?,
+          weeklyTarget: json['weekly_target'] as int?,
+          daysMask: json['schedule_days'] as int?,
+        ),
       );
 
   factory HabitTemplate.fromDriftModel(HabitTemplateEntry entry) => HabitTemplate(
@@ -83,6 +95,11 @@ class HabitTemplate {
         targetUnit: TargetUnit.tryParse(entry.targetUnit),
         sortOrder: entry.sortOrder,
         isActive: entry.isActive,
+        recommendedSchedule: HabitSchedule.fromStorage(
+          type: entry.scheduleType,
+          weeklyTarget: entry.weeklyTarget,
+          daysMask: entry.scheduleDays,
+        ),
       );
 
   HabitTemplatesCompanion toCompanion() => HabitTemplatesCompanion.insert(
@@ -95,6 +112,9 @@ class HabitTemplate {
         targetUnit: Value(targetUnit?.name),
         sortOrder: Value(sortOrder),
         isActive: Value(isActive),
+        scheduleType: Value(recommendedSchedule.type.wire),
+        weeklyTarget: Value(recommendedSchedule.weeklyTarget),
+        scheduleDays: Value(recommendedSchedule.daysMask),
       );
 
   static Map<String, String> _texts(Object? value) =>

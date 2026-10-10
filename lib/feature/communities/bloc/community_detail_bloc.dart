@@ -7,6 +7,7 @@ import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/communities/domain/models/community.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
 import 'package:go_habit/feature/communities/domain/repositories/community_repository.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
 part 'community_detail_event.dart';
 part 'community_detail_state.dart';
@@ -87,8 +88,8 @@ class CommunityDetailBloc extends Bloc<CommunityDetailEvent, CommunityDetailStat
     try {
       final outcome = switch (event) {
         CommunityJoinRequested() => await _repository.join(template.id).then((_) => CommunityOutcome.joined),
-        RankedHabitRequested(:final title, :final description) => await _repository
-            .joinWithRankedHabit(template, title: title, description: description)
+        RankedHabitRequested(:final title, :final description, :final schedule) => await _repository
+            .joinWithRankedHabit(template, title: title, description: description, schedule: schedule)
             .then((_) => wasMember ? CommunityOutcome.rankedHabitCreated : CommunityOutcome.joinedRanked),
         CommunityLeaveRequested() => await _repository.leave(template.id).then((_) => CommunityOutcome.left),
       };

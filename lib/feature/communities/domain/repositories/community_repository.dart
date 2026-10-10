@@ -1,6 +1,7 @@
 import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/communities/domain/models/community.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
 /// Catalog, membership and rankings. Failures are thrown as [CommunityException].
 ///
@@ -21,20 +22,22 @@ abstract interface class CommunityRepository {
   /// Joins without taking part in the ranking (idempotent). Habits are not touched.
   Future<CommunityMembership> join(String templateId);
 
-  /// Creates a personal habit from [template] with the user's [title] and
-  /// [description] and makes it the ranked habit, joining first if needed. If the
-  /// server does not accept it, the new habit is removed again, so a retry never
-  /// leaves a duplicate.
+  /// Creates a personal habit from [template] with the user's [title],
+  /// [description] and [schedule] and makes it the ranked habit, joining first if
+  /// needed. The template itself is never changed. If the server does not accept the
+  /// habit, it is removed again, so a retry never leaves a duplicate.
   Future<CommunityMembership> joinWithRankedHabit(
     HabitTemplate template, {
     required String title,
     required String description,
+    HabitSchedule schedule = HabitSchedule.daily,
   });
 
   /// Leaves the community. The ranked habit and its history are kept.
   Future<void> leave(String templateId);
 
-  /// The current week's ranking, computed by the server for the user's [today].
+  /// The ranking of the last finished Monday–Sunday week before [today] (the user's
+  /// local date), computed by the server.
   Future<CommunityLeaderboard> leaderboard(String templateId, {required CalendarDay today});
 
   /// The real number of members, or null if it cannot be loaded right now.

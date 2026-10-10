@@ -32,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
   /// 6 — offline cache of the user's social profile, friends and requests.
   /// 7 — habit schedules (daily, weekly target, weekdays) and the streak reset day.
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration {
@@ -53,6 +53,12 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(habits, habits.weeklyTarget);
           await m.addColumn(habits, habits.scheduleDays);
           await m.addColumn(habits, habits.streakResetOn);
+        }
+        // v3+ created the catalog cache without the recommended schedule.
+        if (from >= 3 && from < 8) {
+          await m.addColumn(habitTemplates, habitTemplates.scheduleType);
+          await m.addColumn(habitTemplates, habitTemplates.weeklyTarget);
+          await m.addColumn(habitTemplates, habitTemplates.scheduleDays);
         }
       },
     );
