@@ -620,7 +620,7 @@
     "nav_habits": "Habits",
     "habit_mark_done": "Mark as done for today",
     "habit_unmark_done": "Undo today's completion",
-    "theme_settings": "Dark theme",
+    "theme_settings": "Theme",
     "archive": "Archive",
     "notifications": "Notifications",
     "widgets": "Widgets",
@@ -787,5 +787,16 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "language_label": "Language",
+    "profile_section_stats": "Statistics",
+    "profile_section_social": "Friends and privacy",
+    "profile_section_settings": "Settings",
+    "profile_section_about": "App",
+    "profile_show_welcome": "Show the welcome screen",
+    "profile_email_hint": "Only you can see your account email",
+    "notifications_empty": "No new notifications"
 }

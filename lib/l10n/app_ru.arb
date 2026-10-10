@@ -321,7 +321,7 @@
     "nav_habits": "Привычки",
     "habit_mark_done": "Отметить выполненной сегодня",
     "habit_unmark_done": "Отменить отметку за сегодня",
-    "theme_settings": "Темная тема",
+    "theme_settings": "Тема",
     "archive": "Архив",
     "notifications": "Уведомления",
     "widgets": "Виджеты",
@@ -395,5 +395,16 @@
     "community_this_week": "Эта неделя (идёт): {progress}",
     "community_progress_days": "{completed}/{expected} дн.",
     "community_progress_target": "{completed}/{expected} цели недели",
-    "community_progress_weekdays": "{completed}/{expected} запланированных дн."
+    "community_progress_weekdays": "{completed}/{expected} запланированных дн.",
+    "theme_system": "Системная",
+    "theme_light": "Светлая",
+    "theme_dark": "Тёмная",
+    "language_label": "Язык",
+    "profile_section_stats": "Статистика",
+    "profile_section_social": "Друзья и приватность",
+    "profile_section_settings": "Настройки",
+    "profile_section_about": "Приложение",
+    "profile_show_welcome": "Показать приветствие",
+    "profile_email_hint": "Почта аккаунта видна только вам",
+    "notifications_empty": "Нет новых уведомлений"
 }

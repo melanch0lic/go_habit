@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/ui_kit/app_choice_chip.dart';
 import 'package:go_habit/core/ui_kit/app_haptics.dart';
 import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
@@ -160,7 +161,7 @@ class _HabitFormSheetState extends State<HabitFormSheet> {
               TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.habits_keep_editing)),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
                 child: Text(l10n.habits_discard),
               ),
             ],
@@ -249,7 +250,6 @@ class _HabitFormSheetState extends State<HabitFormSheet> {
                           controller: _customIcon,
                           decoration: InputDecoration(
                             labelText: l10n.habits_icon_custom,
-                            border: const OutlineInputBorder(),
                             isDense: true,
                           ),
                           validator: _validateIcon,
@@ -265,8 +265,7 @@ class _HabitFormSheetState extends State<HabitFormSheet> {
                           textCapitalization: TextCapitalization.sentences,
                           textInputAction: TextInputAction.next,
                           inputFormatters: [LengthLimitingTextInputFormatter(HabitFormSheet.maxTitleLength)],
-                          decoration:
-                              InputDecoration(labelText: l10n.habits_name_label, border: const OutlineInputBorder()),
+                          decoration: InputDecoration(labelText: l10n.habits_name_label),
                           validator: (value) => (value ?? '').trim().isEmpty ? l10n.habits_name_required : null,
                           onChanged: (_) => setState(() {}),
                         ),
@@ -279,7 +278,6 @@ class _HabitFormSheetState extends State<HabitFormSheet> {
                           inputFormatters: [LengthLimitingTextInputFormatter(HabitFormSheet.maxDescriptionLength)],
                           decoration: InputDecoration(
                             labelText: l10n.habits_description_label,
-                            border: const OutlineInputBorder(),
                           ),
                           onChanged: (_) => setState(() {}),
                         ),
@@ -294,20 +292,12 @@ class _HabitFormSheetState extends State<HabitFormSheet> {
                             runSpacing: 8,
                             children: [
                               for (final category in widget.categories)
-                                ChoiceChip(
-                                  avatar: Icon(getCategoryIcon(category.id), size: 18, color: Colors.white),
-                                  label: Text(category.name),
+                                AppChoiceChip(
+                                  icon: getCategoryIcon(category.id),
+                                  label: category.name,
                                   selected: _categoryId == category.id,
-                                  showCheckmark: false,
-                                  selectedColor: hexToColor(category.color),
-                                  backgroundColor: Colors.grey.shade700,
-                                  labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                                  side: BorderSide.none,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                  onSelected: (_) {
-                                    if (_categoryId != category.id) AppHaptics.selection();
-                                    setState(() => _categoryId = category.id);
-                                  },
+                                  color: hexToColor(category.color),
+                                  onSelected: () => setState(() => _categoryId = category.id),
                                 ),
                             ],
                           ),

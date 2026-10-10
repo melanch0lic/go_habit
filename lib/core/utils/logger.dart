@@ -123,8 +123,9 @@ final class DefaultLogger extends Logger {
     buffer.write('$emoji $time [${level.name.toUpperCase()}] $content');
 
     if (error != null && wrappedMessage.printError) {
-      buffer.writeln();
-      buffer.write(error);
+      buffer
+        ..writeln()
+        ..write(error);
     }
 
     if (stackTrace != null && wrappedMessage.printStackTrace) {

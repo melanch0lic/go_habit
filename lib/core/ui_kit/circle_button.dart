@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:go_habit/core/extension/theme_extension.dart';
 
 class CircleButton extends StatelessWidget {
   final Widget icon;
@@ -27,7 +26,7 @@ class CircleButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(dimension / 2),
           child: Ink(
             decoration: BoxDecoration(
-              color: backgroundColor ?? context.theme.commonColors.white,
+              color: backgroundColor ?? Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(dimension / 2),
             ),
             child: Padding(

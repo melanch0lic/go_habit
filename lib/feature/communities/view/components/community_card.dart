@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/theme/app_theme.dart';
 import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
 import 'package:go_habit/feature/communities/view/community_texts.dart';
@@ -33,14 +34,16 @@ class CommunityCard extends StatelessWidget {
     final l10n = context.l10n;
     final language = languageCodeOf(context);
     final colors = context.theme.commonColors;
+    final onSurface = context.theme.onFeatureSurface;
+    final muted = context.theme.onFeatureSurfaceMuted;
     final memberCount = this.memberCount;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: PressableScale(
         child: Material(
-          color: context.themeOf.focusColor,
-          borderRadius: BorderRadius.circular(16),
+          color: context.theme.featureSurface,
+          borderRadius: BorderRadius.circular(AppRadius.card),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
@@ -57,14 +60,14 @@ class CommunityCard extends StatelessWidget {
                       children: [
                         Text(
                           template.titleFor(language),
-                          style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: onSurface, fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           template.descriptionFor(language),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14),
+                          style: TextStyle(color: muted, fontSize: 14),
                         ),
                         const SizedBox(height: 10),
                         Wrap(
@@ -83,20 +86,20 @@ class CommunityCard extends StatelessWidget {
                                     child: Icon(
                                       Icons.event_repeat,
                                       size: 16,
-                                      color: Colors.white.withValues(alpha: 0.8),
+                                      color: muted,
                                     ),
                                   ),
                                 ),
                                 TextSpan(text: l10n.scheduleShort(template.recommendedSchedule)),
                               ]),
-                              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
+                              style: TextStyle(color: muted, fontSize: 13),
                             ),
                             if (memberCount != null)
                               Text(
                                 memberCount > 0
                                     ? l10n.communities_members(memberCount)
                                     : l10n.communities_no_members_yet,
-                                style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
+                                style: TextStyle(color: muted, fontSize: 13),
                               ),
                             if (isMember)
                               Row(
@@ -117,7 +120,7 @@ class CommunityCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const ExcludeSemantics(child: Icon(Icons.chevron_right, color: Colors.white70)),
+                  ExcludeSemantics(child: Icon(Icons.chevron_right, color: muted)),
                 ],
               ),
             ),

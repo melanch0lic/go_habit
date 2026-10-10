@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
 import 'package:go_habit/core/router/routes_enum.dart';
-import 'package:go_habit/core/ui_kit/app_haptics.dart';
+import 'package:go_habit/core/theme/app_theme.dart';
+import 'package:go_habit/core/ui_kit/app_choice_chip.dart';
 import 'package:go_habit/feature/communities/bloc/community_catalog_bloc.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
 import 'package:go_habit/feature/communities/domain/repositories/community_repository.dart';
@@ -44,8 +45,6 @@ class CommunitiesView extends StatelessWidget {
           appBar: AppBar(
             title: Text(l10n.communities_title),
             bottom: TabBar(
-              indicatorColor: context.theme.commonColors.green100,
-              labelColor: context.theme.commonColors.green100,
               tabs: [Tab(text: l10n.communities_tab_catalog), Tab(text: l10n.communities_tab_mine)],
             ),
           ),
@@ -164,10 +163,8 @@ class _SearchFieldState extends State<_SearchField> {
                     _changed('');
                   },
                 ),
-          filled: true,
-          fillColor: context.themeOf.cardColor,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          // Fill, border and the focus ring come from the theme.
+          contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
         ),
       ),
     );
@@ -183,25 +180,12 @@ class _CategoryFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    void select(String? id) {
-      if (id != selected) AppHaptics.selection();
-      context.read<CommunityCatalogBloc>().add(CommunityCatalogCategorySelected(id));
-    }
+    void select(String? id) => context.read<CommunityCatalogBloc>().add(CommunityCatalogCategorySelected(id));
 
     Widget chip({required String label, required bool isSelected, required Color color, required VoidCallback onTap}) =>
         Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: ChoiceChip(
-            label: Text(label),
-            selected: isSelected,
-            onSelected: (_) => onTap(),
-            showCheckmark: false,
-            selectedColor: color,
-            backgroundColor: Colors.grey.shade800,
-            labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-            side: BorderSide.none,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          ),
+          padding: const EdgeInsets.only(right: AppSpacing.sm),
+          child: AppChoiceChip(label: label, selected: isSelected, color: color, onSelected: onTap),
         );
 
     return SizedBox(
@@ -213,7 +197,7 @@ class _CategoryFilter extends StatelessWidget {
           chip(
             label: l10n.communities_filter_all,
             isSelected: selected == null,
-            color: context.theme.commonColors.green100,
+            color: context.themeOf.colorScheme.primary,
             onTap: () => select(null),
           ),
           for (final id in categoryIds)
@@ -293,8 +277,8 @@ class _Banner extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.amber.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
+            color: context.theme.warningContainer,
+            borderRadius: BorderRadius.circular(AppRadius.field),
           ),
           child: Row(
             children: [

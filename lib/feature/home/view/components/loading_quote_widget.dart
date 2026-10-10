@@ -32,10 +32,8 @@ class _LoadingAnimationState extends State<LoadingAnimation> with SingleTickerPr
           builder: (context, child) {
             return Opacity(
               opacity: (_animation.value + index * 0.3) % 1.0,
-              child: const Text(
-                '.',
-                style: TextStyle(fontSize: 40, color: Colors.white),
-              ),
+              // Inherits the bubble's text color, so the dots read on it in both themes.
+              child: const Text('.', style: TextStyle(fontSize: 40)),
             );
           },
         );

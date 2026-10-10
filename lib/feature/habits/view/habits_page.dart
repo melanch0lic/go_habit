@@ -37,8 +37,11 @@ class HabitsPage extends StatelessWidget {
               pressedScale: 0.9,
               child: IconButton.filled(
                 tooltip: l10n.habits_add,
-                style: IconButton.styleFrom(backgroundColor: context.theme.commonColors.green100),
-                icon: const Icon(Icons.add, color: Colors.white),
+                style: IconButton.styleFrom(
+                  backgroundColor: context.themeOf.colorScheme.primary,
+                  foregroundColor: context.themeOf.colorScheme.onPrimary,
+                ),
+                icon: const Icon(Icons.add),
                 onPressed: () => addHabit(context),
               ),
             ),

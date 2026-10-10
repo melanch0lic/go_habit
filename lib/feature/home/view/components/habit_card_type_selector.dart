@@ -44,7 +44,8 @@ class HabitCardTypeSelector extends StatelessWidget {
 
   Widget _buildCardTypeOption(BuildContext context, HabitCardConfig config) {
     final isSelected = selectedMode == config.displayMode;
-    final theme = Theme.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final foreground = isSelected ? scheme.primary : scheme.onSurfaceVariant;
 
     return PressableScale(
       child: InkWell(
@@ -56,10 +57,11 @@ class HabitCardTypeSelector extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isSelected ? theme.primaryColor.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+            color: isSelected ? scheme.primary.withValues(alpha: 0.12) : scheme.surfaceContainer,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? theme.primaryColor : Colors.grey.withOpacity(0.3),
+              color: isSelected ? scheme.primary : scheme.outlineVariant,
+              width: isSelected ? 2 : 1,
             ),
           ),
           child: Column(
@@ -67,14 +69,14 @@ class HabitCardTypeSelector extends StatelessWidget {
             children: [
               Icon(
                 config.icon,
-                color: isSelected ? theme.primaryColor : Colors.grey,
+                color: foreground,
                 size: 24,
               ),
               const SizedBox(height: 4),
               Text(
                 config.title,
                 style: TextStyle(
-                  color: isSelected ? theme.primaryColor : Colors.grey,
+                  color: foreground,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),

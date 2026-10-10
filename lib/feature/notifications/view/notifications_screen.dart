@@ -70,15 +70,14 @@ class NotificationsScreen extends StatelessWidget {
                   Icon(
                     Icons.notifications_off,
                     size: 64,
-                    color: Colors.grey[400],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Нет новых уведомлений',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
                 ],
               ),
@@ -90,12 +89,12 @@ class NotificationsScreen extends StatelessWidget {
                 return Dismissible(
                   key: Key(notification.id),
                   background: Container(
-                    color: Colors.red,
+                    color: Theme.of(context).colorScheme.error,
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.only(right: 16),
-                    child: const Icon(
+                    child: Icon(
                       Icons.delete,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onError,
                     ),
                   ),
                   direction: DismissDirection.endToStart,
@@ -108,7 +107,7 @@ class NotificationsScreen extends StatelessWidget {
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: notification.getColor().withOpacity(0.1),
+                          color: notification.getColor().withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -129,10 +128,7 @@ class NotificationsScreen extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             DateFormat('dd.MM.yyyy HH:mm').format(notification.timestamp),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
                       ),

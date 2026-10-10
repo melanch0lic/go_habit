@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/ui_kit/app_choice_chip.dart';
 import 'package:go_habit/core/ui_kit/app_haptics.dart';
 import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 import 'package:go_habit/feature/habits/view/habit_texts.dart';
@@ -33,22 +34,10 @@ class HabitScheduleSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = context.themeOf;
-    final green = context.theme.commonColors.green100;
     final error = theme.colorScheme.error;
 
-    Widget typeChip(ScheduleType value, String label) => ChoiceChip(
-          label: Text(label),
-          selected: type == value,
-          showCheckmark: false,
-          selectedColor: green,
-          labelStyle: TextStyle(color: type == value ? Colors.white : null, fontWeight: FontWeight.w600),
-          side: BorderSide(color: type == value ? green : theme.dividerColor),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          onSelected: (_) {
-            if (type != value) AppHaptics.selection();
-            onTypeChanged(value);
-          },
-        );
+    Widget typeChip(ScheduleType value, String label) =>
+        AppChoiceChip(label: label, selected: type == value, onSelected: () => onTypeChanged(value));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

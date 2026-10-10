@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_habit/core/theme/app_theme.dart';
@@ -37,8 +38,12 @@ class MaterialContext extends StatelessWidget {
 
                     return MaterialApp.router(
                       routerConfig: scope.routerConfig.get,
-                      // Above every route, so tabs and full-screen pages share them.
-                      builder: (context, child) => SocialScope(child: child ?? const SizedBox.shrink()),
+                      // Above every route, so tabs and full-screen pages share them. The system
+                      // bars follow the effective theme, also on screens without an app bar.
+                      builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+                        value: systemBars(Theme.of(context).brightness),
+                        child: SocialScope(child: child ?? const SizedBox.shrink()),
+                      ),
                       title: 'Go Habit',
                       theme: appTheme.lightTheme,
                       darkTheme: appTheme.darkTheme,

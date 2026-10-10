@@ -51,12 +51,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
             const SizedBox(height: 32),
             Center(
               child: Text(
-                context.l10n
-                    .privacy_policy_copyright(DateTime.now().year.toString()),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                context.l10n.privacy_policy_copyright(DateTime.now().year.toString()),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             const SizedBox(height: 16),

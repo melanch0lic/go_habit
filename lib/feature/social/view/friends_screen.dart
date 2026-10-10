@@ -225,7 +225,6 @@ class _SearchSectionState extends State<_SearchSection> {
             labelText: l10n.social_search_label,
             hintText: l10n.social_search_hint,
             prefixText: '@',
-            border: const OutlineInputBorder(),
             suffixIcon:
                 IconButton(tooltip: l10n.social_search_label, icon: const Icon(Icons.search), onPressed: _submit),
           ),
