@@ -2281,6 +2281,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No new notifications'**
   String get notifications_empty;
+
+  /// No description provided for @notifications_habit_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Time for your habit'**
+  String get notifications_habit_title;
+
+  /// No description provided for @notifications_habit_body.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} — take a few minutes for it today.'**
+  String notifications_habit_body(String name);
+
+  /// No description provided for @notifications_progress_title.
+  ///
+  /// In en, this message translates to:
+  /// **'How is your day going?'**
+  String get notifications_progress_title;
+
+  /// No description provided for @notifications_progress_body.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} habit is left for today.} other{{count} habits are left for today.}}'**
+  String notifications_progress_body(int count);
+
+  /// No description provided for @notifications_progress_body_general.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a look at today\'s habits.'**
+  String get notifications_progress_body_general;
+
+  /// No description provided for @notifications_streak_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your streak is at risk'**
+  String get notifications_streak_title;
+
+  /// No description provided for @notifications_streak_body_one.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark “{title}” today to keep your streak.'**
+  String notifications_streak_body_one(String title);
+
+  /// No description provided for @notifications_streak_body_many.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} habit is not marked yet — its streak ends if today is skipped.} other{{count} habits are not marked yet — their streaks end if today is skipped.}}'**
+  String notifications_streak_body_many(int count);
+
+  /// No description provided for @notifications_channel_habits.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit reminders'**
+  String get notifications_channel_habits;
+
+  /// No description provided for @notifications_channel_habits_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders at the time you chose for a habit'**
+  String get notifications_channel_habits_description;
+
+  /// No description provided for @notifications_channel_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily progress and streaks'**
+  String get notifications_channel_progress;
+
+  /// No description provided for @notifications_channel_progress_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional reminders about remaining habits and streaks'**
+  String get notifications_channel_progress_description;
+
+  /// No description provided for @notifications_empty_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders you saw or opened will appear here.'**
+  String get notifications_empty_hint;
+
+  /// No description provided for @notifications_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notifications_today;
+
+  /// No description provided for @notifications_yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get notifications_yesterday;
+
+  /// No description provided for @notifications_earlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get notifications_earlier;
+
+  /// No description provided for @notifications_just_now.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get notifications_just_now;
+
+  /// No description provided for @notifications_minutes_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String notifications_minutes_ago(int count);
+
+  /// No description provided for @notifications_hours_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h ago'**
+  String notifications_hours_ago(int count);
+
+  /// No description provided for @notifications_mark_all_read.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get notifications_mark_all_read;
+
+  /// No description provided for @notifications_clear_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get notifications_clear_all;
+
+  /// No description provided for @notifications_clear_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear notification history?'**
+  String get notifications_clear_title;
+
+  /// No description provided for @notifications_clear_message.
+  ///
+  /// In en, this message translates to:
+  /// **'The records will be deleted. Scheduled reminders stay.'**
+  String get notifications_clear_message;
+
+  /// No description provided for @notifications_clear_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get notifications_clear_confirm;
+
+  /// No description provided for @notifications_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get notifications_delete;
+
+  /// No description provided for @notifications_unread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notifications_unread;
+
+  /// No description provided for @notifications_category_habit.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit'**
+  String get notifications_category_habit;
+
+  /// No description provided for @notifications_category_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily progress'**
+  String get notifications_category_progress;
+
+  /// No description provided for @notifications_category_streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get notifications_category_streak;
+
+  /// No description provided for @notifications_category_system.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get notifications_category_system;
+
+  /// No description provided for @notifications_habit_missing.
+  ///
+  /// In en, this message translates to:
+  /// **'This habit has been deleted.'**
+  String get notifications_habit_missing;
+
+  /// No description provided for @notifications_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load notifications.'**
+  String get notifications_load_failed;
+
+  /// No description provided for @notifications_settings_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification settings'**
+  String get notifications_settings_title;
+
+  /// No description provided for @notifications_master.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Habit notifications'**
+  String get notifications_master;
+
+  /// No description provided for @notifications_master_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off to cancel all of the app\'s reminders. Your settings are kept.'**
+  String get notifications_master_hint;
+
+  /// No description provided for @notifications_permission_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications so reminders arrive at the times you choose.'**
+  String get notifications_permission_request;
+
+  /// No description provided for @notifications_permission_denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are turned off in the system settings — reminders won\'t be shown.'**
+  String get notifications_permission_denied;
+
+  /// No description provided for @notifications_permission_unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications aren\'t available on this device.'**
+  String get notifications_permission_unsupported;
+
+  /// No description provided for @notifications_allow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get notifications_allow;
+
+  /// No description provided for @notifications_open_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get notifications_open_settings;
+
+  /// No description provided for @notifications_habit_reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit reminders'**
+  String get notifications_habit_reminders;
+
+  /// No description provided for @notifications_habit_reminders_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the time and days in each habit\'s form.'**
+  String get notifications_habit_reminders_hint;
+
+  /// No description provided for @notifications_progress_setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily progress'**
+  String get notifications_progress_setting;
+
+  /// No description provided for @notifications_progress_setting_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me if habits are left for today'**
+  String get notifications_progress_setting_hint;
+
+  /// No description provided for @notifications_streak_setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak at risk'**
+  String get notifications_streak_setting;
+
+  /// No description provided for @notifications_streak_setting_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Warn me if a streak would end without today\'s mark'**
+  String get notifications_streak_setting_hint;
+
+  /// No description provided for @notifications_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time: {time}'**
+  String notifications_time(String time);
+
+  /// No description provided for @notifications_delivery_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The system may delay a notification slightly to save battery.'**
+  String get notifications_delivery_hint;
+
+  /// No description provided for @habits_reminder_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder'**
+  String get habits_reminder_label;
+
+  /// No description provided for @habits_reminder_toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me'**
+  String get habits_reminder_toggle;
+
+  /// No description provided for @habits_reminder_days.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder days'**
+  String get habits_reminder_days;
+
+  /// No description provided for @habits_reminder_days_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one day'**
+  String get habits_reminder_days_required;
+
+  /// No description provided for @habits_reminder_weekly_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'A weekly goal has no fixed days — choose when to be reminded.'**
+  String get habits_reminder_weekly_hint;
+
+  /// No description provided for @habits_reminder_off_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off — the reminder won\'t arrive. Turn them on in Profile → Notifications.'**
+  String get habits_reminder_off_hint;
+
+  /// No description provided for @profile_notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get profile_notifications;
+
+  /// No description provided for @notifications_extra_reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'More reminders'**
+  String get notifications_extra_reminders;
+
+  /// No description provided for @habits_choose_icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an icon'**
+  String get habits_choose_icon;
+
+  /// No description provided for @habits_reminder_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder time'**
+  String get habits_reminder_time;
+
+  /// No description provided for @habits_reminder_off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get habits_reminder_off;
+
+  /// No description provided for @habits_reminder_every_day.
+  ///
+  /// In en, this message translates to:
+  /// **'every day'**
+  String get habits_reminder_every_day;
+
+  /// No description provided for @habits_reminder_independent_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder days are set separately from the schedule.'**
+  String get habits_reminder_independent_hint;
 }
 
 class _AppLocalizationsDelegate

@@ -1411,4 +1411,231 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifications_empty => 'No new notifications';
+
+  @override
+  String get notifications_habit_title => 'Time for your habit';
+
+  @override
+  String notifications_habit_body(String name) {
+    return '$name — take a few minutes for it today.';
+  }
+
+  @override
+  String get notifications_progress_title => 'How is your day going?';
+
+  @override
+  String notifications_progress_body(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count habits are left for today.',
+      one: '$count habit is left for today.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifications_progress_body_general =>
+      'Take a look at today\'s habits.';
+
+  @override
+  String get notifications_streak_title => 'Your streak is at risk';
+
+  @override
+  String notifications_streak_body_one(String title) {
+    return 'Mark “$title” today to keep your streak.';
+  }
+
+  @override
+  String notifications_streak_body_many(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count habits are not marked yet — their streaks end if today is skipped.',
+      one:
+          '$count habit is not marked yet — its streak ends if today is skipped.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notifications_channel_habits => 'Habit reminders';
+
+  @override
+  String get notifications_channel_habits_description =>
+      'Reminders at the time you chose for a habit';
+
+  @override
+  String get notifications_channel_progress => 'Daily progress and streaks';
+
+  @override
+  String get notifications_channel_progress_description =>
+      'Optional reminders about remaining habits and streaks';
+
+  @override
+  String get notifications_empty_hint =>
+      'Reminders you saw or opened will appear here.';
+
+  @override
+  String get notifications_today => 'Today';
+
+  @override
+  String get notifications_yesterday => 'Yesterday';
+
+  @override
+  String get notifications_earlier => 'Earlier';
+
+  @override
+  String get notifications_just_now => 'just now';
+
+  @override
+  String notifications_minutes_ago(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String notifications_hours_ago(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String get notifications_mark_all_read => 'Mark all as read';
+
+  @override
+  String get notifications_clear_all => 'Clear history';
+
+  @override
+  String get notifications_clear_title => 'Clear notification history?';
+
+  @override
+  String get notifications_clear_message =>
+      'The records will be deleted. Scheduled reminders stay.';
+
+  @override
+  String get notifications_clear_confirm => 'Clear';
+
+  @override
+  String get notifications_delete => 'Delete';
+
+  @override
+  String get notifications_unread => 'Unread';
+
+  @override
+  String get notifications_category_habit => 'Habit';
+
+  @override
+  String get notifications_category_progress => 'Daily progress';
+
+  @override
+  String get notifications_category_streak => 'Streak';
+
+  @override
+  String get notifications_category_system => 'System';
+
+  @override
+  String get notifications_habit_missing => 'This habit has been deleted.';
+
+  @override
+  String get notifications_load_failed => 'Couldn\'t load notifications.';
+
+  @override
+  String get notifications_settings_title => 'Notification settings';
+
+  @override
+  String get notifications_master => 'Go Habit notifications';
+
+  @override
+  String get notifications_master_hint =>
+      'Turn off to cancel all of the app\'s reminders. Your settings are kept.';
+
+  @override
+  String get notifications_permission_request =>
+      'Allow notifications so reminders arrive at the times you choose.';
+
+  @override
+  String get notifications_permission_denied =>
+      'Notifications are turned off in the system settings — reminders won\'t be shown.';
+
+  @override
+  String get notifications_permission_unsupported =>
+      'Notifications aren\'t available on this device.';
+
+  @override
+  String get notifications_allow => 'Allow';
+
+  @override
+  String get notifications_open_settings => 'Open settings';
+
+  @override
+  String get notifications_habit_reminders => 'Habit reminders';
+
+  @override
+  String get notifications_habit_reminders_hint =>
+      'Set the time and days in each habit\'s form.';
+
+  @override
+  String get notifications_progress_setting => 'Daily progress';
+
+  @override
+  String get notifications_progress_setting_hint =>
+      'Remind me if habits are left for today';
+
+  @override
+  String get notifications_streak_setting => 'Streak at risk';
+
+  @override
+  String get notifications_streak_setting_hint =>
+      'Warn me if a streak would end without today\'s mark';
+
+  @override
+  String notifications_time(String time) {
+    return 'Time: $time';
+  }
+
+  @override
+  String get notifications_delivery_hint =>
+      'The system may delay a notification slightly to save battery.';
+
+  @override
+  String get habits_reminder_label => 'Reminder';
+
+  @override
+  String get habits_reminder_toggle => 'Remind me';
+
+  @override
+  String get habits_reminder_days => 'Reminder days';
+
+  @override
+  String get habits_reminder_days_required => 'Choose at least one day';
+
+  @override
+  String get habits_reminder_weekly_hint =>
+      'A weekly goal has no fixed days — choose when to be reminded.';
+
+  @override
+  String get habits_reminder_off_hint =>
+      'Notifications are off — the reminder won\'t arrive. Turn them on in Profile → Notifications.';
+
+  @override
+  String get profile_notifications => 'Notifications';
+
+  @override
+  String get notifications_extra_reminders => 'More reminders';
+
+  @override
+  String get habits_choose_icon => 'Choose an icon';
+
+  @override
+  String get habits_reminder_time => 'Reminder time';
+
+  @override
+  String get habits_reminder_off => 'Off';
+
+  @override
+  String get habits_reminder_every_day => 'every day';
+
+  @override
+  String get habits_reminder_independent_hint =>
+      'Reminder days are set separately from the schedule.';
 }

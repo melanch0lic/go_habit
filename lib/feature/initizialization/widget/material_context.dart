@@ -8,11 +8,16 @@ import 'package:go_habit/feature/categories/widget/habit_categories_scope.dart';
 import 'package:go_habit/feature/habits/widget/habits_scope.dart';
 import 'package:go_habit/feature/initizialization/scopes/app_scope_container.dart';
 import 'package:go_habit/feature/language/domain/bloc/language_bloc.dart';
+import 'package:go_habit/feature/notifications/widget/notifications_host.dart';
+import 'package:go_habit/feature/notifications/widget/notifications_scope.dart';
 import 'package:go_habit/feature/social/widget/social_scope.dart';
 import 'package:go_habit/feature/theme/theme_cubit.dart' as theme_cubit;
 import 'package:go_habit/feature/theme/widget/theme_scope.dart';
 import 'package:go_habit/l10n/app_localizations.dart';
 import 'package:yx_scope_flutter/yx_scope_flutter.dart';
+
+/// Lets the notification host show a message above every screen.
+final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
 class MaterialContext extends StatelessWidget {
   const MaterialContext({super.key});
@@ -22,46 +27,54 @@ class MaterialContext extends StatelessWidget {
     return ThemeScope(
       child: AuthScope(
         child: HabitCategoriesScope(
-          child: HabitsScope(
-            child: ScopeBuilder<AppScopeContainer>.withPlaceholder(
-              // Shows this widget while [appScopeHolder] is loading
-              placeholder: const Center(child: CircularProgressIndicator()),
-              builder: (context, scope) => BlocBuilder<LanguageBloc, LanguageState>(
-                builder: (context, languageState) {
-                  return BlocBuilder<theme_cubit.ThemeCubit, theme_cubit.ThemeState>(builder: (context, themeState) {
-                    final materialThemeMode = themeState.themeMode;
+          child: NotificationsScope(
+            child: HabitsScope(
+              child: ScopeBuilder<AppScopeContainer>.withPlaceholder(
+                // Shows this widget while [appScopeHolder] is loading
+                placeholder: const Center(child: CircularProgressIndicator()),
+                builder: (context, scope) => BlocBuilder<LanguageBloc, LanguageState>(
+                  builder: (context, languageState) {
+                    return BlocBuilder<theme_cubit.ThemeCubit, theme_cubit.ThemeState>(builder: (context, themeState) {
+                      final materialThemeMode = themeState.themeMode;
 
-                    final appTheme = AppTheme(
-                      themeMode: materialThemeMode,
-                      seed: Colors.blue,
-                    );
+                      final appTheme = AppTheme(
+                        themeMode: materialThemeMode,
+                        seed: Colors.blue,
+                      );
 
-                    return MaterialApp.router(
-                      routerConfig: scope.routerConfig.get,
-                      // Above every route, so tabs and full-screen pages share them. The system
-                      // bars follow the effective theme, also on screens without an app bar.
-                      builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
-                        value: systemBars(Theme.of(context).brightness),
-                        child: SocialScope(child: child ?? const SizedBox.shrink()),
-                      ),
-                      title: 'Go Habit',
-                      theme: appTheme.lightTheme,
-                      darkTheme: appTheme.darkTheme,
-                      themeMode: materialThemeMode,
-                      localizationsDelegates: const [
-                        AppLocalizations.delegate,
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate,
-                        GlobalCupertinoLocalizations.delegate,
-                      ],
-                      supportedLocales: const [
-                        Locale('en'),
-                        Locale('ru'),
-                      ],
-                      locale: Locale(languageState.currentLocale),
-                    );
-                  });
-                },
+                      return MaterialApp.router(
+                        routerConfig: scope.routerConfig.get,
+                        // Above every route, so tabs and full-screen pages share them. The system
+                        // bars follow the effective theme, also on screens without an app bar.
+                        scaffoldMessengerKey: _messengerKey,
+                        builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+                          value: systemBars(Theme.of(context).brightness),
+                          child: NotificationsHost(
+                            service: scope.notificationService.get,
+                            router: scope.routerConfig.get,
+                            messengerKey: _messengerKey,
+                            child: SocialScope(child: child ?? const SizedBox.shrink()),
+                          ),
+                        ),
+                        title: 'Go Habit',
+                        theme: appTheme.lightTheme,
+                        darkTheme: appTheme.darkTheme,
+                        themeMode: materialThemeMode,
+                        localizationsDelegates: const [
+                          AppLocalizations.delegate,
+                          GlobalMaterialLocalizations.delegate,
+                          GlobalWidgetsLocalizations.delegate,
+                          GlobalCupertinoLocalizations.delegate,
+                        ],
+                        supportedLocales: const [
+                          Locale('en'),
+                          Locale('ru'),
+                        ],
+                        locale: Locale(languageState.currentLocale),
+                      );
+                    });
+                  },
+                ),
               ),
             ),
           ),

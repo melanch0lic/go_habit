@@ -15,6 +15,7 @@ import '../../generated_migrations/schema_v4.dart' as v4;
 import '../../generated_migrations/schema_v5.dart' as v5;
 import '../../generated_migrations/schema_v6.dart' as v6;
 import '../../generated_migrations/schema_v7.dart' as v7;
+import '../../generated_migrations/schema_v8.dart' as v8;
 
 /// Regenerate helpers after a schema change:
 /// `dart run drift_dev schema dump lib/core/database/drift_database.dart drift_schemas/drift_schema_vN.json`
@@ -27,9 +28,9 @@ void main() {
   int seconds(DateTime dateTime) => dateTime.millisecondsSinceEpoch ~/ 1000;
 
   test('a fresh install matches the latest schema snapshot', () async {
-    final schema = await verifier.schemaAt(8);
+    final schema = await verifier.schemaAt(9);
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
     await db.close();
   });
 
@@ -81,7 +82,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final habits = {for (final h in await db.select(db.habits).get()) h.id: h};
     expect(habits.keys, unorderedEquals(['a', 'b', 'c']));
@@ -138,7 +139,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final habit = await (db.select(db.habits)..where((t) => t.id.equals('h1'))).getSingle();
     expect(habit.isPendingSync, isTrue, reason: 'pending uploads survive the upgrade');
@@ -158,7 +159,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
@@ -176,7 +177,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
@@ -194,7 +195,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     expect((await db.select(db.communityMemberships).get()).single.habitId, 'h1');
     expect(await db.select(db.socialCache).get(), isEmpty);
@@ -224,7 +225,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final habit = (await db.select(db.habits).get()).single;
     expect(habit.scheduleType, 'daily');
@@ -253,11 +254,32 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final template = (await db.select(db.habitTemplates).get()).single;
     expect((template.scheduleType, template.weeklyTarget, template.scheduleDays), ('daily', null, null));
     expect((await db.select(db.communityMemberships).get()).single.templateId, 'reading');
+    await db.close();
+  });
+
+  test('upgrading from v8 adds empty reminder and history tables and keeps habits', () async {
+    final schema = await verifier.schemaAt(8);
+    final old = v8.DatabaseAtV8(schema.newConnection());
+    final created = seconds(DateTime(2026, 9, 1));
+    await old
+        .into(old.habitCategories)
+        .insert(v8.HabitCategoriesCompanion.insert(id: 'health', name: 'H', color: '#FF0000'));
+    await old.into(old.habits).insert(
+          v8.HabitsCompanion.insert(
+              id: 'h1', title: 'Walk', categoryId: 'health', createdAt: created, updatedAt: created),
+        );
+    await old.close();
+
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 9);
+    expect((await db.select(db.habits).get()).single.id, 'h1');
+    expect(await db.select(db.habitReminders).get(), isEmpty);
+    expect(await db.select(db.notificationHistory).get(), isEmpty);
     await db.close();
   });
 }

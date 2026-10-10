@@ -7,6 +7,7 @@ part 'app_bar_theme.dart';
 part 'app_theme_extension.dart';
 part 'common_colors.dart';
 part 'common_text_styles.dart';
+part 'contrast.dart';
 part 'design_tokens.dart';
 part 'typography.dart';
 
@@ -157,7 +158,15 @@ ThemeData _buildTheme({
       fillColor: scheme.surface,
       hintStyle: textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
       labelStyle: textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
-      floatingLabelStyle: TextStyle(color: scheme.primary),
+      floatingLabelStyle: WidgetStateTextStyle.resolveWith(
+        (states) => TextStyle(
+          color: states.contains(WidgetState.error)
+              ? scheme.error
+              : states.contains(WidgetState.focused)
+                  ? scheme.primary
+                  : scheme.onSurfaceVariant,
+        ),
+      ),
       helperStyle: textTheme.bodySmall,
       errorStyle: TextStyle(color: scheme.error),
       prefixIconColor: scheme.onSurfaceVariant,
@@ -271,6 +280,35 @@ ThemeData _buildTheme({
       dividerColor: divider,
     ),
     badgeTheme: BadgeThemeData(backgroundColor: scheme.error, textColor: scheme.onError),
+    timePickerTheme: TimePickerThemeData(
+      backgroundColor: scheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.dialog)),
+      hourMinuteShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.field)),
+      hourMinuteColor: WidgetStateColor.resolveWith(
+        (states) =>
+            states.contains(WidgetState.selected) ? scheme.primary.withValues(alpha: 0.16) : scheme.surfaceContainer,
+      ),
+      hourMinuteTextColor: WidgetStateColor.resolveWith(
+        (states) => states.contains(WidgetState.selected) ? scheme.primary : scheme.onSurface,
+      ),
+      dialBackgroundColor: scheme.surfaceContainer,
+      dialHandColor: scheme.primary,
+      dialTextColor: WidgetStateColor.resolveWith(
+        (states) => states.contains(WidgetState.selected) ? scheme.onPrimary : scheme.onSurface,
+      ),
+      dayPeriodShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.field)),
+      dayPeriodColor: WidgetStateColor.resolveWith(
+        (states) => states.contains(WidgetState.selected) ? scheme.primary.withValues(alpha: 0.16) : Colors.transparent,
+      ),
+      dayPeriodTextColor: WidgetStateColor.resolveWith(
+        (states) => states.contains(WidgetState.selected) ? scheme.primary : scheme.onSurfaceVariant,
+      ),
+      dayPeriodBorderSide: BorderSide(color: scheme.outlineVariant),
+      entryModeIconColor: scheme.onSurfaceVariant,
+      helpTextStyle: textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
+      cancelButtonStyle: TextButton.styleFrom(foregroundColor: scheme.onSurfaceVariant),
+      confirmButtonStyle: TextButton.styleFrom(foregroundColor: scheme.primary),
+    ),
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(color: scheme.inverseSurface, borderRadius: BorderRadius.circular(8)),
       textStyle: TextStyle(color: scheme.onInverseSurface),

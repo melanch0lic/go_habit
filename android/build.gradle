@@ -13,6 +13,20 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// home_widget declares dynamic versions ("glance-appwidget:1.+", "work-runtime-ktx:2.+").
+// They now resolve to releases that need a newer Android Gradle plugin and JVM 11,
+// while home_widget compiles its Kotlin for JVM 1.8. Keep the last compatible
+// releases for every module.
+subprojects {
+    configurations.configureEach {
+        resolutionStrategy {
+            force 'androidx.glance:glance-appwidget:1.0.0'
+            force 'androidx.work:work-runtime:2.9.1'
+            force 'androidx.work:work-runtime-ktx:2.9.1'
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

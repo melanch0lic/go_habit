@@ -75,18 +75,7 @@ class HabitScheduleSection extends StatelessWidget {
           const SizedBox(height: 12),
           Text(l10n.habits_weekdays_label, style: theme.textTheme.bodySmall),
           const SizedBox(height: 6),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: [
-              for (var day = DateTime.monday; day <= DateTime.sunday; day++)
-                _RoundToggle(
-                  label: l10n.weekdayShort(day),
-                  selected: weekdays.contains(day),
-                  onTap: () => onWeekdayToggled(day),
-                ),
-            ],
-          ),
+          WeekdayToggles(selected: weekdays, onToggled: onWeekdayToggled),
           if (showWeekdaysError)
             Padding(
               padding: const EdgeInsets.only(top: 6),
@@ -107,6 +96,91 @@ class HabitScheduleSection extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// Monday to Sunday in one row of equal cells, so it never overflows on narrow screens.
+/// The whole cell (48 high) is the touch target; a selected day is filled, an
+/// unselected one only outlined, so the state does not rely on color alone.
+class WeekdayToggles extends StatelessWidget {
+  final Set<int> selected;
+  final ValueChanged<int> onToggled;
+
+  const WeekdayToggles({required this.selected, required this.onToggled, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Row(
+      children: [
+        for (var day = DateTime.monday; day <= DateTime.sunday; day++)
+          Expanded(
+            child: _DayToggle(
+              label: l10n.weekdayShort(day),
+              selected: selected.contains(day),
+              onTap: () => onToggled(day),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _DayToggle extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _DayToggle({required this.label, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      excludeSemantics: true,
+      child: InkResponse(
+        onTap: () {
+          AppHaptics.selection();
+          onTap();
+        },
+        radius: 24,
+        child: SizedBox(
+          height: 48,
+          child: Center(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final size = constraints.maxWidth.clamp(32.0, 40.0);
+                return AnimatedContainer(
+                  duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 150),
+                  width: size,
+                  height: size,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selected ? scheme.primary : Colors.transparent,
+                    border: Border.all(color: selected ? scheme.primary : scheme.outline),
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      label,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: selected ? scheme.onPrimary : scheme.onSurface,
+                        fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

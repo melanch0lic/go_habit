@@ -13,6 +13,7 @@ import 'package:go_habit/feature/communities/view/communities_screen.dart';
 import 'package:go_habit/feature/communities/view/community_detail_screen.dart';
 import 'package:go_habit/feature/habits/view/habits_page.dart';
 import 'package:go_habit/feature/home/view/home_screen.dart';
+import 'package:go_habit/feature/notifications/view/notification_settings_screen.dart';
 import 'package:go_habit/feature/notifications/view/notifications_screen.dart';
 import 'package:go_habit/feature/profile/view/profile_screen.dart';
 import 'package:go_habit/feature/root/view/root_page.dart';

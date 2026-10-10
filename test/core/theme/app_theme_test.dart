@@ -122,4 +122,45 @@ void main() {
       await cubit.close();
     });
   });
+
+  group('readableOn', () {
+    const white = Color(0xFFFFFFFF);
+    const darkCard = Color(0xFF252525);
+    // Category colors from the catalog.
+    const categories = [Color(0xFFFF6B6B), Color(0xFF4ECDC4), Color(0xFFFB8C00), Color(0xFFFDD835), Color(0xFF00ACC1)];
+
+    test('category colors become readable as text on light and dark cards', () {
+      for (final color in categories) {
+        expect(contrastRatio(color.readableOn(white), white), greaterThanOrEqualTo(4.5), reason: '$color on white');
+        expect(contrastRatio(color.readableOn(darkCard), darkCard), greaterThanOrEqualTo(4.5),
+            reason: '$color on dark');
+      }
+    });
+
+    test('a color that is already readable is unchanged', () {
+      const green = Color(0xFF0E7A47);
+      expect(green.readableOn(white), green);
+    });
+
+    test('white labels read on darkened category pills', () {
+      for (final color in categories) {
+        expect(contrastRatio(white, color.readableOn(white)), greaterThanOrEqualTo(4.5), reason: '$color');
+      }
+    });
+
+    test('non-text UI can ask for 3:1', () {
+      final ring = categories.first.readableOn(white, ratio: 3);
+      expect(contrastRatio(ring, white), greaterThanOrEqualTo(3));
+      expect(contrastRatio(ring, white), lessThan(4.5), reason: 'only as dark as needed');
+    });
+  });
+
+  testWidgets('a field in error shows its floating label in the error color', (tester) async {
+    for (final theme in themes.values) {
+      final style = theme.inputDecorationTheme.floatingLabelStyle! as WidgetStateTextStyle;
+      expect(style.resolve({WidgetState.error}).color, theme.colorScheme.error);
+      expect(style.resolve({WidgetState.focused}).color, theme.colorScheme.primary);
+      expect(style.resolve({WidgetState.error, WidgetState.focused}).color, theme.colorScheme.error);
+    }
+  });
 }

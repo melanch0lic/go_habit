@@ -31,6 +31,11 @@ dependencies:
   lottie: ^3.0.0
   animated_text_kit: ^4.2.2
   dio: ^5.8.0+1
+  # Local reminders and the system notification settings shortcut.
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+  flutter_timezone: ^5.0.2
+  app_settings: ^6.1.1
 
 dev_dependencies:
   flutter_test:

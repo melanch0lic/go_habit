@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/theme/app_theme.dart';
 import 'package:go_habit/core/ui_kit/app_haptics.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
@@ -107,7 +108,11 @@ class HabitCard extends StatelessWidget {
                             meta,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w600),
+                            // The category color, adjusted until it reads as small text on the card.
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: color.readableOn(theme.cardColor),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           if (progress != null) ...[
                             const SizedBox(height: 2),
@@ -131,7 +136,8 @@ class HabitCard extends StatelessWidget {
                     HabitCompletionButton(
                       habitId: habit.id,
                       round: true,
-                      color: color,
+                      // Non-text UI needs 3:1 against the card.
+                      color: color.readableOn(theme.cardColor, ratio: 3),
                       completedColor: green,
                       iconColor: Colors.white,
                     ),

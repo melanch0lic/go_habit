@@ -20,7 +20,12 @@ import 'package:go_router/go_router.dart';
 /// The habits tab: today's progress, today's habits with one-tap completion, and paused
 /// habits. Editing, pausing and deleting live in each habit's menu.
 class HabitsPage extends StatelessWidget {
-  const HabitsPage({super.key});
+  /// A habit to open once the list is loaded (from a tapped reminder), with the
+  /// [openRequest] that asked for it, so each request opens it exactly once.
+  final String? openHabitId;
+  final String? openRequest;
+
+  const HabitsPage({this.openHabitId, this.openRequest, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +65,7 @@ class HabitsPage extends StatelessWidget {
             listener: (context, state) => _showError(context, l10n.habits_error_completion),
           ),
         ],
-        child: const _HabitsBody(),
+        child: _OpenHabitOnce(habitId: openHabitId, request: openRequest, child: const _HabitsBody()),
       ),
     );
   }
@@ -75,6 +80,55 @@ class HabitsPage extends StatelessWidget {
   static void _showError(BuildContext context, String message) => ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(message)));
+}
+
+/// Opens [habitId]'s form once per [request], as tapping its card would. A habit that
+/// no longer exists is explained instead.
+class _OpenHabitOnce extends StatefulWidget {
+  final String? habitId;
+  final String? request;
+  final Widget child;
+
+  const _OpenHabitOnce({required this.habitId, required this.request, required this.child});
+
+  @override
+  State<_OpenHabitOnce> createState() => _OpenHabitOnceState();
+}
+
+class _OpenHabitOnceState extends State<_OpenHabitOnce> {
+  String? _handled;
+
+  void _maybeOpen(HabitsState state) {
+    final habitId = widget.habitId;
+    final request = widget.request ?? habitId;
+    if (habitId == null || request == _handled || state is HabitsInitial || state is HabitsLoading) return;
+    _handled = request;
+    final habit = state.habits.where((habit) => habit.id == habitId).firstOrNull;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (habit == null) {
+        HabitsPage._showError(context, context.l10n.notifications_habit_missing);
+      } else {
+        editHabit(context, habit);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _maybeOpen(context.read<HabitsBloc>().state);
+  }
+
+  @override
+  void didUpdateWidget(covariant _OpenHabitOnce oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _maybeOpen(context.read<HabitsBloc>().state);
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocListener<HabitsBloc, HabitsState>(listener: (context, state) => _maybeOpen(state), child: widget.child);
 }
 
 class _HabitsBody extends StatelessWidget {

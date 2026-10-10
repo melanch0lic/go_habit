@@ -24,6 +24,11 @@ final _profileRoutes = [
         name: ProfileRoutes.privacy.name,
         builder: (_, state) => PrivacyScreen(key: state.pageKey),
       ),
+      GoRoute(
+        path: 'notifications',
+        name: ProfileRoutes.notificationSettings.name,
+        builder: (_, state) => NotificationSettingsScreen(key: state.pageKey),
+      ),
     ],
   ),
   GoRoute(

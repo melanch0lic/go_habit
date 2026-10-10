@@ -6,6 +6,7 @@ import 'package:go_habit/core/database/tables/community_cache.dart';
 import 'package:go_habit/core/database/tables/habit_categories.dart';
 import 'package:go_habit/core/database/tables/habit_completions.dart';
 import 'package:go_habit/core/database/tables/habits.dart';
+import 'package:go_habit/core/database/tables/notifications.dart';
 import 'package:go_habit/core/database/tables/social_cache.dart';
 import 'package:go_habit/core/database/tables/sync_state.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
@@ -14,7 +15,17 @@ import 'package:path_provider/path_provider.dart';
 part 'drift_database.g.dart';
 
 @DriftDatabase(
-  tables: [Habits, HabitCategories, HabitCompletions, SyncState, HabitTemplates, CommunityMemberships, SocialCache],
+  tables: [
+    Habits,
+    HabitCategories,
+    HabitCompletions,
+    SyncState,
+    HabitTemplates,
+    CommunityMemberships,
+    SocialCache,
+    HabitReminders,
+    NotificationHistory,
+  ],
   daos: [HabitsDao],
 )
 class AppDatabase extends _$AppDatabase {
@@ -31,8 +42,10 @@ class AppDatabase extends _$AppDatabase {
   /// 5 — community memberships link the ranked habit again.
   /// 6 — offline cache of the user's social profile, friends and requests.
   /// 7 — habit schedules (daily, weekly target, weekdays) and the streak reset day.
+  /// 8 — recommended schedules in the catalog cache.
+  /// 9 — local habit reminders and the in-app notification history.
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
@@ -59,6 +72,10 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(habitTemplates, habitTemplates.scheduleType);
           await m.addColumn(habitTemplates, habitTemplates.weeklyTarget);
           await m.addColumn(habitTemplates, habitTemplates.scheduleDays);
+        }
+        if (from < 9) {
+          await m.createTable(habitReminders);
+          await m.createTable(notificationHistory);
         }
       },
     );
@@ -144,6 +161,9 @@ class AppDatabase extends _$AppDatabase {
         await delete(habitCompletions).go();
         await delete(habits).go();
         await delete(syncState).go();
+        // Reminders and history name the previous account's habits.
+        await delete(habitReminders).go();
+        await delete(notificationHistory).go();
       });
 
   static QueryExecutor _openConnection() {
