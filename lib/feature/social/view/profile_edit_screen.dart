@@ -141,7 +141,6 @@ class _EditBodyState extends State<_EditBody> {
                   decoration: InputDecoration(
                     labelText: l10n.social_nickname_label,
                     prefixText: '@',
-                    border: const OutlineInputBorder(),
                     helperText: l10n.social_nickname_hint,
                     helperMaxLines: 2,
                     errorText: _nicknameError(state),
@@ -158,7 +157,7 @@ class _EditBodyState extends State<_EditBody> {
                   maxLines: 3,
                   minLines: 1,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(labelText: l10n.social_bio_label, border: const OutlineInputBorder()),
+                  decoration: InputDecoration(labelText: l10n.social_bio_label),
                 ),
                 const SizedBox(height: 16),
                 PressableScale(
@@ -168,7 +167,8 @@ class _EditBodyState extends State<_EditBody> {
                     child: state.isSaving
                         ? const SizedBox.square(
                             dimension: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            // Disabled while saving: the brand color stays visible on the muted fill.
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(l10n.social_save),
                   ),

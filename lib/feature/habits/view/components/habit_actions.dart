@@ -62,7 +62,7 @@ Future<void> deleteHabit(BuildContext context, Habit habit) async {
           ),
         TextButton(
           onPressed: () => Navigator.pop(context, HabitMenuAction.delete),
-          style: TextButton.styleFrom(foregroundColor: Colors.red),
+          style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
           child: Text(l10n.habits_delete),
         ),
       ],

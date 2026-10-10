@@ -148,7 +148,7 @@ class _RankedHabitSheetState extends State<RankedHabitSheet> {
         TextFormField(
           controller: _title,
           textInputAction: template.hasTarget ? TextInputAction.next : TextInputAction.done,
-          decoration: InputDecoration(labelText: l10n.create_habit_name_label, border: const OutlineInputBorder()),
+          decoration: InputDecoration(labelText: l10n.create_habit_name_label),
           validator: (value) => (value ?? '').trim().isEmpty ? l10n.create_habit_name_label : null,
         ),
         if (template.hasTarget) ...[
@@ -161,7 +161,6 @@ class _RankedHabitSheetState extends State<RankedHabitSheet> {
               labelText: l10n.create_habit_target_label,
               // "20 страниц" → "страниц": the number is in the field.
               suffixText: unit?.replaceFirst(RegExp(r'^\d+\s*'), ''),
-              border: const OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() {}),
             validator: (value) => (int.tryParse(value ?? '') ?? 0) > 0 ? null : l10n.create_habit_target_label,

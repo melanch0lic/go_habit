@@ -14,19 +14,8 @@ Widget makeTestableWidget({
     locale: const Locale('ru'),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    theme: ThemeData(
-      useMaterial3: true,
-      brightness: useDarkTheme ? Brightness.dark : Brightness.light,
-      primaryColor: Colors.green,
-      scaffoldBackgroundColor:
-          useDarkTheme ? Colors.grey[900] : Colors.grey[100],
-      cardColor: useDarkTheme ? Colors.grey[800] : Colors.white,
-      focusColor: useDarkTheme ? Colors.black54 : Colors.grey[800],
-      // The app's design tokens (colors, text styles) used by its widgets.
-      extensions: [
-        if (useDarkTheme) AppThemeExtension.darkThemeExtension() else AppThemeExtension.lightThemeExtension(),
-      ],
-    ),
+    // The app's real light and dark themes, so goldens show what users see.
+    theme: useDarkTheme ? AppTheme.defaultTheme.darkTheme : AppTheme.defaultTheme.lightTheme,
     home: Scaffold(
       body: Center(
         child: child,

@@ -1967,7 +1967,7 @@ abstract class AppLocalizations {
   /// No description provided for @theme_settings.
   ///
   /// In en, this message translates to:
-  /// **'Dark theme'**
+  /// **'Theme'**
   String get theme_settings;
 
   /// No description provided for @archive.
@@ -2215,6 +2215,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{completed}/{expected} scheduled days'**
   String community_progress_weekdays(int completed, int expected);
+
+  /// No description provided for @theme_system.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get theme_system;
+
+  /// No description provided for @theme_light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get theme_light;
+
+  /// No description provided for @theme_dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get theme_dark;
+
+  /// No description provided for @language_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language_label;
+
+  /// No description provided for @profile_section_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get profile_section_stats;
+
+  /// No description provided for @profile_section_social.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends and privacy'**
+  String get profile_section_social;
+
+  /// No description provided for @profile_section_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get profile_section_settings;
+
+  /// No description provided for @profile_section_about.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get profile_section_about;
+
+  /// No description provided for @profile_show_welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the welcome screen'**
+  String get profile_show_welcome;
+
+  /// No description provided for @profile_email_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you can see your account email'**
+  String get profile_email_hint;
+
+  /// No description provided for @notifications_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No new notifications'**
+  String get notifications_empty;
 }
 
 class _AppLocalizationsDelegate

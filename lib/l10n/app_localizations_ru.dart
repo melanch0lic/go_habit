@@ -1221,7 +1221,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get habit_unmark_done => 'Отменить отметку за сегодня';
 
   @override
-  String get theme_settings => 'Темная тема';
+  String get theme_settings => 'Тема';
 
   @override
   String get archive => 'Архив';
@@ -1403,4 +1403,37 @@ class AppLocalizationsRu extends AppLocalizations {
   String community_progress_weekdays(int completed, int expected) {
     return '$completed/$expected запланированных дн.';
   }
+
+  @override
+  String get theme_system => 'Системная';
+
+  @override
+  String get theme_light => 'Светлая';
+
+  @override
+  String get theme_dark => 'Тёмная';
+
+  @override
+  String get language_label => 'Язык';
+
+  @override
+  String get profile_section_stats => 'Статистика';
+
+  @override
+  String get profile_section_social => 'Друзья и приватность';
+
+  @override
+  String get profile_section_settings => 'Настройки';
+
+  @override
+  String get profile_section_about => 'Приложение';
+
+  @override
+  String get profile_show_welcome => 'Показать приветствие';
+
+  @override
+  String get profile_email_hint => 'Почта аккаунта видна только вам';
+
+  @override
+  String get notifications_empty => 'Нет новых уведомлений';
 }

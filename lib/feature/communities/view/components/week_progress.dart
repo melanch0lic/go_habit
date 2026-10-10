@@ -36,7 +36,7 @@ class MembershipProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final textColor = Colors.white.withValues(alpha: 0.85);
+    final textColor = context.theme.onFeatureSurfaceMuted;
     final habits = context.select<HabitsBloc, List<Habit>>((bloc) => bloc.state.habits);
     final habit = membership.rankedHabitIn(habits);
     final stats = context.watch<HabitStatsBloc>().state;

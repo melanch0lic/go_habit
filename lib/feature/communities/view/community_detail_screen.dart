@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
+import 'package:go_habit/core/theme/app_theme.dart';
 import 'package:go_habit/core/ui_kit/app_haptics.dart';
 import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/communities/bloc/community_detail_bloc.dart';
@@ -139,8 +140,9 @@ class _DarkCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: context.themeOf.focusColor, borderRadius: BorderRadius.circular(16)),
-        child: DefaultTextStyle.merge(style: const TextStyle(color: Colors.white), child: child),
+        decoration:
+            BoxDecoration(color: context.theme.featureSurface, borderRadius: BorderRadius.circular(AppRadius.card)),
+        child: DefaultTextStyle.merge(style: TextStyle(color: context.theme.onFeatureSurface), child: child),
       );
 }
 
@@ -214,7 +216,7 @@ class _InfoLine extends StatelessWidget {
         padding: const EdgeInsets.only(top: 4),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: Colors.white70),
+            Icon(icon, size: 18, color: context.theme.onFeatureSurfaceMuted),
             const SizedBox(width: 8),
             Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
           ],
@@ -260,7 +262,7 @@ class _Membership extends StatelessWidget {
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: context.themeOf.colorScheme.error),
             child: Text(l10n.community_leave_confirm),
           ),
         ],
@@ -282,10 +284,8 @@ class _Membership extends StatelessWidget {
         child: ElevatedButton(
           onPressed: busy ? null : () => _openSheet(context),
           child: busy
-              ? const SizedBox.square(
-                  dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                )
+              // The busy button is disabled, so the spinner uses the brand color on its muted fill.
+              ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
               : Text(l10n.community_join),
         ),
       );
@@ -327,7 +327,8 @@ class _Membership extends StatelessWidget {
                 ),
               TextButton.icon(
                 onPressed: busy ? null : () => _confirmLeave(context),
-                style: TextButton.styleFrom(foregroundColor: Colors.red.shade300),
+                // On the dark feature surface in both themes: the dark theme's error color.
+                style: TextButton.styleFrom(foregroundColor: const Color(0xFFF28B82)),
                 icon: const Icon(Icons.logout),
                 label: Text(l10n.community_leave),
               ),

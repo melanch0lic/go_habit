@@ -19,7 +19,8 @@ class CommonColors {
   final lightBackground = const Color(0xFFF8F9FA); // Очень светлый серо-голубой
   final lightSurface = const Color(0xFFFFFFFF); // Белый
   final lightPrimaryText = const Color(0xFF505050); // Средне-темный серый
-  final lightSecondaryText = const Color(0xFF8F8F8F); // Средний серый
+  // ≥ 4.5:1 on the light background and cards (WCAG AA for small text).
+  final lightSecondaryText = const Color(0xFF6E6E6E); // Средний серый
   final lightDisabledText = const Color(0xFFBBBBBB); // Светло-серый
   final lightDivider = const Color(0xFFEEEEEE); // Очень светло-серый
   final lightCard = const Color(0xFFFFFFFF); // Белый

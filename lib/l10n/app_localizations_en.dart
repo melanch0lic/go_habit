@@ -1199,7 +1199,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get habit_unmark_done => 'Undo today\'s completion';
 
   @override
-  String get theme_settings => 'Dark theme';
+  String get theme_settings => 'Theme';
 
   @override
   String get archive => 'Archive';
@@ -1378,4 +1378,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String community_progress_weekdays(int completed, int expected) {
     return '$completed/$expected scheduled days';
   }
+
+  @override
+  String get theme_system => 'System';
+
+  @override
+  String get theme_light => 'Light';
+
+  @override
+  String get theme_dark => 'Dark';
+
+  @override
+  String get language_label => 'Language';
+
+  @override
+  String get profile_section_stats => 'Statistics';
+
+  @override
+  String get profile_section_social => 'Friends and privacy';
+
+  @override
+  String get profile_section_settings => 'Settings';
+
+  @override
+  String get profile_section_about => 'App';
+
+  @override
+  String get profile_show_welcome => 'Show the welcome screen';
+
+  @override
+  String get profile_email_hint => 'Only you can see your account email';
+
+  @override
+  String get notifications_empty => 'No new notifications';
 }

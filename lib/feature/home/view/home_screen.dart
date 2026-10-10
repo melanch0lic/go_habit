@@ -6,7 +6,6 @@ import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/home/domain/bloc/home_bloc.dart';
 import 'package:go_habit/feature/home/view/components/habit_home_list.dart';
 import 'package:go_habit/feature/home/view/components/loading_quote_widget.dart';
-import 'package:go_habit/feature/theme/theme_cubit.dart';
 import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -68,6 +67,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    // The mascot's speech bubble: light green on light, deep green on dark.
+    final scheme = Theme.of(context).colorScheme;
+    final bubble = scheme.primaryContainer;
+    final onBubble = scheme.onPrimaryContainer;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -103,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 width: 8,
                                 height: 8,
                                 decoration: BoxDecoration(
-                                  color: Colors.lightGreen.shade100,
+                                  color: bubble,
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
@@ -128,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 width: 12,
                                 height: 12,
                                 decoration: BoxDecoration(
-                                  color: Colors.lightGreen.shade200,
+                                  color: bubble,
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
@@ -146,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           margin: const EdgeInsets.only(bottom: 20),
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           decoration: BoxDecoration(
-                            color: Colors.lightGreen.shade100,
+                            color: bubble,
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
@@ -160,12 +163,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             child: Row(
                               // mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.pets, color: Colors.green.shade700),
+                                Icon(Icons.pets, color: onBubble),
                                 const SizedBox(width: 8),
                                 Flexible(
                                   child: DefaultTextStyle(
                                     style: TextStyle(
-                                      color: Colors.green.shade900,
+                                      color: onBubble,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
@@ -246,16 +249,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(16),
-                              child: BlocBuilder<ThemeCubit, ThemeState>(
-                                builder: (context, state) {
-                                  return Lottie.asset(
-                                      state.themeMode == ThemeMode.light
-                                          ? 'animation/tiger_orange.json'
-                                          : 'animation/tiger_white.json',
-                                      fit: BoxFit.contain,
-                                      repeat: true,
-                                      reverse: true);
-                                },
+                              // The effective brightness, so "system" follows the device setting.
+                              child: Lottie.asset(
+                                Theme.of(context).brightness == Brightness.light
+                                    ? 'animation/tiger_orange.json'
+                                    : 'animation/tiger_white.json',
+                                fit: BoxFit.contain,
+                                repeat: true,
+                                reverse: true,
                               ),
                             ),
                           ),

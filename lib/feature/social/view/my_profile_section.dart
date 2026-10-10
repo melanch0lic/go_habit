@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
 import 'package:go_habit/core/router/routes_enum.dart';
+import 'package:go_habit/core/theme/app_theme.dart';
+import 'package:go_habit/core/ui_kit/app_section.dart';
 import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/communities/domain/weekly_consistency.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
@@ -10,14 +12,66 @@ import 'package:go_habit/feature/habit_stats/domain/streak.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/social/bloc/friends_bloc.dart';
 import 'package:go_habit/feature/social/bloc/my_profile_bloc.dart';
+import 'package:go_habit/feature/social/domain/models/social.dart';
 import 'package:go_habit/feature/social/view/components/user_avatar.dart';
 import 'package:go_habit/feature/social/view/social_texts.dart';
 import 'package:go_router/go_router.dart';
 
-/// The top of the own profile screen: public identity, own statistics, friends and
-/// privacy.
+/// The top of the own profile screen: public identity with the edit action, the
+/// user's statistics, and friends and privacy.
 class MyProfileSection extends StatelessWidget {
-  const MyProfileSection({super.key});
+  /// The private account email, shown to the owner only.
+  final String? email;
+
+  const MyProfileSection({this.email, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final profile = context.select<MyProfileBloc, MyProfile?>((bloc) => bloc.state.profile);
+    final incoming = context.select<FriendsBloc, int>((bloc) => bloc.state.incomingCount);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Header(email: email),
+        const SizedBox(height: AppSpacing.section),
+        AppSection(title: l10n.profile_section_stats, children: const [_OwnStats()]),
+        const SizedBox(height: AppSpacing.section),
+        AppSection(
+          title: l10n.profile_section_social,
+          children: [
+            AppSettingsTile(
+              icon: Icons.group_outlined,
+              title: l10n.social_friends_title,
+              subtitle: incoming > 0 ? l10n.social_incoming_count(incoming) : null,
+              badgeCount: incoming,
+              onTap: () => context.push(ProfileRoutes.friends.path),
+            ),
+            AppSettingsTile(
+              icon: Icons.lock_outline,
+              title: l10n.social_privacy_title,
+              onTap: () => context.push(ProfileRoutes.privacy.path),
+            ),
+            if (profile != null)
+              AppSettingsTile(
+                icon: Icons.badge_outlined,
+                title: l10n.social_view_public_profile,
+                onTap: () => context.push(SocialRoutes.userOf(profile.publicId)),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Avatar, nickname and bio, with editing as the primary action. Without a nickname
+/// the primary action is choosing one.
+class _Header extends StatelessWidget {
+  final String? email;
+
+  const _Header({required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -25,87 +79,77 @@ class MyProfileSection extends StatelessWidget {
     final theme = context.themeOf;
     final state = context.watch<MyProfileBloc>().state;
     final profile = state.profile;
-    final incoming = context.select<FriendsBloc, int>((bloc) => bloc.state.incomingCount);
+    final email = this.email;
+
+    final Widget identity;
+    if (profile == null && state.status == MyProfileStatus.failure) {
+      identity = Text(state.failure?.message(l10n) ?? '', style: theme.textTheme.bodyMedium);
+    } else if (profile == null) {
+      identity = const Padding(
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    } else {
+      final bio = profile.bio?.trim();
+      identity = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            profile.nickname == null ? l10n.social_no_nickname : '@${profile.nickname}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          if (bio != null && bio.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(bio, maxLines: 3, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium),
+          ],
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: theme.cardColor, borderRadius: BorderRadius.circular(16)),
-          child: Row(
-            children: [
-              UserAvatar(nickname: profile?.nickname, avatar: profile?.avatar, size: 64),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (profile == null && state.status == MyProfileStatus.failure)
-                      Text(state.failure?.message(l10n) ?? '', style: theme.textTheme.bodySmall)
-                    else if (profile == null)
-                      const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    else if (profile.nickname == null) ...[
-                      Text(l10n.social_no_nickname, style: theme.textTheme.titleMedium),
-                      TextButton(
-                        onPressed: () => context.push(ProfileRoutes.edit.path),
-                        style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(48, 40)),
-                        child: Text(l10n.social_set_nickname),
-                      ),
-                    ] else ...[
-                      Text(
-                        '@${profile.nickname}',
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      if (profile.bio case final bio? when bio.isNotEmpty)
-                        Text(bio, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium),
-                    ],
-                  ],
-                ),
-              ),
-              if (profile != null)
-                IconButton(
-                  tooltip: l10n.social_edit_profile,
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: () => context.push(ProfileRoutes.edit.path),
-                ),
-            ],
-          ),
+        Row(
+          children: [
+            UserAvatar(nickname: profile?.nickname, avatar: profile?.avatar, size: 72),
+            const SizedBox(width: AppSpacing.lg),
+            Expanded(child: identity),
+          ],
         ),
-        const SizedBox(height: 12),
-        const _OwnStats(),
-        const SizedBox(height: 12),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Column(
-            children: [
-              ListTile(
-                leading: Badge(
-                  isLabelVisible: incoming > 0,
-                  label: Text('$incoming'),
-                  child: const Icon(Icons.group_outlined),
+        if (email != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          Semantics(
+            label: '$email. ${l10n.profile_email_hint}',
+            excludeSemantics: true,
+            child: Row(
+              children: [
+                Icon(Icons.lock_outline, size: AppSizes.iconSm, color: theme.colorScheme.onSurfaceVariant),
+                const SizedBox(width: AppSpacing.sm),
+                // The account email is private: shown here only, never to other users.
+                Expanded(
+                  child: Text(email, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
                 ),
-                title: Text(l10n.social_friends_title),
-                subtitle: incoming > 0 ? Text(l10n.social_incoming_count(incoming)) : null,
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push(ProfileRoutes.friends.path),
-              ),
-              ListTile(
-                leading: const Icon(Icons.lock_outline),
-                title: Text(l10n.social_privacy_title),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push(ProfileRoutes.privacy.path),
-              ),
-              if (profile != null)
-                ListTile(
-                  leading: const Icon(Icons.badge_outlined),
-                  title: Text(l10n.social_view_public_profile),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push(SocialRoutes.userOf(profile.publicId)),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
+        if (profile != null) ...[
+          const SizedBox(height: AppSpacing.lg),
+          if (profile.nickname == null)
+            FilledButton.icon(
+              onPressed: () => context.push(ProfileRoutes.edit.path),
+              icon: const Icon(Icons.alternate_email),
+              label: Text(l10n.social_set_nickname),
+            )
+          else
+            OutlinedButton.icon(
+              onPressed: () => context.push(ProfileRoutes.edit.path),
+              icon: const Icon(Icons.edit_outlined),
+              label: Text(l10n.social_edit_profile),
+            ),
+        ],
       ],
     );
   }
@@ -120,7 +164,7 @@ class _OwnStats extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = context.themeOf;
-    final green = context.theme.commonColors.green100;
+    final green = theme.colorScheme.primary;
     final active = context.watch<HabitsBloc>().state.habits.where((habit) => habit.isActive).toList();
     final stats = context.watch<HabitStatsBloc>().state;
 
@@ -146,36 +190,40 @@ class _OwnStats extends StatelessWidget {
     }
 
     Widget stat(String value, String label) => Expanded(
-          child: Column(
-            children: [
-              Text(value, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: green)),
-              Text(label, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
-            ],
+          child: Semantics(
+            label: '$value, $label',
+            excludeSemantics: true,
+            child: Column(
+              children: [
+                Text(
+                  value,
+                  style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: green),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(label, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+              ],
+            ),
           ),
         );
 
-    return Semantics(
-      container: true,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        decoration: BoxDecoration(color: theme.cardColor, borderRadius: BorderRadius.circular(16)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            stat('${active.length}', l10n.social_stat_active_habits),
-            stat(
-              '${bestStreak?.count ?? 0}',
-              switch (bestStreak?.unit) {
-                null => l10n.social_stat_best_streak,
-                StreakUnit.days => l10n.social_best_streak_days(bestStreak!.count),
-                StreakUnit.weeks => l10n.social_best_streak_weeks(bestStreak!.count),
-                StreakUnit.occurrences => l10n.social_best_streak_occurrences(bestStreak!.count),
-              },
-            ),
-            stat(eligible == 0 ? '—' : '${(completed * 100 / eligible).round()}%',
-                l10n.social_stat_week(completed, eligible)),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg, horizontal: AppSpacing.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          stat('${active.length}', l10n.social_stat_active_habits),
+          stat(
+            '${bestStreak?.count ?? 0}',
+            switch (bestStreak?.unit) {
+              null => l10n.social_stat_best_streak,
+              StreakUnit.days => l10n.social_best_streak_days(bestStreak!.count),
+              StreakUnit.weeks => l10n.social_best_streak_weeks(bestStreak!.count),
+              StreakUnit.occurrences => l10n.social_best_streak_occurrences(bestStreak!.count),
+            },
+          ),
+          stat(eligible == 0 ? '—' : '${(completed * 100 / eligible).round()}%',
+              l10n.social_stat_week(completed, eligible)),
+        ],
       ),
     );
   }
