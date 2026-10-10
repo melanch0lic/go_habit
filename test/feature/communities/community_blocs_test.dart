@@ -27,7 +27,7 @@ void main() {
     test('loads the catalog; retired templates are not offered', () async {
       await load();
       expect(bloc.state.status, CatalogStatus.ready);
-      expect(bloc.state.visibleTemplates.map((t) => t.id), ['reading', 'walking', 'no-sugar']);
+      expect(bloc.state.visibleTemplates.map((t) => t.id), ['reading', 'walking', 'strength-training', 'no-sugar']);
       expect(bloc.state.memberCountOf('reading'), 3);
       expect(bloc.state.memberCountOf('walking'), 0, reason: 'a loaded count of zero is real');
     });
@@ -36,7 +36,7 @@ void main() {
       await load();
       bloc.add(const CommunityCatalogCategorySelected('health'));
       await pumpEventQueue();
-      expect(bloc.state.visibleTemplates.map((t) => t.id), ['walking', 'no-sugar']);
+      expect(bloc.state.visibleTemplates.map((t) => t.id), ['walking', 'strength-training', 'no-sugar']);
 
       bloc.add(const CommunityCatalogQueryChanged('  SWEETS '));
       await pumpEventQueue();

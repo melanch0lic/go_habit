@@ -31,9 +31,18 @@ select 'a0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-11111111
   from generate_series(current_date - (extract(isodow from current_date)::int - 1), current_date, interval '1 day') d;
 insert into public.habit_completion (habit_id, user_id, completed_on)
 values ('b0000000-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', current_date);
--- Alice ranks in a community; Mallory is a member there too.
+-- Last week Alice also read every day: the community ranking covers the finished week.
+insert into public.habit_completion (habit_id, user_id, completed_on)
+select 'a0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', d::date
+  from generate_series(current_date - (extract(isodow from current_date)::int - 1) - 7,
+                       current_date - extract(isodow from current_date)::int, interval '1 day') d;
+-- Alice ranks in a community since last week; Mallory and Bob are members there too.
+alter table public.community_membership disable trigger community_membership_guard;
+insert into public.community_membership (user_id, template_id, habit_id, joined_on) values
+  ('11111111-1111-1111-1111-111111111111', 'reading', 'a0000000-0000-0000-0000-000000000001',
+   current_date - (extract(isodow from current_date)::int - 1) - 7);
+alter table public.community_membership enable trigger community_membership_guard;
 insert into public.community_membership (user_id, template_id, habit_id) values
-  ('11111111-1111-1111-1111-111111111111', 'reading', 'a0000000-0000-0000-0000-000000000001'),
   ('44444444-4444-4444-4444-444444444444', 'reading', null),
   ('22222222-2222-2222-2222-222222222222', 'reading', null);
 

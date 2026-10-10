@@ -6,6 +6,9 @@ import 'package:go_habit/core/ui_kit/pressable_scale.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
 import 'package:go_habit/feature/communities/view/community_texts.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
+import 'package:go_habit/feature/habits/view/components/habit_schedule_section.dart';
+import 'package:go_habit/feature/habits/view/habit_texts.dart';
 
 /// What the user chose in [RankedHabitSheet].
 sealed class RankedHabitChoice {
@@ -17,7 +20,10 @@ final class CreateRankedHabit extends RankedHabitChoice {
   final String title;
   final String description;
 
-  const CreateRankedHabit({required this.title, required this.description});
+  /// The user's own schedule, prefilled from the template's recommendation.
+  final HabitSchedule schedule;
+
+  const CreateRankedHabit({required this.title, required this.description, required this.schedule});
 }
 
 /// Join without taking part in the ranking.
@@ -25,8 +31,9 @@ final class JoinWithoutRanking extends RankedHabitChoice {
   const JoinWithoutRanking();
 }
 
-/// Creating the ranked habit from a template, with the user's own name and daily
-/// target. When [joining], the user may instead join without the ranking.
+/// Creating the ranked habit from a template, with the user's own name, target and
+/// schedule (prefilled from the template's recommendation). When [joining], the user
+/// may instead join without the ranking.
 class RankedHabitSheet extends StatefulWidget {
   final HabitTemplate template;
 
@@ -68,6 +75,17 @@ class _RankedHabitSheetState extends State<RankedHabitSheet> {
   final _title = TextEditingController();
   late final _target = TextEditingController(text: widget.template.targetValue?.toString() ?? '');
   bool _ranked = true;
+  late ScheduleType _scheduleType = widget.template.recommendedSchedule.type;
+  late int _weeklyTarget = widget.template.recommendedSchedule.weeklyTarget ?? 3;
+  late Set<int> _weekdays = {...widget.template.recommendedSchedule.weekdays};
+  bool _showWeekdaysError = false;
+
+  /// Null while weekdays are chosen but none is ticked.
+  HabitSchedule? get _schedule => switch (_scheduleType) {
+        ScheduleType.daily => HabitSchedule.daily,
+        ScheduleType.weeklyTarget => HabitSchedule.weeklyTarget(_weeklyTarget),
+        ScheduleType.weekdays => _weekdays.isEmpty ? null : HabitSchedule.weekdays(_weekdays),
+      };
 
   @override
   void didChangeDependencies() {
@@ -87,7 +105,9 @@ class _RankedHabitSheetState extends State<RankedHabitSheet> {
       Navigator.pop<RankedHabitChoice>(context, const JoinWithoutRanking());
       return;
     }
-    if (!_formKey.currentState!.validate()) return;
+    final schedule = _schedule;
+    setState(() => _showWeekdaysError = schedule == null);
+    if (!_formKey.currentState!.validate() || schedule == null) return;
     final l10n = context.l10n;
     final description = widget.template.descriptionFor(languageCodeOf(context));
     final target = widget.template.targetText(l10n, value: int.tryParse(_target.text));
@@ -96,6 +116,7 @@ class _RankedHabitSheetState extends State<RankedHabitSheet> {
       CreateRankedHabit(
         title: _title.text.trim(),
         description: target == null ? description : l10n.create_habit_description(description, target),
+        schedule: schedule,
       ),
     );
   }
@@ -146,6 +167,21 @@ class _RankedHabitSheetState extends State<RankedHabitSheet> {
             validator: (value) => (int.tryParse(value ?? '') ?? 0) > 0 ? null : l10n.create_habit_target_label,
           ),
         ],
+        const SizedBox(height: 16),
+        HabitScheduleSection(
+          type: _scheduleType,
+          weeklyTarget: _weeklyTarget,
+          weekdays: _weekdays,
+          showWeekdaysError: _showWeekdaysError,
+          summary: _schedule == null ? null : l10n.scheduleSummary(_schedule!),
+          onTypeChanged: (type) => setState(() => _scheduleType = type),
+          onTargetChanged: (target) => setState(() => _weeklyTarget = target),
+          onWeekdayToggled: (day) => setState(() {
+            _weekdays = {..._weekdays};
+            if (!_weekdays.remove(day)) _weekdays.add(day);
+            if (_weekdays.isNotEmpty) _showWeekdaysError = false;
+          }),
+        ),
         const SizedBox(height: 8),
         Text(l10n.create_habit_hint, style: theme.textTheme.bodySmall),
       ],

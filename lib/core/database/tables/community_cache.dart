@@ -16,6 +16,11 @@ class HabitTemplates extends Table {
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
 
+  /// Recommended schedule, as on `public.habit_template` (see `HabitSchedule`).
+  TextColumn get scheduleType => text().withDefault(const Constant('daily'))();
+  IntColumn get weeklyTarget => integer().nullable()();
+  IntColumn get scheduleDays => integer().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

@@ -9,6 +9,7 @@ import 'package:go_habit/feature/communities/domain/models/community.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
 import 'package:go_habit/feature/communities/domain/repositories/community_repository.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 import 'package:go_habit/feature/habits/domain/repositories/habit_repository.dart';
 
 class CommunityRepositoryImpl implements CommunityRepository {
@@ -98,10 +99,17 @@ class CommunityRepositoryImpl implements CommunityRepository {
     HabitTemplate template, {
     required String title,
     required String description,
+    HabitSchedule schedule = HabitSchedule.daily,
   }) async {
     // Checked before creating the habit, so an offline attempt leaves nothing behind.
     await _requireConnection();
-    final habit = Habit(title: title, description: description, categoryId: template.categoryId, icon: template.icon);
+    final habit = Habit(
+      title: title,
+      description: description,
+      categoryId: template.categoryId,
+      icon: template.icon,
+      schedule: schedule,
+    );
     await _habits.addHabit(habit);
     try {
       // The server only accepts a habit it already has.
@@ -130,7 +138,11 @@ class CommunityRepositoryImpl implements CommunityRepository {
   @override
   Future<CommunityLeaderboard> leaderboard(String templateId, {required CalendarDay today}) async {
     await _requireConnection();
-    return CommunityLeaderboard.fromRows(await _remote.fetchLeaderboard(templateId: templateId, today: today));
+    return CommunityLeaderboard.fromRows(
+      await _remote.fetchLeaderboard(templateId: templateId, today: today),
+      // The same week the server ranks: the one before the current one.
+      weekStart: today.weekStart.addDays(-7),
+    );
   }
 
   @override

@@ -358,11 +358,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String community_recommended_target(String target) {
-    return 'Recommended target: $target a day';
+    return 'Recommended target: $target per session';
   }
-
-  @override
-  String get community_schedule_daily => 'Every day';
 
   @override
   String get community_join => 'Join';
@@ -375,7 +372,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get community_leave_message =>
-      'Your ranked habit stays in your list with its history. If you come back, days of this week before rejoining won\'t count.';
+      'Your ranked habit stays in your list with its history. You will disappear from the ranking; if you come back, days before rejoining won\'t count.';
 
   @override
   String get community_leave_confirm => 'Leave';
@@ -389,7 +386,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get community_leaderboard_title => 'This week\'s ranking';
+  String get community_leaderboard_title => 'Last week\'s ranking';
 
   @override
   String get community_retired => 'This community is closed to new members.';
@@ -1067,7 +1064,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get community_rules_body =>
-      'One habit created from the community\'s template takes part in the ranking. The ranking is weekly, from Monday to today. It measures regularity: the share of counted days on which the habit was marked. Days before you joined or created the habit, and future days, are not counted. Time and effort are not compared. Others see only your profile name (or “Member”), your percentage and day count.';
+      'One habit created from the community\'s template, with its own schedule, takes part in the ranking. Results cover last week, Monday to Sunday. The ranking measures consistency with your schedule: a daily habit counts every day, selected weekdays count only those days, a weekly target counts the target (marks beyond it add nothing). Days before you joined or created the habit don\'t count, and a weekly target is prorated when you join mid-week. Ties go to more completed actions, then to more successful weeks in a row. The current week is shown separately and is ranked only once it is over. Others see only your profile name (or “Member”), your percentage and numbers.';
 
   @override
   String community_ranked_habit(String title) {
@@ -1099,7 +1096,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get community_leaderboard_empty =>
-      'Nobody has counted days this week yet.';
+      'No results for last week yet: no member was ranked for all or part of it.';
 
   @override
   String get community_leaderboard_offline =>
@@ -1115,11 +1112,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get community_you => 'You';
 
   @override
-  String community_days(int completed, int eligible) {
-    return '$completed of $eligible days';
-  }
-
-  @override
   String community_rank(int rank) {
     return 'Rank $rank';
   }
@@ -1131,7 +1123,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get community_not_ranked_yet =>
-      'You\'ll appear in the ranking once your ranked habit has counted days.';
+      'Your results will appear in the ranking once your first week with a ranked habit is over.';
 
   @override
   String get community_unsynced_hint =>
@@ -1175,11 +1167,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_habit_name_label => 'Name';
 
   @override
-  String get create_habit_target_label => 'Daily target';
+  String get create_habit_target_label => 'Target per session';
 
   @override
   String get create_habit_hint =>
-      'The target is saved in the habit\'s description. Schedule: every day.';
+      'The target is saved in the habit\'s description. The schedule is suggested by the template; changing it does not change the template.';
 
   @override
   String create_habit_similar(String title) {
@@ -1188,7 +1180,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String create_habit_description(String description, String target) {
-    return '$description Target: $target a day.';
+    return '$description Target: $target per session.';
   }
 
   @override
@@ -1317,5 +1309,73 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String privacy_policy_copyright(String year) {
     return '© $year Go Habit. All rights reserved.';
+  }
+
+  @override
+  String community_recommended_schedule(String schedule) {
+    return 'Recommended schedule: $schedule';
+  }
+
+  @override
+  String community_leaderboard_period(String range) {
+    return 'Week of $range';
+  }
+
+  @override
+  String community_percent(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString%';
+  }
+
+  @override
+  String community_actions(int completed, int expected) {
+    return '$completed/$expected';
+  }
+
+  @override
+  String community_actions_semantics(int completed, int expected) {
+    return '$completed of $expected scheduled done';
+  }
+
+  @override
+  String community_success_weeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count successful weeks in a row',
+      one: '$count successful week in a row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get community_status_paused =>
+      'Your habit was paused at the end of last week, so the week was not scored.';
+
+  @override
+  String get community_status_no_actions =>
+      'Your schedule had nothing planned last week.';
+
+  @override
+  String community_this_week(String progress) {
+    return 'This week (in progress): $progress';
+  }
+
+  @override
+  String community_progress_days(int completed, int expected) {
+    return '$completed/$expected days';
+  }
+
+  @override
+  String community_progress_target(int completed, int expected) {
+    return '$completed/$expected weekly target';
+  }
+
+  @override
+  String community_progress_weekdays(int completed, int expected) {
+    return '$completed/$expected scheduled days';
   }
 }

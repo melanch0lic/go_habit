@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_habit/core/extension/locale_extension.dart';
 import 'package:go_habit/core/extension/theme_extension.dart';
 import 'package:go_habit/core/router/routes_enum.dart';
+import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/communities/bloc/community_detail_bloc.dart';
 import 'package:go_habit/feature/communities/domain/models/community.dart';
 import 'package:go_habit/feature/communities/view/community_texts.dart';
 import 'package:go_habit/feature/social/view/components/user_avatar.dart';
 import 'package:go_router/go_router.dart';
 
-/// The weekly ranking with its loading, empty, offline and error states.
+/// The ranking of the last finished week with its period, the caller's place or the
+/// reason they are not ranked, and the loading, empty, offline and error states.
 class LeaderboardSection extends StatelessWidget {
   final CommunityDetailState state;
   final VoidCallback onRetry;
@@ -42,6 +44,9 @@ class LeaderboardSection extends StatelessWidget {
       body = Column(children: [for (final entry in leaderboard.entries) LeaderboardRow(entry: entry)]);
     }
 
+    final weekStart = leaderboard?.weekStart;
+    final myStatus = me == null ? null : _myStatus(context, me, leaderboard!.rankedCount);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -60,16 +65,13 @@ class LeaderboardSection extends StatelessWidget {
               const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2)),
           ],
         ),
-        if (me != null) ...[
+        if (weekStart != null) ...[
+          const SizedBox(height: 2),
+          Text(l10n.community_leaderboard_period(weekRange(context, weekStart)), style: secondary),
+        ],
+        if (myStatus != null) ...[
           const SizedBox(height: 4),
-          Text(
-            me.rank != null
-                ? l10n.community_my_rank(me.rank!, leaderboard!.rankedCount)
-                : state.membership?.isRanked ?? false
-                    ? l10n.community_not_ranked_yet
-                    : l10n.community_not_ranked,
-            style: secondary,
-          ),
+          Text(myStatus, style: secondary),
         ],
         if (state.hasUnsyncedChanges) ...[
           const SizedBox(height: 4),
@@ -90,10 +92,31 @@ class LeaderboardSection extends StatelessWidget {
       ],
     );
   }
+
+  /// The caller's place, or why they are not ranked for the week.
+  String _myStatus(BuildContext context, LeaderboardEntry me, int rankedCount) {
+    final l10n = context.l10n;
+    final rank = me.rank;
+    if (rank != null) return l10n.community_my_rank(rank, rankedCount);
+    return switch (me.status) {
+      LeaderboardStatus.joinedRecently => l10n.community_not_ranked_yet,
+      LeaderboardStatus.paused => l10n.community_status_paused,
+      LeaderboardStatus.noScheduledActions => l10n.community_status_no_actions,
+      LeaderboardStatus.noHabit || LeaderboardStatus.scored => l10n.community_not_ranked,
+    };
+  }
 }
 
-/// One ranked member: place, avatar, name (or a neutral label), days and percent.
-/// Opens the member's public profile when their name is visible.
+/// "5–11 окт." for the week starting [monday], in the app's locale.
+String weekRange(BuildContext context, CalendarDay monday) {
+  final material = MaterialLocalizations.of(context);
+  return '${material.formatShortMonthDay(monday.toDateTime())} – '
+      '${material.formatShortMonthDay(monday.addDays(6).toDateTime())}';
+}
+
+/// One ranked member: place, avatar, name (or a neutral label), completed and
+/// expected actions, successful weeks in a row and the percentage. Opens the member's
+/// public profile when their name is visible.
 class LeaderboardRow extends StatelessWidget {
   final LeaderboardEntry entry;
 
@@ -109,15 +132,24 @@ class LeaderboardRow extends StatelessWidget {
         : entry.displayName == null
             ? l10n.community_member_fallback
             : '@${entry.displayName}';
-    final percent = entry.roundedPercent ?? 0;
-    final days = l10n.community_days(entry.completedDays, entry.eligibleDays);
+    final percent = l10n.community_percent(entry.displayPercent ?? 0);
+    final details = [
+      l10n.community_actions(entry.completed, entry.expected),
+      if (entry.successWeeks > 0) l10n.community_success_weeks(entry.successWeeks),
+    ].join(' · ');
     final publicId = entry.publicId;
     final canOpen = publicId != null && !entry.isMe;
 
     return Semantics(
       container: true,
       button: canOpen,
-      label: '${l10n.community_rank(entry.rank ?? 0)}, $name, $percent%, $days',
+      label: [
+        l10n.community_rank(entry.rank ?? 0),
+        name,
+        percent,
+        l10n.community_actions_semantics(entry.completed, entry.expected),
+        if (entry.successWeeks > 0) l10n.community_success_weeks(entry.successWeeks),
+      ].join(', '),
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 3),
@@ -151,11 +183,12 @@ class LeaderboardRow extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyLarge?.copyWith(fontWeight: entry.isMe ? FontWeight.bold : null),
                         ),
-                        Text(days, style: theme.textTheme.bodySmall),
+                        Text(details, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
                       ],
                     ),
                   ),
-                  Text('$percent%',
+                  const SizedBox(width: 8),
+                  Text(percent,
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: green)),
                 ],
               ),

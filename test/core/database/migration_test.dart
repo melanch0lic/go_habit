@@ -14,6 +14,7 @@ import '../../generated_migrations/schema_v3.dart' as v3;
 import '../../generated_migrations/schema_v4.dart' as v4;
 import '../../generated_migrations/schema_v5.dart' as v5;
 import '../../generated_migrations/schema_v6.dart' as v6;
+import '../../generated_migrations/schema_v7.dart' as v7;
 
 /// Regenerate helpers after a schema change:
 /// `dart run drift_dev schema dump lib/core/database/drift_database.dart drift_schemas/drift_schema_vN.json`
@@ -26,9 +27,9 @@ void main() {
   int seconds(DateTime dateTime) => dateTime.millisecondsSinceEpoch ~/ 1000;
 
   test('a fresh install matches the latest schema snapshot', () async {
-    final schema = await verifier.schemaAt(7);
+    final schema = await verifier.schemaAt(8);
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
     await db.close();
   });
 
@@ -80,7 +81,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     final habits = {for (final h in await db.select(db.habits).get()) h.id: h};
     expect(habits.keys, unorderedEquals(['a', 'b', 'c']));
@@ -137,7 +138,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     final habit = await (db.select(db.habits)..where((t) => t.id.equals('h1'))).getSingle();
     expect(habit.isPendingSync, isTrue, reason: 'pending uploads survive the upgrade');
@@ -157,7 +158,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
@@ -175,7 +176,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     final membership = (await db.select(db.communityMemberships).get()).single;
     expect(membership.templateId, 'reading');
@@ -193,7 +194,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     expect((await db.select(db.communityMemberships).get()).single.habitId, 'h1');
     expect(await db.select(db.socialCache).get(), isEmpty);
@@ -223,7 +224,7 @@ void main() {
     await old.close();
 
     final db = AppDatabase(schema.newConnection());
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     final habit = (await db.select(db.habits).get()).single;
     expect(habit.scheduleType, 'daily');
@@ -231,6 +232,32 @@ void main() {
     expect(habit.streakResetOn, isNull);
     expect(habit.isPendingSync, isTrue, reason: 'pending uploads survive');
     expect(await db.select(db.habitCompletions).get(), hasLength(1), reason: 'history is kept');
+    await db.close();
+  });
+
+  test('upgrading from v7 adds the recommended schedule to the catalog cache and keeps memberships', () async {
+    final schema = await verifier.schemaAt(7);
+    final old = v7.DatabaseAtV7(schema.newConnection());
+    await old.into(old.habitTemplates).insert(
+          v7.HabitTemplatesCompanion.insert(
+            id: 'reading',
+            categoryId: 'education',
+            title: '{"ru": "Чтение", "en": "Reading"}',
+            description: '{"ru": "", "en": ""}',
+            icon: '📚',
+          ),
+        );
+    await old
+        .into(old.communityMemberships)
+        .insert(v7.CommunityMembershipsCompanion.insert(templateId: 'reading', joinedOn: '2026-10-01'));
+    await old.close();
+
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 8);
+
+    final template = (await db.select(db.habitTemplates).get()).single;
+    expect((template.scheduleType, template.weeklyTarget, template.scheduleDays), ('daily', null, null));
+    expect((await db.select(db.communityMemberships).get()).single.templateId, 'reading');
     await db.close();
   });
 }

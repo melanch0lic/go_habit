@@ -8,6 +8,7 @@ import 'package:go_habit/feature/communities/domain/models/community.dart';
 import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
 import 'package:go_habit/feature/communities/domain/repositories/community_repository.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 import 'package:go_habit/feature/habits/domain/repositories/habit_repository.dart';
 
 const reading = HabitTemplate(
@@ -49,6 +50,19 @@ const retired = HabitTemplate(
   icon: '🗄️',
   sortOrder: 40,
   isActive: false,
+);
+
+/// Recommends a weekly target, so habits created from it start with that schedule.
+final strength = HabitTemplate(
+  id: 'strength-training',
+  categoryId: 'health',
+  title: const {'ru': 'Силовая тренировка', 'en': 'Strength training'},
+  description: const {'ru': 'Тренировка с весом или собственным телом.', 'en': 'Weights or bodyweight training.'},
+  icon: '🏋️',
+  targetValue: 45,
+  targetUnit: TargetUnit.minutes,
+  sortOrder: 35,
+  recommendedSchedule: HabitSchedule.weeklyTarget(3),
 );
 
 final today = CalendarDay(2026, 10, 9);
@@ -195,6 +209,9 @@ class FakeCommunityRepository implements CommunityRepository {
   int? members = 3;
   bool unsynced = false;
 
+  /// The schedule of the last habit created for a ranking.
+  HabitSchedule? lastRankedSchedule;
+
   /// Thrown by the next calls of the named operations.
   final failures = <String, CommunityFailure>{};
 
@@ -203,10 +220,10 @@ class FakeCommunityRepository implements CommunityRepository {
 
   FakeCommunityRepository({CommunityCatalog? catalog})
       : catalog = catalog ??
-            const CommunityCatalog(
-              templates: [reading, walking, noSugar, retired],
-              memberships: {},
-              memberCounts: {'reading': 3},
+            CommunityCatalog(
+              templates: [reading, walking, strength, noSugar, retired],
+              memberships: const {},
+              memberCounts: const {'reading': 3},
             );
 
   Future<void> _call(String name) async {
@@ -246,8 +263,10 @@ class FakeCommunityRepository implements CommunityRepository {
     HabitTemplate template, {
     required String title,
     required String description,
+    HabitSchedule schedule = HabitSchedule.daily,
   }) async {
     await _call('ranked:$title');
+    lastRankedSchedule = schedule;
     final membership = CommunityMembership(
       templateId: template.id,
       joinedOn: memberships[template.id]?.joinedOn ?? today,

@@ -15,6 +15,7 @@ import 'package:go_habit/feature/communities/view/components/ranked_habit_sheet.
 import 'package:go_habit/feature/communities/view/components/week_progress.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
+import 'package:go_habit/feature/habits/view/habit_texts.dart';
 import 'package:go_habit/feature/initizialization/scopes/app_scope_container.dart';
 import 'package:yx_scope_flutter/yx_scope_flutter.dart';
 
@@ -186,7 +187,10 @@ class _Header extends StatelessWidget {
           Text(template.descriptionFor(language), style: const TextStyle(fontSize: 15)),
           const SizedBox(height: 12),
           if (target != null) _InfoLine(icon: Icons.flag_outlined, text: l10n.community_recommended_target(target)),
-          _InfoLine(icon: Icons.event_repeat, text: l10n.community_schedule_daily),
+          _InfoLine(
+            icon: Icons.event_repeat,
+            text: l10n.community_recommended_schedule(l10n.scheduleSummary(template.recommendedSchedule)),
+          ),
           if (memberCount != null)
             _InfoLine(
               icon: Icons.groups_outlined,
@@ -234,8 +238,8 @@ class _Membership extends StatelessWidget {
       joining: !state.isMember,
     );
     switch (choice) {
-      case CreateRankedHabit(:final title, :final description):
-        bloc.add(RankedHabitRequested(title: title, description: description));
+      case CreateRankedHabit(:final title, :final description, :final schedule):
+        bloc.add(RankedHabitRequested(title: title, description: description, schedule: schedule));
       case JoinWithoutRanking():
         bloc.add(const CommunityJoinRequested());
       case null:

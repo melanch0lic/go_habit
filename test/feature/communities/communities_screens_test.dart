@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_habit/core/router/routes_enum.dart';
 import 'package:go_habit/core/theme/app_theme.dart';
+import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/categories/bloc/habit_category_bloc.dart';
 import 'package:go_habit/feature/categories/domain/models/habit_category.dart';
 import 'package:go_habit/feature/categories/domain/repositories/habit_category_repository.dart';
@@ -13,6 +14,7 @@ import 'package:go_habit/feature/communities/view/community_detail_screen.dart';
 import 'package:go_habit/feature/habit_stats/bloc/habit_stats_bloc.dart';
 import 'package:go_habit/feature/habits/bloc/habits_bloc.dart';
 import 'package:go_habit/feature/habits/data/models/habit.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 import 'package:go_habit/l10n/app_localizations.dart';
 import 'package:go_habit/l10n/app_localizations_ru.dart';
 import 'package:go_router/go_router.dart';
@@ -153,6 +155,17 @@ void main() {
       expect(find.text(l10n.communities_empty_search), findsOneWidget);
     });
 
+    testWidgets('search also finds descriptions; each card shows its recommended frequency', (tester) async {
+      await _pump(tester);
+      expect(find.textContaining(l10n.habits_schedule_times_per_week(3)), findsOneWidget);
+      expect(find.textContaining(l10n.habits_schedule_daily), findsWidgets);
+
+      await tester.enterText(find.byType(TextField), 'собственным телом');
+      await tester.pumpAndSettle();
+      expect(find.text('Силовая тренировка'), findsOneWidget);
+      expect(find.text('Чтение'), findsNothing);
+    });
+
     testWidgets('category chips filter the list', (tester) async {
       await _pump(tester);
 
@@ -208,7 +221,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(l10n.community_ranked_habit('Чтение книг')), findsOneWidget);
-      expect(find.text(l10n.community_week_progress(1, 1)), findsOneWidget);
+      expect(find.text(l10n.community_this_week(l10n.community_progress_days(1, 1))), findsOneWidget);
     });
   });
 
@@ -235,11 +248,58 @@ void main() {
 
       await tester.enterText(find.widgetWithText(TextFormField, 'Чтение'), 'Читаю перед сном');
       await tester.enterText(find.widgetWithText(TextFormField, '20'), '30');
+      await tester.ensureVisible(find.text(l10n.community_join).last);
+      await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.community_join).last);
       await tester.pumpAndSettle();
 
       expect(harness.repository.log, contains('ranked:Читаю перед сном'));
       expect(find.text(l10n.community_joined_ranked), findsOneWidget);
+    });
+
+    testWidgets("the template's recommended schedule is prefilled and can be changed", (tester) async {
+      final harness = await _pump(tester, initialLocation: _detail('strength-training'));
+      expect(
+        find.text(l10n.community_recommended_schedule(l10n.habits_schedule_weekly_summary(3))),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text(l10n.community_join));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.habits_schedule_weekly_summary(3)), findsOneWidget, reason: 'prefilled');
+
+      // The user prefers selected weekdays: Monday and Thursday.
+      final weekdays = find.widgetWithText(ChoiceChip, l10n.habits_schedule_option_weekdays);
+      await tester.ensureVisible(weekdays);
+      await tester.tap(weekdays);
+      await tester.pumpAndSettle();
+      for (final day in [l10n.habits_weekday_1, l10n.habits_weekday_4]) {
+        await tester.ensureVisible(find.bySemanticsLabel(day));
+        await tester.tap(find.bySemanticsLabel(day));
+        await tester.pumpAndSettle();
+      }
+      await tester.ensureVisible(find.text(l10n.community_join).last);
+      await tester.tap(find.text(l10n.community_join).last);
+      await tester.pumpAndSettle();
+
+      expect(harness.repository.lastRankedSchedule, HabitSchedule.weekdays({DateTime.monday, DateTime.thursday}));
+      expect(strength.recommendedSchedule, HabitSchedule.weeklyTarget(3), reason: 'the template is unchanged');
+    });
+
+    testWidgets('selected weekdays without a day are refused before anything is created', (tester) async {
+      final harness = await _pump(tester, initialLocation: _detail('reading'));
+      await tester.tap(find.text(l10n.community_join));
+      await tester.pumpAndSettle();
+      final weekdays = find.widgetWithText(ChoiceChip, l10n.habits_schedule_option_weekdays);
+      await tester.ensureVisible(weekdays);
+      await tester.tap(weekdays);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text(l10n.community_join).last);
+      await tester.tap(find.text(l10n.community_join).last);
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.habits_weekdays_required), findsOneWidget);
+      expect(harness.repository.log.where((e) => e.startsWith('ranked')), isEmpty);
     });
 
     testWidgets('joining without the ranking, then creating a ranked habit later', (tester) async {
@@ -260,6 +320,8 @@ void main() {
       await tester.tap(find.text(l10n.community_create_ranked_habit));
       await tester.pumpAndSettle();
       expect(find.text(l10n.join_option_unranked), findsNothing, reason: 'already a member');
+      await tester.ensureVisible(find.text(l10n.community_create_habit_action));
+      await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.community_create_habit_action));
       await tester.pumpAndSettle();
 
@@ -305,22 +367,69 @@ void main() {
             rank: 1,
             displayName: 'Alice',
             isMe: false,
-            completedDays: 5,
-            eligibleDays: 5,
+            completed: 5,
+            expected: 5,
             consistency: 100,
             rankedCount: 3,
           ),
-          LeaderboardEntry(rank: 2, isMe: true, completedDays: 5, eligibleDays: 7, consistency: 71.43, rankedCount: 3),
-          LeaderboardEntry(rank: 3, isMe: false, completedDays: 0, eligibleDays: 2, consistency: 0, rankedCount: 3),
+          LeaderboardEntry(rank: 2, isMe: true, completed: 5, expected: 7, consistency: 71.43, rankedCount: 3),
+          LeaderboardEntry(rank: 3, isMe: false, completed: 0, expected: 2, consistency: 0, rankedCount: 3),
         ]),
       );
       await tester.scrollUntilVisible(find.text(l10n.community_member_fallback), 200);
 
       expect(find.text('@Alice'), findsOneWidget);
       expect(find.text(l10n.community_you), findsOneWidget);
-      expect(find.text('71%'), findsOneWidget);
+      expect(find.text(l10n.community_percent(71.4)), findsOneWidget, reason: 'one decimal, unrounded ranking');
       expect(find.text(l10n.community_my_rank(2, 3)), findsOneWidget);
     });
+
+    testWidgets('the ranking names its week and shows actions and successful weeks', (tester) async {
+      await _pump(
+        tester,
+        initialLocation: _detail('reading'),
+        setUp: (repo) => repo.leaderboardResult = CommunityLeaderboard.fromRows(
+          const [
+            LeaderboardEntry(
+              rank: 1,
+              displayName: 'Alice',
+              isMe: false,
+              completed: 6,
+              expected: 7,
+              consistency: 600 / 7,
+              rankedCount: 1,
+              successWeeks: 2,
+            ),
+          ],
+          weekStart: CalendarDay(2026, 9, 28),
+        ),
+      );
+      await tester.scrollUntilVisible(find.text('@Alice'), 200);
+
+      expect(find.textContaining(l10n.community_leaderboard_period('')), findsOneWidget);
+      expect(find.text(l10n.community_percent(85.7)), findsOneWidget);
+      expect(find.text('${l10n.community_actions(6, 7)} · ${l10n.community_success_weeks(2)}'), findsOneWidget);
+    });
+
+    for (final (status, text) in [
+      (LeaderboardStatus.joinedRecently, l10n.community_not_ranked_yet),
+      (LeaderboardStatus.paused, l10n.community_status_paused),
+      (LeaderboardStatus.noScheduledActions, l10n.community_status_no_actions),
+      (LeaderboardStatus.noHabit, l10n.community_not_ranked),
+    ]) {
+      testWidgets('an unranked member is told why: $status', (tester) async {
+        await _pump(
+          tester,
+          initialLocation: _detail('reading'),
+          setUp: (repo) => repo.leaderboardResult = CommunityLeaderboard.fromRows([
+            LeaderboardEntry(isMe: true, completed: 0, expected: 0, status: status),
+          ]),
+        );
+        await tester.scrollUntilVisible(find.text(l10n.community_leaderboard_empty), 200);
+        expect(find.text(text), findsWidgets);
+        expect(find.textContaining('%'), findsNothing, reason: 'no invented score');
+      });
+    }
 
     testWidgets('an offline ranking says so and can be retried', (tester) async {
       final harness = await _pump(

@@ -165,4 +165,127 @@ void main() {
       expect(result.isScored, isFalse);
     });
   });
+
+  // The finished week ranked by communities (weekly_consistency_v2). The fixtures match
+  // supabase/tests/database/02_communities.test.sql and 04_schedules.test.sql, so the
+  // device and the server score the same week the same way.
+  group('finished week', () {
+    final mwf = HabitSchedule.weekdays({DateTime.monday, DateTime.wednesday, DateTime.friday});
+    WeeklyConsistency week(
+      HabitSchedule schedule,
+      Iterable<CalendarDay> done, {
+      CalendarDay? joinedOn,
+      DateTime? createdAt,
+      CalendarDay? weekStart,
+      bool active = true,
+    }) =>
+        WeeklyConsistency.finishedWeek(
+          weekStart: weekStart ?? monday,
+          joinedOn: joinedOn ?? monday.addDays(-30),
+          habitCreatedAt: createdAt ?? longAgo,
+          completedDays: done,
+          schedule: schedule,
+          habitActive: active,
+        );
+
+    test('daily: 7 of 7 is 100%, 6 of 7 is 85.7%, 4 of 7 is 57.1%', () {
+      expect(week(HabitSchedule.daily, days(monday, 7)).percentage, 100);
+      expect(week(HabitSchedule.daily, days(monday, 6)).percentage, closeTo(85.714, 0.001));
+      expect(week(HabitSchedule.daily, days(monday, 4)).percentage, closeTo(57.142, 0.001));
+    });
+
+    test('weekly target: 3 of 3 is 100%, 2 of 3 is 66.7%, 4 of 5 is 80%', () {
+      expect(week(HabitSchedule.weeklyTarget(3), days(monday, 3)).percentage, 100);
+      expect(week(HabitSchedule.weeklyTarget(3), days(monday, 2)).percentage, closeTo(66.667, 0.001));
+      expect(week(HabitSchedule.weeklyTarget(5), days(monday, 4)).percentage, 80);
+    });
+
+    test('weekly target: extra completions never exceed 100%', () {
+      final result = week(HabitSchedule.weeklyTarget(3), days(monday, 4));
+      expect(result, const WeeklyConsistency(completedDays: 3, eligibleDays: 3));
+      expect(result.percentage, 100);
+    });
+
+    test('selected weekdays: 2 of 3 scheduled days is 66.7%; days off are not missed', () {
+      // Mon, Tue, Wed marked: Tuesday is not scheduled.
+      final result = week(mwf, days(monday, 3));
+      expect(result, const WeeklyConsistency(completedDays: 2, eligibleDays: 3));
+      expect(result.percentage, closeTo(66.667, 0.001));
+    });
+
+    test('no completions is 0%, not "not scored"', () {
+      final result = week(HabitSchedule.daily, const []);
+      expect(result.isScored, isTrue);
+      expect(result.percentage, 0);
+    });
+
+    test('no applicable scheduled actions: not scored, no division by zero', () {
+      // Mondays only, joined on Tuesday.
+      final result = week(HabitSchedule.weekdays({DateTime.monday}), const [], joinedOn: monday.addDays(1));
+      expect(result.isScored, isFalse);
+      expect(result.percentage, isNull);
+    });
+
+    test('joining mid-week: days before joining are not expected', () {
+      // Joined on Thursday 2026-10-08: Thursday to Sunday.
+      final joined = monday.addDays(3);
+      expect(
+        week(HabitSchedule.daily, [monday.addDays(2), ...days(joined, 3)], joinedOn: joined),
+        const WeeklyConsistency(completedDays: 3, eligibleDays: 4),
+      );
+      // The weekly target is prorated: ceil(3 × 4 / 7) = 2.
+      expect(
+        week(HabitSchedule.weeklyTarget(3), days(joined, 2), joinedOn: joined),
+        const WeeklyConsistency(completedDays: 2, eligibleDays: 2),
+      );
+    });
+
+    test('a habit created during the week counts from its creation day (UTC)', () {
+      expect(
+        week(HabitSchedule.daily, [sunday.addDays(-2)], createdAt: DateTime.utc(2026, 10, 9, 10)),
+        const WeeklyConsistency(completedDays: 1, eligibleDays: 3),
+      );
+    });
+
+    test('joined after the week: nothing to score', () {
+      expect(week(HabitSchedule.daily, days(monday, 7), joinedOn: sunday.addDays(1)).isScored, isFalse);
+    });
+
+    test('weeks run Monday to Sunday: the Sunday before belongs to the previous week', () {
+      final done = [monday.addDays(-1), ...days(monday, 5)];
+      expect(week(HabitSchedule.daily, done), const WeeklyConsistency(completedDays: 5, eligibleDays: 7));
+      expect(
+        week(HabitSchedule.daily, done, weekStart: monday.addDays(-7), joinedOn: CalendarDay(2026, 10, 1)),
+        const WeeklyConsistency(completedDays: 1, eligibleDays: 4),
+      );
+    });
+
+    test('duplicate records of one day count once', () {
+      expect(
+        week(HabitSchedule.daily, [monday, monday, monday, monday.addDays(1)]),
+        const WeeklyConsistency(completedDays: 2, eligibleDays: 7),
+      );
+    });
+
+    test('the order of records does not matter', () {
+      final done = days(monday, 5);
+      expect(week(mwf, done.reversed), week(mwf, done));
+    });
+
+    test('a paused habit is not scored', () {
+      expect(week(HabitSchedule.daily, days(monday, 7), active: false), WeeklyConsistency.notScored);
+    });
+  });
+
+  group('current week', () {
+    test('future days are not missed: on Wednesday a full start is 3 of 3', () {
+      final result = WeeklyConsistency.compute(
+        today: monday.addDays(2),
+        joinedOn: monday.addDays(-30),
+        habitCreatedAt: longAgo,
+        completedDays: days(monday, 3),
+      );
+      expect(result.percentage, 100);
+    });
+  });
 }

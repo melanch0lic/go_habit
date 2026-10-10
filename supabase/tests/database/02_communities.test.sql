@@ -3,15 +3,39 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local timezone = 'UTC';
 
-select plan(44);
+select plan(54);
 
 -- ===== Catalog ======================================================================
 select has_table('public', 'habit_template', 'habit_template exists');
 select has_table('public', 'community_membership', 'community_membership exists');
-select is((select count(*)::int from public.habit_template), 16, '16 templates are seeded');
+select is((select count(*)::int from public.habit_template), 39, '39 templates are seeded');
+select ok((select bool_and(id in (select id from public.habit_template))
+             from unnest(array['reading', 'english-practice', 'learning', 'morning-exercise', 'running', 'stretching',
+                               'walking', 'drinking-water', 'consistent-sleep', 'no-sugar', 'meditation', 'journaling',
+                               'drawing', 'music-practice', 'deep-work', 'expense-tracking']) as id),
+          'the original 16 template ids are kept');
 select is((select count(*)::int from public.habit_template
-            where is_active and scoring_policy = 'weekly_consistency_v1' and schedule = 'daily'), 16,
-          'seeded templates are active, daily and use the v1 scoring policy');
+            where is_active and scoring_policy = 'weekly_consistency_v2'), 39,
+          'all templates are active and use the v2 scoring policy');
+select is((select array_agg(distinct schedule order by schedule) from public.habit_template),
+          array['daily', 'weekdays', 'weekly_target'], 'all three schedule types are recommended');
+select is((select (schedule, weekly_target, schedule_days)::text from public.habit_template where id = 'strength-training'),
+          '(weekly_target,3,)', 'a recommended schedule is structured data, e.g. strength training 3 times a week');
+select is((select (schedule, weekly_target, schedule_days)::text from public.habit_template where id = 'deep-work'),
+          '(weekdays,,31)', 'selected weekdays are a bit mask (Monday to Friday = 31)');
+select is((select count(distinct lower(title->>'ru'))::int + count(distinct lower(title->>'en'))::int
+             from public.habit_template), 78, 'template names are distinct in both languages');
+select ok(not exists (select 1 from public.habit_template t
+                       where not exists (select 1 from public.category c where c.id = t.category_id)),
+          'every template belongs to an existing category');
+select throws_ok($$ insert into public.habit_template (id, category_id, title, description, icon, schedule)
+                    values ('x', 'health', '{"ru":"x","en":"x"}', '{"ru":"x","en":"x"}', 'x', 'weekly_target') $$,
+                 '23514', null, 'a weekly-target recommendation needs its target');
+-- Re-running the seed updates entries in place.
+insert into public.habit_template (id, category_id, title, description, icon, schedule, weekly_target, sort_order)
+values ('running', 'sport', '{"ru": "Бег", "en": "Running"}', '{"ru": "x", "en": "x"}', '🏃', 'weekly_target', 3, 50)
+on conflict (id) do update set description = excluded.description;
+select is((select count(*)::int from public.habit_template), 39, 're-running the seed creates no duplicates');
 select ok((select bool_and(c.relrowsecurity) from pg_class c
             where c.oid in ('public.habit_template'::regclass, 'public.community_membership'::regclass)),
           'RLS is enabled on both tables');
@@ -73,55 +97,64 @@ insert into public.habit_completion (habit_id, user_id, completed_on, deleted_at
   ('c0000000-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', '2026-10-08', null),
   ('e0000000-0000-0000-0000-000000000001', '55555555-5555-5555-5555-555555555555', '2026-10-09', null);
 
--- ===== Scoring rules (weekly_consistency_v1) ========================================
-select is((select (completed_days, eligible_days, round(consistency, 2))::text
-             from public._community_scores('walking', '2026-10-11')
+-- ===== Finished-week scoring (weekly_consistency_v2) ===============================
+select is((select (completed_actions, expected_actions, round(consistency, 2), status)::text
+             from public._community_week_scores('walking', '2026-10-05')
             where user_id = '11111111-1111-1111-1111-111111111111'),
-          '(5,7,71.43)', '5 of 7 scheduled days = 71.43%; other weeks and un-marked days do not count');
-select is((select (completed_days, eligible_days, round(consistency, 2))::text
-             from public._community_scores('walking', '2026-10-11')
+          '(5,7,71.43,scored)', '5 of 7 scheduled days = 71.43%; other weeks and a reverted mark do not count');
+select is((select (completed_actions, expected_actions, round(consistency, 2))::text
+             from public._community_week_scores('walking', '2026-10-05')
             where user_id = '22222222-2222-2222-2222-222222222222'),
-          '(3,4,75.00)', 'days before joining are neither eligible nor completed');
-select is((select (completed_days, eligible_days)::text
-             from public._community_scores('walking', '2026-10-11')
+          '(3,4,75.00)', 'joining mid-week: days before joining are neither expected nor completed');
+select is((select (completed_actions, expected_actions)::text
+             from public._community_week_scores('walking', '2026-10-05')
             where user_id = '55555555-5555-5555-5555-555555555555'),
-          '(1,3)', 'days before the habit was created are not eligible');
-select is((select (completed_days, eligible_days, round(consistency, 2))::text
-             from public._community_scores('walking', '2026-10-07')
+          '(1,3)', 'days before the habit was created are not expected');
+select is((select (completed_actions, expected_actions)::text
+             from public._community_week_scores('walking', '2026-09-28')
             where user_id = '11111111-1111-1111-1111-111111111111'),
-          '(3,3,100.00)', 'future days of the week are not counted');
-select is((select (completed_days, eligible_days)::text
-             from public._community_scores('walking', '2026-10-07')
+          '(1,4)', 'weeks run Monday to Sunday: Sunday 2026-10-04 belongs to the week before');
+select is((select status from public._community_week_scores('walking', '2026-09-28')
             where user_id = '22222222-2222-2222-2222-222222222222'),
-          '(0,0)', 'a member who joined later this week has no eligible days yet');
-select ok(not exists (select 1 from public._community_scores('walking', '2026-10-11')
-                       where user_id in ('33333333-3333-3333-3333-333333333333',
-                                         '44444444-4444-4444-4444-444444444444')),
-          'members with a paused or no ranked habit are not scored');
-select is((select (completed_days, eligible_days)::text
-             from public._community_scores('walking', '2026-10-12')
-            where user_id = '11111111-1111-1111-1111-111111111111'),
-          '(0,1)', 'a new week starts on Monday');
+          'joined_recently', 'a member who joined after the week is not scored for it');
+select is((select array_agg(status order by user_id) from public._community_week_scores('walking', '2026-10-05')
+            where user_id in ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444')),
+          array['paused', 'no_habit'], 'a paused or missing ranked habit is not scored, with the reason');
+select is((select consistency from public._community_week_scores('walking', '2026-10-05')
+            where user_id = '33333333-3333-3333-3333-333333333333'),
+          null::numeric, 'no score is invented for a member who is not scored');
 
--- Current week, relative to today: Alice and Bob complete every day so far (a tie),
--- Carol completes nothing, Dave has no ranked habit.
+-- Last finished week, relative to today. Bob completes it and the week before
+-- (successful-week streak 2); Alice and Erin complete it (streak 1, a full tie);
+-- Carol completes nothing; Dave has no ranked habit.
+insert into public.habit (id, user_id, category_id, title, created_at) values
+  ('e0000000-0000-0000-0000-000000000002', '55555555-5555-5555-5555-555555555555', 'selv-development', 'Meditate', '2000-01-01');
 alter table public.community_membership disable trigger community_membership_guard;
 insert into public.community_membership (user_id, template_id, habit_id, joined_on)
-select u, 'meditation', h, current_date - (extract(isodow from current_date)::int - 1)
-  from (values ('11111111-1111-1111-1111-111111111111'::uuid, 'a0000000-0000-0000-0000-000000000002'::uuid),
-               ('22222222-2222-2222-2222-222222222222'::uuid, 'b0000000-0000-0000-0000-000000000002'::uuid),
-               ('33333333-3333-3333-3333-333333333333'::uuid, 'c0000000-0000-0000-0000-000000000002'::uuid))
-       as v(u, h);
+select u, 'meditation', h, current_date - (extract(isodow from current_date)::int - 1) - w
+  from (values ('11111111-1111-1111-1111-111111111111'::uuid, 'a0000000-0000-0000-0000-000000000002'::uuid, 7),
+               ('22222222-2222-2222-2222-222222222222'::uuid, 'b0000000-0000-0000-0000-000000000002'::uuid, 14),
+               ('33333333-3333-3333-3333-333333333333'::uuid, 'c0000000-0000-0000-0000-000000000002'::uuid, 7),
+               ('55555555-5555-5555-5555-555555555555'::uuid, 'e0000000-0000-0000-0000-000000000002'::uuid, 7))
+       as v(u, h, w);
 insert into public.community_membership (user_id, template_id, habit_id, joined_on)
 values ('44444444-4444-4444-4444-444444444444', 'meditation', null, current_date);
 alter table public.community_membership enable trigger community_membership_guard;
 
 insert into public.habit_completion (habit_id, user_id, completed_on)
 select h, u, d::date
-  from (values ('11111111-1111-1111-1111-111111111111'::uuid, 'a0000000-0000-0000-0000-000000000002'::uuid),
-               ('22222222-2222-2222-2222-222222222222'::uuid, 'b0000000-0000-0000-0000-000000000002'::uuid))
-       as v(u, h)
- cross join generate_series(current_date - (extract(isodow from current_date)::int - 1), current_date, interval '1 day') d;
+  from (values ('11111111-1111-1111-1111-111111111111'::uuid, 'a0000000-0000-0000-0000-000000000002'::uuid, 7),
+               ('22222222-2222-2222-2222-222222222222'::uuid, 'b0000000-0000-0000-0000-000000000002'::uuid, 14),
+               ('55555555-5555-5555-5555-555555555555'::uuid, 'e0000000-0000-0000-0000-000000000002'::uuid, 7))
+       as v(u, h, w)
+ cross join generate_series(current_date - (extract(isodow from current_date)::int - 1) - w,
+                            current_date - extract(isodow from current_date)::int, interval '1 day') d;
+-- Marks of the current week do not change the finished week's ranking.
+insert into public.habit_completion (habit_id, user_id, completed_on)
+values ('c0000000-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', current_date);
+-- A schedule change after the week does not rewrite its result.
+update public.habit set schedule_type = 'weekly_target', weekly_target = 1
+ where id = 'b0000000-0000-0000-0000-000000000002';
 
 -- ===== Leaderboard ==================================================================
 set local role authenticated;
@@ -129,33 +162,46 @@ select set_config('request.jwt.claims',
   '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
 
 select is((select array_agg(rank order by rank) from public.community_leaderboard('meditation', current_date)),
-          array[1, 2, 3], 'members with a ranked habit are ranked; others are not');
-select is((select display_name from public.community_leaderboard('meditation', current_date) where rank = 1),
-          'Alice', 'ties go to more completed days, then a stable order; public nicknames are shown');
-select is((select (rank, is_me, display_name is null)::text
+          array[1, 2, 3, 4], 'members with a ranked habit are ranked; others are not');
+select is((select (rank, completed_actions, expected_actions, success_weeks)::text
              from public.community_leaderboard('meditation', current_date) where is_me),
-          '(2,t,t)', 'the caller sees their own rank; members who do not share their name stay anonymous');
-select is((select round(consistency) from public.community_leaderboard('meditation', current_date) where rank = 3),
-          0::numeric, 'a member with no completions is ranked last with 0%');
-select is((select max(ranked_count) from public.community_leaderboard('meditation', current_date)),
-          3, 'the number of ranked members is reported');
+          '(1,7,7,2)', 'equal scores: more consecutive successful weeks rank higher; a later schedule change is ignored');
+select is((select array_agg(display_name order by rank) from public.community_leaderboard('meditation', current_date)
+            where rank in (2, 3)),
+          array['Alice', null], 'a full tie keeps a stable order; only public nicknames are shown');
+select is((select (round(consistency), completed_actions, expected_actions)::text
+             from public.community_leaderboard('meditation', current_date) where rank = 4),
+          '(0,0,7)', 'a member with no completions is ranked last with 0%, current-week marks do not count');
+select is((select (max(ranked_count), min(week_start))::text from public.community_leaderboard('meditation', current_date)),
+          format('(4,%s)', current_date - (extract(isodow from current_date)::int - 1) - 7),
+          'the ranked count and the finished week (from Monday) are reported');
 select throws_ok($$ select * from public.community_leaderboard('meditation', current_date - 7) $$,
-                 '22023', null, 'only the current week can be requested');
-select throws_ok($$ select * from public._community_scores('meditation', current_date) $$,
+                 '22023', null, 'only the current local date is accepted');
+select throws_ok($$ select * from public._community_week_scores('meditation', current_date) $$,
                  '42501', null, 'clients cannot call the internal scoring function');
+select throws_ok($$ select * from public.habit_schedule_version $$,
+                 '42501', null, 'clients cannot read schedule history');
 select is((select member_count from public.community_member_counts() where template_id = 'meditation'),
-          4, 'participant counts include members without ranking');
+          5, 'participant counts include members without ranking');
 
 select set_config('request.jwt.claims',
   '{"sub":"33333333-3333-3333-3333-333333333333","role":"authenticated"}', true);
 select is((select array_agg(rank order by rank) from public.community_leaderboard('meditation', current_date, 1)),
-          array[1, 3], 'the caller''s row is added below the requested top');
+          array[1, 4], 'the caller''s row is added below the requested top');
 
 select set_config('request.jwt.claims',
   '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}', true);
-select is((select (rank is null, eligible_days)::text
+select is((select (rank is null, expected_actions, status)::text
              from public.community_leaderboard('meditation', current_date) where is_me),
-          '(t,0)', 'a member without a ranked habit sees an unranked row of their own');
+          '(t,0,no_habit)', 'a member without a ranked habit sees an unranked row with the reason');
+
+select set_config('request.jwt.claims',
+  '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated"}', true);
+delete from public.community_membership where template_id = 'meditation';
+select set_config('request.jwt.claims',
+  '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
+select is((select (count(*), max(ranked_count))::text from public.community_leaderboard('meditation', current_date)),
+          '(3,3)', 'a member who left is no longer ranked or shown');
 
 -- ===== Membership as Alice ==========================================================
 select set_config('request.jwt.claims',

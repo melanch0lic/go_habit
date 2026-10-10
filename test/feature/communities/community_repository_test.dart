@@ -2,8 +2,11 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_habit/core/database/dao/community_dao.dart';
 import 'package:go_habit/core/database/drift_database.dart';
+import 'package:go_habit/core/utils/calendar_day.dart';
 import 'package:go_habit/feature/communities/data/community_repository_impl.dart';
 import 'package:go_habit/feature/communities/domain/models/community.dart';
+import 'package:go_habit/feature/communities/domain/models/habit_template.dart';
+import 'package:go_habit/feature/habits/domain/habit_schedule.dart';
 
 import 'community_fakes.dart';
 
@@ -113,6 +116,22 @@ void main() {
       expect((await CommunityDao(db).getMemberships()).single.habitId, habit.id);
     });
 
+    test("the habit gets the user's schedule; the shared template is not changed", () async {
+      final strength = HabitTemplate(
+        id: 'strength-training',
+        categoryId: 'sport',
+        title: const {'ru': 'Силовая тренировка', 'en': 'Strength training'},
+        description: const {'ru': '', 'en': ''},
+        icon: '🏋️',
+        recommendedSchedule: HabitSchedule.weeklyTarget(3),
+      );
+      final custom = HabitSchedule.weekdays({DateTime.monday, DateTime.thursday});
+      await repository().joinWithRankedHabit(strength, title: 'Зал', description: '', schedule: custom);
+
+      expect(habits.habits.single.schedule, custom);
+      expect(strength.recommendedSchedule, HabitSchedule.weeklyTarget(3));
+    });
+
     test('a member without ranking can add a ranked habit later', () async {
       final repo = repository();
       final joined = await repo.join('reading');
@@ -166,10 +185,12 @@ void main() {
 
   test('rankings need a connection and come from the server', () async {
     remote.leaderboardRows = [
-      const LeaderboardEntry(rank: 1, isMe: true, completedDays: 1, eligibleDays: 1, consistency: 100, rankedCount: 1),
+      const LeaderboardEntry(rank: 1, isMe: true, completed: 1, expected: 1, consistency: 100, rankedCount: 1),
     ];
     final leaderboard = await repository().leaderboard('reading', today: today);
     expect(leaderboard.me!.rank, 1);
+    // today is Friday 2026-10-09: the ranked week is the one before, from Monday.
+    expect(leaderboard.weekStart, CalendarDay(2026, 9, 28));
 
     connect.online = false;
     await expectLater(repository().leaderboard('reading', today: today), throwsFailure(CommunityFailure.offline));

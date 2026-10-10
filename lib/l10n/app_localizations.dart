@@ -635,14 +635,8 @@ abstract class AppLocalizations {
   /// No description provided for @community_recommended_target.
   ///
   /// In en, this message translates to:
-  /// **'Recommended target: {target} a day'**
+  /// **'Recommended target: {target} per session'**
   String community_recommended_target(String target);
-
-  /// No description provided for @community_schedule_daily.
-  ///
-  /// In en, this message translates to:
-  /// **'Every day'**
-  String get community_schedule_daily;
 
   /// No description provided for @community_join.
   ///
@@ -665,7 +659,7 @@ abstract class AppLocalizations {
   /// No description provided for @community_leave_message.
   ///
   /// In en, this message translates to:
-  /// **'Your ranked habit stays in your list with its history. If you come back, days of this week before rejoining won\'t count.'**
+  /// **'Your ranked habit stays in your list with its history. You will disappear from the ranking; if you come back, days before rejoining won\'t count.'**
   String get community_leave_message;
 
   /// No description provided for @community_leave_confirm.
@@ -683,7 +677,7 @@ abstract class AppLocalizations {
   /// No description provided for @community_leaderboard_title.
   ///
   /// In en, this message translates to:
-  /// **'This week\'s ranking'**
+  /// **'Last week\'s ranking'**
   String get community_leaderboard_title;
 
   /// No description provided for @community_retired.
@@ -1751,7 +1745,7 @@ abstract class AppLocalizations {
   /// No description provided for @community_rules_body.
   ///
   /// In en, this message translates to:
-  /// **'One habit created from the community\'s template takes part in the ranking. The ranking is weekly, from Monday to today. It measures regularity: the share of counted days on which the habit was marked. Days before you joined or created the habit, and future days, are not counted. Time and effort are not compared. Others see only your profile name (or “Member”), your percentage and day count.'**
+  /// **'One habit created from the community\'s template, with its own schedule, takes part in the ranking. Results cover last week, Monday to Sunday. The ranking measures consistency with your schedule: a daily habit counts every day, selected weekdays count only those days, a weekly target counts the target (marks beyond it add nothing). Days before you joined or created the habit don\'t count, and a weekly target is prorated when you join mid-week. Ties go to more completed actions, then to more successful weeks in a row. The current week is shown separately and is ranked only once it is over. Others see only your profile name (or “Member”), your percentage and numbers.'**
   String get community_rules_body;
 
   /// No description provided for @community_ranked_habit.
@@ -1799,7 +1793,7 @@ abstract class AppLocalizations {
   /// No description provided for @community_leaderboard_empty.
   ///
   /// In en, this message translates to:
-  /// **'Nobody has counted days this week yet.'**
+  /// **'No results for last week yet: no member was ranked for all or part of it.'**
   String get community_leaderboard_empty;
 
   /// No description provided for @community_leaderboard_offline.
@@ -1826,12 +1820,6 @@ abstract class AppLocalizations {
   /// **'You'**
   String get community_you;
 
-  /// No description provided for @community_days.
-  ///
-  /// In en, this message translates to:
-  /// **'{completed} of {eligible} days'**
-  String community_days(int completed, int eligible);
-
   /// No description provided for @community_rank.
   ///
   /// In en, this message translates to:
@@ -1847,7 +1835,7 @@ abstract class AppLocalizations {
   /// No description provided for @community_not_ranked_yet.
   ///
   /// In en, this message translates to:
-  /// **'You\'ll appear in the ranking once your ranked habit has counted days.'**
+  /// **'Your results will appear in the ranking once your first week with a ranked habit is over.'**
   String get community_not_ranked_yet;
 
   /// No description provided for @community_unsynced_hint.
@@ -1925,13 +1913,13 @@ abstract class AppLocalizations {
   /// No description provided for @create_habit_target_label.
   ///
   /// In en, this message translates to:
-  /// **'Daily target'**
+  /// **'Target per session'**
   String get create_habit_target_label;
 
   /// No description provided for @create_habit_hint.
   ///
   /// In en, this message translates to:
-  /// **'The target is saved in the habit\'s description. Schedule: every day.'**
+  /// **'The target is saved in the habit\'s description. The schedule is suggested by the template; changing it does not change the template.'**
   String get create_habit_hint;
 
   /// No description provided for @create_habit_similar.
@@ -1943,7 +1931,7 @@ abstract class AppLocalizations {
   /// No description provided for @create_habit_description.
   ///
   /// In en, this message translates to:
-  /// **'{description} Target: {target} a day.'**
+  /// **'{description} Target: {target} per session.'**
   String create_habit_description(String description, String target);
 
   /// No description provided for @profile_title.
@@ -2155,6 +2143,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'© {year} Go Habit. All rights reserved.'**
   String privacy_policy_copyright(String year);
+
+  /// No description provided for @community_recommended_schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended schedule: {schedule}'**
+  String community_recommended_schedule(String schedule);
+
+  /// No description provided for @community_leaderboard_period.
+  ///
+  /// In en, this message translates to:
+  /// **'Week of {range}'**
+  String community_leaderboard_period(String range);
+
+  /// No description provided for @community_percent.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}%'**
+  String community_percent(double value);
+
+  /// No description provided for @community_actions.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed}/{expected}'**
+  String community_actions(int completed, int expected);
+
+  /// No description provided for @community_actions_semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {expected} scheduled done'**
+  String community_actions_semantics(int completed, int expected);
+
+  /// No description provided for @community_success_weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} successful week in a row} other{{count} successful weeks in a row}}'**
+  String community_success_weeks(int count);
+
+  /// No description provided for @community_status_paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Your habit was paused at the end of last week, so the week was not scored.'**
+  String get community_status_paused;
+
+  /// No description provided for @community_status_no_actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your schedule had nothing planned last week.'**
+  String get community_status_no_actions;
+
+  /// No description provided for @community_this_week.
+  ///
+  /// In en, this message translates to:
+  /// **'This week (in progress): {progress}'**
+  String community_this_week(String progress);
+
+  /// No description provided for @community_progress_days.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed}/{expected} days'**
+  String community_progress_days(int completed, int expected);
+
+  /// No description provided for @community_progress_target.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed}/{expected} weekly target'**
+  String community_progress_target(int completed, int expected);
+
+  /// No description provided for @community_progress_weekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed}/{expected} scheduled days'**
+  String community_progress_weekdays(int completed, int expected);
 }
 
 class _AppLocalizationsDelegate
